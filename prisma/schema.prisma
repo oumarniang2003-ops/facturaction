@@ -1,0 +1,217 @@
+// Schéma de base de données - Adaptez la "provider" selon votre base (postgresql recommandé)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MULTI-TENANT : chaque commerçant = 1 Merchant
+// Toutes les données métier sont liées à un merchantId
+// ============================================
+
+model Merchant {
+  id            String    @id @default(cuid())
+  businessName  String
+  slug          String    @unique // utilisé dans les URLs / sous-domaines
+  email         String    @unique
+  phone         String?
+  address       String?
+  vatNumber     String?   // numéro de TVA / SIRET
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  users         User[]
+  clients       Client[]
+  products      Product[]
+  invoices      Invoice[]
+  subscription  Subscription?
+  invoiceCounter InvoiceCounter?
+}
+
+model Subscription {
+  id                String    @id @default(cuid())
+  merchant          Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId        String    @unique
+  plan              Plan      @default(STARTER)
+  status            SubStatus @default(TRIALING)
+  stripeCustomerId  String?
+  stripeSubId       String?
+  currentPeriodEnd  DateTime?
+  createdAt         DateTime  @default(now())
+}
+
+enum Plan {
+  STARTER   // facturation simple
+  PRO       // + stock
+  BUSINESS  // + CRM, multi-utilisateurs, multi-boutiques
+}
+
+enum SubStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+// ============================================
+// UTILISATEURS (le commerçant + ses employés éventuels)
+// ============================================
+
+model User {
+  id          String   @id @default(cuid())
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId  String
+  name        String
+  email       String   @unique
+  passwordHash String
+  role        Role     @default(OWNER)
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  OWNER
+  EMPLOYEE
+  ACCOUNTANT
+}
+
+// ============================================
+// CLIENTS DU COMMERÇANT (CRM léger)
+// ============================================
+
+model Client {
+  id          String    @id @default(cuid())
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId  String
+  type        ClientType @default(INDIVIDUAL)
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  vatNumber   String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  invoices    Invoice[]
+
+  @@index([merchantId])
+}
+
+enum ClientType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+// ============================================
+// PRODUITS / SERVICES + STOCK
+// ============================================
+
+model Product {
+  id            String   @id @default(cuid())
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId    String
+  name          String
+  sku           String?
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  vatRate       Decimal  @db.Decimal(4, 2) @default(20.00)
+  trackStock    Boolean  @default(false)
+  stockQty      Int      @default(0)
+  lowStockAlert Int      @default(5)
+  createdAt     DateTime @default(now())
+
+  invoiceItems  InvoiceItem[]
+  stockMoves    StockMovement[]
+
+  @@index([merchantId])
+}
+
+model StockMovement {
+  id         String   @id @default(cuid())
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  quantity   Int      // positif = entrée, négatif = sortie
+  reason     String   // "vente", "réassort", "inventaire", "casse"...
+  createdAt  DateTime @default(now())
+}
+
+// ============================================
+// FACTURATION
+// ============================================
+
+model InvoiceCounter {
+  id          String   @id @default(cuid())
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId  String   @unique
+  year        Int
+  lastNumber  Int      @default(0)
+}
+
+model Invoice {
+  id           String        @id @default(cuid())
+  merchant     Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId   String
+  client       Client        @relation(fields: [clientId], references: [id])
+  clientId     String
+  number       String        // ex: FAC-2026-0001
+  type         DocType       @default(INVOICE)
+  status       InvoiceStatus @default(DRAFT)
+  issueDate    DateTime      @default(now())
+  dueDate      DateTime?
+  subtotal     Decimal       @db.Decimal(10, 2)
+  vatTotal     Decimal       @db.Decimal(10, 2)
+  total        Decimal       @db.Decimal(10, 2)
+  notes        String?
+  createdAt    DateTime      @default(now())
+
+  items        InvoiceItem[]
+  payments     Payment[]
+
+  @@index([merchantId])
+  @@unique([merchantId, number])
+}
+
+enum DocType {
+  QUOTE     // devis
+  INVOICE   // facture
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELED
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId   String
+  product     Product? @relation(fields: [productId], references: [id])
+  productId   String?
+  description String
+  quantity    Decimal  @db.Decimal(10, 2)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  vatRate     Decimal  @db.Decimal(4, 2)
+  lineTotal   Decimal  @db.Decimal(10, 2)
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  invoice     Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId   String
+  amount      Decimal       @db.Decimal(10, 2)
+  method      PaymentMethod @default(CARD)
+  paidAt      DateTime      @default(now())
+  stripePaymentId String?
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
+  TRANSFER
+  CHECK
+}

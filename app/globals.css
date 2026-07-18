@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1B2320;      /* vert-noir profond, sérieux */
+  --paper: #F7F5F0;    /* fond clair chaud */
+  --brand: #2F6F4E;    /* vert émeraude — confiance / argent / commerce */
+  --brand-dark: #1F4D36;
+  --amber: #C97B2E;    /* accent chaleureux pour alertes/CTA secondaires */
+}
+
+body {
+  font-feature-settings: "cv11", "ss01";
+}
