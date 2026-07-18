@@ -102,7 +102,3 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true });
 }
 
-// Stripe a besoin du corps brut (non parsé) pour vérifier la signature
-export const config = {
-  api: { bodyParser: false },
-};
