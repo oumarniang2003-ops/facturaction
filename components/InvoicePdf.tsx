@@ -54,9 +54,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   dottedValue: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.8,
     borderBottomColor: "#0096B4",
-    borderBottomStyle: "dashed",
     minWidth: 90,
     textAlign: "center",
     fontSize: 9,
@@ -98,9 +97,8 @@ const styles = StyleSheet.create({
   },
   clientFieldValue: {
     flex: 1,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.8,
     borderBottomColor: "#0096B4",
-    borderBottomStyle: "dashed",
     paddingBottom: 1,
     fontSize: 9,
     color: "#1B2320",
@@ -132,10 +130,38 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E6F4F8",
     paddingVertical: 5,
   },
-  colQty: { width: "15%", textAlign: "center", borderRightWidth: 1, borderRightColor: "#E6F4F8" },
-  colDesc: { width: "55%", paddingLeft: 8, borderRightWidth: 1, borderRightColor: "#E6F4F8" },
-  colPrice: { width: "15%", textAlign: "right", paddingRight: 8, borderRightWidth: 1, borderRightColor: "#E6F4F8" },
-  colTotal: { width: "15%", textAlign: "right", paddingRight: 8 },
+  colQty: { 
+    width: "15%", 
+    borderRightWidth: 1, 
+    borderRightColor: "#0096B4",
+    paddingVertical: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  colDesc: { 
+    width: "55%", 
+    borderRightWidth: 1, 
+    borderRightColor: "#0096B4",
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    justifyContent: "center",
+  },
+  colPrice: { 
+    width: "15%", 
+    borderRightWidth: 1, 
+    borderRightColor: "#0096B4",
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+  colTotal: { 
+    width: "15%", 
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
   
   headerText: {
     color: "#0096B4",
@@ -143,6 +169,10 @@ const styles = StyleSheet.create({
     fontSize: 8,
     textAlign: "center",
     width: "100%",
+  },
+  cellText: {
+    fontSize: 8,
+    color: "#1B2320",
   },
 
   // Bottom Area: Payments and Totals
@@ -355,28 +385,52 @@ export function InvoicePdf({ merchant, client, invoice, items }: InvoicePdfProps
         {/* Lined Ledger Table */}
         <View style={styles.table}>
           <View style={styles.tableHeader}>
-            <View style={styles.colQty}><Text style={styles.headerText}>Quantité</Text></View>
-            <View style={styles.colDesc}><Text style={[styles.headerText, { textAlign: "left" }]}>Désignation</Text></View>
-            <View style={styles.colPrice}><Text style={[styles.headerText, { textAlign: "right" }]}>P. Unitaire</Text></View>
-            <View style={styles.colTotal}><Text style={[styles.headerText, { textAlign: "right" }]}>P. TOTAL</Text></View>
+            <View style={styles.colQty}>
+              <Text style={styles.headerText}>Quantité</Text>
+            </View>
+            <View style={styles.colDesc}>
+              <Text style={[styles.headerText, { textAlign: "left" }]}>Désignation</Text>
+            </View>
+            <View style={styles.colPrice}>
+              <Text style={[styles.headerText, { textAlign: "right" }]}>P. Unitaire</Text>
+            </View>
+            <View style={styles.colTotal}>
+              <Text style={[styles.headerText, { textAlign: "right" }]}>P. TOTAL</Text>
+            </View>
           </View>
           
           {items.map((item, i) => (
             <View key={i} style={styles.tableRow}>
-              <Text style={styles.colQty}>{item.quantity}</Text>
-              <Text style={styles.colDesc}>{item.description}</Text>
-              <Text style={styles.colPrice}>{item.unitPrice.toFixed(0)}</Text>
-              <Text style={styles.colTotal}>{item.lineTotal.toFixed(0)}</Text>
+              <View style={styles.colQty}>
+                <Text style={styles.cellText}>{String(item.quantity)}</Text>
+              </View>
+              <View style={styles.colDesc}>
+                <Text style={styles.cellText}>{item.description}</Text>
+              </View>
+              <View style={styles.colPrice}>
+                <Text style={styles.cellText}>{item.unitPrice.toFixed(0)}</Text>
+              </View>
+              <View style={styles.colTotal}>
+                <Text style={styles.cellText}>{item.lineTotal.toFixed(0)}</Text>
+              </View>
             </View>
           ))}
           
           {/* Pad with empty rows to look like a physical paper receipt book */}
           {Array.from({ length: Math.max(1, 12 - items.length) }).map((_, idx) => (
             <View key={`empty-${idx}`} style={[styles.tableRow, idx === Math.max(1, 12 - items.length) - 1 ? { borderBottomWidth: 0 } : {}]}>
-              <Text style={styles.colQty}> </Text>
-              <Text style={styles.colDesc}> </Text>
-              <Text style={styles.colPrice}> </Text>
-              <Text style={styles.colTotal}> </Text>
+              <View style={styles.colQty}>
+                <Text style={styles.cellText}> </Text>
+              </View>
+              <View style={styles.colDesc}>
+                <Text style={styles.cellText}> </Text>
+              </View>
+              <View style={styles.colPrice}>
+                <Text style={styles.cellText}> </Text>
+              </View>
+              <View style={styles.colTotal}>
+                <Text style={styles.cellText}> </Text>
+              </View>
             </View>
           ))}
         </View>
