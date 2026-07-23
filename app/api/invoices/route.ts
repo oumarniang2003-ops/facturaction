@@ -27,9 +27,10 @@ export async function POST(req: Request) {
 
   const merchantId = (session as any).merchantId;
   const body = await req.json();
-  const { clientId, type, dueDate, notes, lines, advanceReceived, paymentMethod } = body as {
+  const { clientId, type, issueDate, dueDate, notes, lines, advanceReceived, paymentMethod } = body as {
     clientId: string;
     type: "QUOTE" | "INVOICE";
+    issueDate?: string;
     dueDate?: string;
     notes?: string;
     lines: LineInput[];
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
       number,
       type: type ?? "INVOICE",
       status: "DRAFT",
+      issueDate: issueDate ? new Date(issueDate) : undefined,
       dueDate: dueDate ? new Date(dueDate) : undefined,
       notes,
       subtotal,
