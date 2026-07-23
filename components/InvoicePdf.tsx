@@ -1,42 +1,275 @@
-import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: "#1B2320" },
-  header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 30 },
-  businessName: { fontSize: 18, fontWeight: 700, marginBottom: 4 },
-  small: { fontSize: 9, color: "#555" },
-  docTitle: { fontSize: 22, fontWeight: 700, textAlign: "right", color: "#2F6F4E" },
-  section: { marginBottom: 20 },
-  label: { fontSize: 9, color: "#888", marginBottom: 2 },
-  table: { marginTop: 10 },
+  page: { padding: 30, fontSize: 9, fontFamily: "Helvetica", color: "#1B2320" },
+  
+  // Header with Teal/Cyan border
+  headerContainer: {
+    borderWidth: 2,
+    borderColor: "#0096B4",
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 15,
+  },
+  businessName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#0096B4",
+    letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  businessSubtitle: {
+    fontSize: 8,
+    textAlign: "center",
+    color: "#555",
+    marginBottom: 6,
+    fontStyle: "italic",
+  },
+  contactRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 15,
+    borderTopWidth: 1,
+    borderTopColor: "#E6F4F8",
+    paddingTop: 4,
+    fontSize: 8,
+    color: "#333",
+  },
+
+  // Document Badge & Meta Row
+  metaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dottedLabel: {
+    fontSize: 9,
+    color: "#333",
+    fontWeight: "bold",
+  },
+  dottedValue: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#0096B4",
+    borderBottomStyle: "dashed",
+    minWidth: 90,
+    textAlign: "center",
+    fontSize: 9,
+    paddingBottom: 1,
+    marginLeft: 4,
+  },
+  docBadgeContainer: {
+    backgroundColor: "#0096B4",
+    borderRadius: 12,
+    paddingHorizontal: 22,
+    paddingVertical: 3,
+  },
+  docBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "bold",
+    letterSpacing: 1.5,
+  },
+  docNumber: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#DC2626", // Red color for number
+  },
+
+  // Client Details with dotted underlines
+  clientContainer: {
+    marginBottom: 15,
+    gap: 6,
+  },
+  clientFieldRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  clientFieldLabel: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: "#0096B4",
+    width: 65,
+  },
+  clientFieldValue: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: "#0096B4",
+    borderBottomStyle: "dashed",
+    paddingBottom: 1,
+    fontSize: 9,
+    color: "#1B2320",
+  },
+  clientSubRow: {
+    flexDirection: "row",
+    gap: 15,
+  },
+
+  // Lined Ledger Table
+  table: {
+    borderWidth: 2,
+    borderColor: "#0096B4",
+    borderRadius: 4,
+    marginBottom: 15,
+    overflow: "hidden",
+  },
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#F7F5F0",
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    fontWeight: 700,
+    backgroundColor: "#E6F4F8",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#0096B4",
+    paddingVertical: 5,
+    fontWeight: "bold",
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 6,
-    paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#EEE",
+    borderBottomColor: "#E6F4F8",
+    paddingVertical: 5,
   },
-  colDesc: { width: "40%" },
-  colQty: { width: "15%", textAlign: "right" },
-  colPrice: { width: "20%", textAlign: "right" },
-  colVat: { width: "10%", textAlign: "right" },
-  colTotal: { width: "15%", textAlign: "right" },
-  totals: { marginTop: 20, alignItems: "flex-end" },
-  totalRow: { flexDirection: "row", width: 200, justifyContent: "space-between", marginBottom: 4 },
-  grandTotal: { fontSize: 13, fontWeight: 700, color: "#2F6F4E" },
-  footer: { position: "absolute", bottom: 30, left: 40, right: 40, fontSize: 8, color: "#999", textAlign: "center" },
+  colQty: { width: "15%", textAlign: "center", borderRightWidth: 1, borderRightColor: "#E6F4F8" },
+  colDesc: { width: "55%", paddingLeft: 8, borderRightWidth: 1, borderRightColor: "#E6F4F8" },
+  colPrice: { width: "15%", textAlign: "right", paddingRight: 8, borderRightWidth: 1, borderRightColor: "#E6F4F8" },
+  colTotal: { width: "15%", textAlign: "right", paddingRight: 8 },
+  
+  headerText: {
+    color: "#0096B4",
+    fontWeight: "bold",
+    fontSize: 8,
+    textAlign: "center",
+    width: "100%",
+  },
+
+  // Bottom Area: Payments and Totals
+  bottomSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  
+  // Payment methods
+  paymentContainer: {
+    width: "45%",
+    borderWidth: 1.5,
+    borderColor: "#0096B4",
+    borderRadius: 4,
+    padding: 8,
+    backgroundColor: "#FAFDFD",
+  },
+  paymentHeader: {
+    fontSize: 8,
+    fontWeight: "bold",
+    color: "#0096B4",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E6F4F8",
+    paddingBottom: 3,
+    marginBottom: 6,
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+  paymentGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    rowGap: 6,
+    columnGap: 8,
+  },
+  paymentOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "46%",
+  },
+  checkbox: {
+    width: 12,
+    height: 12,
+    borderWidth: 1,
+    borderColor: "#0096B4",
+    marginRight: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 2,
+    backgroundColor: "#FFF",
+  },
+  checkboxChecked: {
+    backgroundColor: "#0096B4",
+  },
+  checkboxText: {
+    color: "#FFFFFF",
+    fontSize: 7,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  paymentLabel: {
+    fontSize: 8,
+    color: "#333",
+  },
+  
+  // Totals Style Boxes
+  totalsContainer: {
+    width: "50%",
+    borderWidth: 1.5,
+    borderColor: "#0096B4",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  totalRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#0096B4",
+  },
+  totalLabel: {
+    width: "65%",
+    backgroundColor: "#E6F4F8",
+    color: "#0096B4",
+    fontSize: 8,
+    fontWeight: "bold",
+    padding: 5,
+    borderRightWidth: 1.5,
+    borderRightColor: "#0096B4",
+  },
+  totalValue: {
+    width: "35%",
+    padding: 5,
+    textAlign: "right",
+    fontSize: 8.5,
+    fontWeight: "bold",
+  },
+  
+  // Signature Box
+  signatureContainer: {
+    marginTop: 20,
+    width: "45%",
+  },
+  signatureTitle: {
+    fontSize: 9,
+    fontStyle: "italic",
+    color: "#0096B4",
+    textAlign: "left",
+    textDecoration: "underline",
+    marginBottom: 2,
+  },
+  
+  footer: {
+    position: "absolute",
+    bottom: 20,
+    left: 30,
+    right: 30,
+    fontSize: 7,
+    color: "#999",
+    textAlign: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#EEE",
+    paddingTop: 4,
+  }
 });
 
 type InvoicePdfProps = {
-  merchant: { businessName: string; address?: string | null; email: string; vatNumber?: string | null };
-  client: { name: string; address?: string | null; email?: string | null; vatNumber?: string | null };
+  merchant: { businessName: string; address?: string | null; email: string; vatNumber?: string | null; phone?: string | null };
+  client: { name: string; address?: string | null; email?: string | null; vatNumber?: string | null; phone?: string | null };
   invoice: {
     number: string;
     type: "QUOTE" | "INVOICE";
@@ -45,6 +278,8 @@ type InvoicePdfProps = {
     subtotal: number;
     vatTotal: number;
     total: number;
+    advanceReceived?: number;
+    paymentMethod?: string | null;
     notes?: string | null;
   };
   items: { description: string; quantity: number; unitPrice: number; vatRate: number; lineTotal: number }[];
@@ -52,86 +287,177 @@ type InvoicePdfProps = {
 
 export function InvoicePdf({ merchant, client, invoice, items }: InvoicePdfProps) {
   const docLabel = invoice.type === "QUOTE" ? "DEVIS" : "FACTURE";
+  
+  // Calculations
+  const advance = invoice.advanceReceived || 0;
+  const remaining = Math.max(0, invoice.total - advance);
+  
+  // Format dates
+  const formattedDate = new Date(invoice.issueDate).toLocaleDateString("fr-FR");
+  
+  // Payment check states
+  const method = invoice.paymentMethod || "";
+  const isCash = method === "CASH";
+  const isCheck = method === "CHECK";
+  const isWave = method === "WAVE";
+  const isOrangeMoney = method === "ORANGE_MONEY";
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.businessName}>{merchant.businessName}</Text>
-            {merchant.address && <Text style={styles.small}>{merchant.address}</Text>}
-            <Text style={styles.small}>{merchant.email}</Text>
-            {merchant.vatNumber && <Text style={styles.small}>TVA : {merchant.vatNumber}</Text>}
-          </View>
-          <View>
-            <Text style={styles.docTitle}>{docLabel}</Text>
-            <Text style={[styles.small, { textAlign: "right", marginTop: 4 }]}>{invoice.number}</Text>
+        
+        {/* Header Block (style NBS Electronic) */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.businessName}>{merchant.businessName.toUpperCase()}</Text>
+          <Text style={styles.businessSubtitle}>
+            Vente tous matériaux Électroménagers & Accessoires Téléphones
+          </Text>
+          <View style={styles.contactRow}>
+            {merchant.phone && <Text>Tél: {merchant.phone}</Text>}
+            {merchant.address && <Text>Adresse: {merchant.address}</Text>}
+            <Text>Email: {merchant.email}</Text>
           </View>
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 20 }}>
-          <View style={styles.section}>
-            <Text style={styles.label}>Facturé à</Text>
-            <Text>{client.name}</Text>
-            {client.address && <Text style={styles.small}>{client.address}</Text>}
-            {client.email && <Text style={styles.small}>{client.email}</Text>}
-            {client.vatNumber && <Text style={styles.small}>TVA : {client.vatNumber}</Text>}
+        {/* Badge & Date/Number */}
+        <View style={styles.metaRow}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.dottedLabel}>Date:</Text>
+            <Text style={styles.dottedValue}>{formattedDate}</Text>
           </View>
-          <View style={styles.section}>
-            <Text style={styles.label}>Date d'émission</Text>
-            <Text>{invoice.issueDate.toLocaleDateString("fr-FR")}</Text>
-            {invoice.dueDate && (
+          
+          <View style={styles.docBadgeContainer}>
+            <Text style={styles.docBadgeText}>{docLabel}</Text>
+          </View>
+          
+          <Text style={styles.docNumber}>N° {invoice.number.replace("FAC-", "")}</Text>
+        </View>
+
+        {/* Client details with underlines */}
+        <View style={styles.clientContainer}>
+          <View style={styles.clientFieldRow}>
+            <Text style={styles.clientFieldLabel}>Client:</Text>
+            <Text style={styles.clientFieldValue}>{client.name}</Text>
+          </View>
+          
+          <View style={styles.clientSubRow}>
+            <View style={[styles.clientFieldRow, { flex: 1 }]}>
+              <Text style={styles.clientFieldLabel}>Tel Client:</Text>
+              <Text style={styles.clientFieldValue}>{client.phone || ""}</Text>
+            </View>
+            <View style={[styles.clientFieldRow, { flex: 1.5 }]}>
+              <Text style={styles.clientFieldLabel}>Adr Client:</Text>
+              <Text style={styles.clientFieldValue}>{client.address || ""}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Lined Ledger Table */}
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <View style={styles.colQty}><Text style={styles.headerText}>Quantité</Text></View>
+            <View style={styles.colDesc}><Text style={[styles.headerText, { textAlign: "left" }]}>Désignation</Text></View>
+            <View style={styles.colPrice}><Text style={[styles.headerText, { textAlign: "right" }]}>P. Unitaire</Text></View>
+            <View style={styles.colTotal}><Text style={[styles.headerText, { textAlign: "right" }]}>P. TOTAL</Text></View>
+          </View>
+          
+          {items.map((item, i) => (
+            <View key={i} style={styles.tableRow}>
+              <Text style={styles.colQty}>{item.quantity}</Text>
+              <Text style={styles.colDesc}>{item.description}</Text>
+              <Text style={styles.colPrice}>{item.unitPrice.toFixed(0)}</Text>
+              <Text style={styles.colTotal}>{item.lineTotal.toFixed(0)}</Text>
+            </View>
+          ))}
+          
+          {/* Pad with empty rows to look like a physical paper receipt book */}
+          {Array.from({ length: Math.max(1, 12 - items.length) }).map((_, idx) => (
+            <View key={`empty-${idx}`} style={[styles.tableRow, idx === Math.max(1, 12 - items.length) - 1 ? { borderBottomWidth: 0 } : {}]}>
+              <Text style={styles.colQty}> </Text>
+              <Text style={styles.colDesc}> </Text>
+              <Text style={styles.colPrice}> </Text>
+              <Text style={styles.colTotal}> </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Bottom Section: Payment Methods & Totals */}
+        <View style={styles.bottomSection}>
+          
+          {/* Mode de paiement */}
+          <View style={{ flex: 1, flexDirection: "column", gap: 15 }}>
+            {invoice.type === "INVOICE" && (
+              <View style={styles.paymentContainer}>
+                <Text style={styles.paymentHeader}>MODE DE PAIEMENT</Text>
+                <View style={styles.paymentGrid}>
+                  <View style={styles.paymentOption}>
+                    <View style={[styles.checkbox, isCash ? styles.checkboxChecked : {}]}>
+                      {isCash && <Text style={styles.checkboxText}>X</Text>}
+                    </View>
+                    <Text style={styles.paymentLabel}>Espèces</Text>
+                  </View>
+                  <View style={styles.paymentOption}>
+                    <View style={[styles.checkbox, isCheck ? styles.checkboxChecked : {}]}>
+                      {isCheck && <Text style={styles.checkboxText}>X</Text>}
+                    </View>
+                    <Text style={styles.paymentLabel}>Chèque</Text>
+                  </View>
+                  <View style={styles.paymentOption}>
+                    <View style={[styles.checkbox, isWave ? styles.checkboxChecked : {}]}>
+                      {isWave && <Text style={styles.checkboxText}>X</Text>}
+                    </View>
+                    <Text style={styles.paymentLabel}>Wave</Text>
+                  </View>
+                  <View style={styles.paymentOption}>
+                    <View style={[styles.checkbox, isOrangeMoney ? styles.checkboxChecked : {}]}>
+                      {isOrangeMoney && <Text style={styles.checkboxText}>X</Text>}
+                    </View>
+                    <Text style={styles.paymentLabel}>Orange Money</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Signature Box */}
+            <View style={styles.signatureContainer}>
+              <Text style={styles.signatureTitle}>Le Gérant</Text>
+            </View>
+          </View>
+
+          {/* Totals Table */}
+          <View style={styles.totalsContainer}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>MONTANT TOTAL DE LA COMMANDE</Text>
+              <Text style={styles.totalValue}>{invoice.total.toLocaleString("fr-FR")} F</Text>
+            </View>
+            {invoice.type === "INVOICE" && (
               <>
-                <Text style={[styles.label, { marginTop: 8 }]}>Échéance</Text>
-                <Text>{invoice.dueDate.toLocaleDateString("fr-FR")}</Text>
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>AVANCE REÇUE</Text>
+                  <Text style={styles.totalValue}>{advance.toLocaleString("fr-FR")} F</Text>
+                </View>
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>SOLDE RESTANT</Text>
+                  <Text style={styles.totalValue}>{remaining.toLocaleString("fr-FR")} F</Text>
+                </View>
+                <View style={[styles.totalRow, { borderBottomWidth: 0 }]}>
+                  <Text style={styles.totalLabel}>TOTAL A REGLER</Text>
+                  <Text style={styles.totalValue}>{remaining.toLocaleString("fr-FR")} F</Text>
+                </View>
               </>
             )}
           </View>
         </View>
 
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.colDesc}>Description</Text>
-            <Text style={styles.colQty}>Qté</Text>
-            <Text style={styles.colPrice}>Prix HT</Text>
-            <Text style={styles.colVat}>TVA</Text>
-            <Text style={styles.colTotal}>Total TTC</Text>
-          </View>
-          {items.map((item, i) => (
-            <View key={i} style={styles.tableRow}>
-              <Text style={styles.colDesc}>{item.description}</Text>
-              <Text style={styles.colQty}>{item.quantity}</Text>
-              <Text style={styles.colPrice}>{item.unitPrice.toFixed(2)} €</Text>
-              <Text style={styles.colVat}>{item.vatRate}%</Text>
-              <Text style={styles.colTotal}>{item.lineTotal.toFixed(2)} €</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.totals}>
-          <View style={styles.totalRow}>
-            <Text>Sous-total HT</Text>
-            <Text>{invoice.subtotal.toFixed(2)} €</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text>TVA</Text>
-            <Text>{invoice.vatTotal.toFixed(2)} €</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.grandTotal}>Total TTC</Text>
-            <Text style={styles.grandTotal}>{invoice.total.toFixed(2)} €</Text>
-          </View>
-        </View>
-
         {invoice.notes && (
-          <View style={{ marginTop: 30 }}>
-            <Text style={styles.label}>Notes</Text>
-            <Text style={styles.small}>{invoice.notes}</Text>
+          <View style={{ marginTop: 20 }}>
+            <Text style={[styles.dottedLabel, { color: "#0096B4" }]}>Notes:</Text>
+            <Text style={{ fontSize: 8, color: "#555", marginTop: 2 }}>{invoice.notes}</Text>
           </View>
         )}
 
         <Text style={styles.footer}>
-          {merchant.businessName} — Document généré automatiquement, faisant foi entre les parties.
+          Document généré par {merchant.businessName} — Merci pour votre confiance !
         </Text>
       </Page>
     </Document>

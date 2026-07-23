@@ -162,6 +162,8 @@ model Invoice {
   subtotal     Decimal       @db.Decimal(10, 2)
   vatTotal     Decimal       @db.Decimal(10, 2)
   total        Decimal       @db.Decimal(10, 2)
+  advanceReceived Decimal    @db.Decimal(10, 2) @default(0.00)
+  paymentMethod String?
   notes        String?
   createdAt    DateTime      @default(now())
 

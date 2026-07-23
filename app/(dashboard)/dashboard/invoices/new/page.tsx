@@ -14,6 +14,8 @@ export default function NewInvoicePage() {
   const [lines, setLines] = useState<Line[]>([
     { description: "", quantity: 1, unitPrice: 0, vatRate: 20 },
   ]);
+  const [advanceReceived, setAdvanceReceived] = useState<number | "">("");
+  const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -31,6 +33,8 @@ export default function NewInvoicePage() {
   }
 
   const total = lines.reduce((sum, l) => sum + l.quantity * l.unitPrice * (1 + l.vatRate / 100), 0);
+  const advance = advanceReceived === "" ? 0 : Number(advanceReceived);
+  const remainingBalance = Math.max(0, total - advance);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,7 +42,13 @@ export default function NewInvoicePage() {
     const res = await fetch("/api/invoices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clientId, type, lines }),
+      body: JSON.stringify({
+        clientId,
+        type,
+        lines,
+        advanceReceived: advance,
+        paymentMethod: type === "INVOICE" ? paymentMethod : null,
+      }),
     });
     setSaving(false);
     if (res.ok) router.push("/dashboard/invoices");
@@ -115,12 +125,65 @@ export default function NewInvoicePage() {
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold text-ink">Total TTC : {total.toFixed(2)} €</p>
+        {type === "INVOICE" && (
+          <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+                Acompte / Avance reçue (CFA/€)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                placeholder="Ex: 5000"
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                value={advanceReceived}
+                onChange={(e) => setAdvanceReceived(e.target.value === "" ? "" : parseFloat(e.target.value) || 0)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+                Mode de paiement
+              </label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              >
+                <option value="CASH">Espèces</option>
+                <option value="CHECK">Chèque</option>
+                <option value="WAVE">Wave</option>
+                <option value="ORANGE_MONEY">Orange Money</option>
+                <option value="CARD">Carte Bancaire</option>
+                <option value="TRANSFER">Virement</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        <div className="border-t border-neutral-200 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-sm text-neutral-500">
+              Total de la commande : <span className="font-semibold text-ink">{total.toFixed(2)} €</span>
+            </p>
+            {type === "INVOICE" && advance > 0 && (
+              <>
+                <p className="text-sm text-neutral-500">
+                  Avance reçue : <span className="font-semibold text-emerald-600">-{advance.toFixed(2)} €</span>
+                </p>
+                <p className="text-lg font-bold text-ink">
+                  Solde restant : {remainingBalance.toFixed(2)} €
+                </p>
+              </>
+            )}
+            {!(type === "INVOICE" && advance > 0) && (
+              <p className="text-lg font-bold text-ink">Total TTC : {total.toFixed(2)} €</p>
+            )}
+          </div>
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-brand hover:bg-brand-dark text-white font-medium px-5 py-2.5 transition-colors disabled:opacity-60"
+            className="rounded-lg bg-brand hover:bg-brand-dark text-white font-medium px-5 py-2.5 transition-colors disabled:opacity-60 self-end"
           >
             {saving ? "Enregistrement..." : "Créer la facture"}
           </button>

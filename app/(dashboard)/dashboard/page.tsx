@@ -17,7 +17,7 @@ export default async function DashboardHome() {
   ]);
 
   const stats = [
-    { label: "Chiffre d'affaires encaissé", value: `${revenue._sum.total ?? 0} €` },
+    { label: "Chiffre d'affaires encaissé", value: `${Number(revenue._sum.total ?? 0).toLocaleString("fr-FR")} F` },
     { label: "Factures & devis", value: invoiceCount },
     { label: "Clients", value: clientCount },
     { label: "Produits en stock bas", value: lowStockCount },

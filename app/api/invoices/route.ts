@@ -27,12 +27,14 @@ export async function POST(req: Request) {
 
   const merchantId = (session as any).merchantId;
   const body = await req.json();
-  const { clientId, type, dueDate, notes, lines } = body as {
+  const { clientId, type, dueDate, notes, lines, advanceReceived, paymentMethod } = body as {
     clientId: string;
     type: "QUOTE" | "INVOICE";
     dueDate?: string;
     notes?: string;
     lines: LineInput[];
+    advanceReceived?: number;
+    paymentMethod?: string;
   };
 
   if (!clientId || !lines?.length) {
@@ -60,6 +62,8 @@ export async function POST(req: Request) {
       subtotal,
       vatTotal,
       total,
+      advanceReceived: advanceReceived ? Number(advanceReceived) : 0,
+      paymentMethod,
       items: {
         create: items.map((it) => ({
           description: it.description,

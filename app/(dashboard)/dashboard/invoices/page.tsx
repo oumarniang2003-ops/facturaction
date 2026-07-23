@@ -58,7 +58,7 @@ export default async function InvoicesPage() {
                   <td className="px-4 py-3 font-medium text-ink">{inv.number}</td>
                   <td className="px-4 py-3">{inv.client.name}</td>
                   <td className="px-4 py-3">{statusLabel[inv.status]}</td>
-                  <td className="px-4 py-3 text-right">{inv.total.toString()} €</td>
+                  <td className="px-4 py-3 text-right">{Number(inv.total).toLocaleString("fr-FR")} F</td>
                   <td className="px-4 py-3 text-right">
                     <a
                       href={`/api/invoices/${inv.id}/pdf`}

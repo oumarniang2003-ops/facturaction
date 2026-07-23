@@ -22,12 +22,14 @@ export async function generateInvoicePdfBuffer(invoiceId: string, merchantId: st
         address: invoice.merchant.address,
         email: invoice.merchant.email,
         vatNumber: invoice.merchant.vatNumber,
+        phone: invoice.merchant.phone,
       }}
       client={{
         name: invoice.client.name,
         address: invoice.client.address,
         email: invoice.client.email,
         vatNumber: invoice.client.vatNumber,
+        phone: invoice.client.phone,
       }}
       invoice={{
         number: invoice.number,
@@ -37,6 +39,8 @@ export async function generateInvoicePdfBuffer(invoiceId: string, merchantId: st
         subtotal: Number(invoice.subtotal),
         vatTotal: Number(invoice.vatTotal),
         total: Number(invoice.total),
+        advanceReceived: Number(invoice.advanceReceived),
+        paymentMethod: invoice.paymentMethod,
         notes: invoice.notes,
       }}
       items={invoice.items.map((it) => ({
