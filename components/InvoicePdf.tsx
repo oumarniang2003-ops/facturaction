@@ -1,5 +1,9 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
+function formatCFA(value: number): string {
+  return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
 const styles = StyleSheet.create({
   page: { padding: 30, fontSize: 9, fontFamily: "Helvetica", color: "#1B2320" },
   
@@ -408,10 +412,10 @@ export function InvoicePdf({ merchant, client, invoice, items }: InvoicePdfProps
                 <Text style={styles.cellText}>{item.description}</Text>
               </View>
               <View style={styles.colPrice}>
-                <Text style={styles.cellText}>{item.unitPrice.toFixed(0)}</Text>
+                <Text style={styles.cellText}>{formatCFA(Number(item.unitPrice))}</Text>
               </View>
               <View style={styles.colTotal}>
-                <Text style={styles.cellText}>{item.lineTotal.toFixed(0)}</Text>
+                <Text style={styles.cellText}>{formatCFA(Number(item.lineTotal))}</Text>
               </View>
             </View>
           ))}
@@ -482,21 +486,21 @@ export function InvoicePdf({ merchant, client, invoice, items }: InvoicePdfProps
           <View style={styles.totalsContainer}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>MONTANT TOTAL DE LA COMMANDE</Text>
-              <Text style={styles.totalValue}>{invoice.total.toLocaleString("fr-FR")} F</Text>
+              <Text style={styles.totalValue}>{formatCFA(Number(invoice.total))} F</Text>
             </View>
             {invoice.type === "INVOICE" && (
               <>
                 <View style={styles.totalRow}>
                   <Text style={styles.totalLabel}>AVANCE REÇUE</Text>
-                  <Text style={styles.totalValue}>{advance.toLocaleString("fr-FR")} F</Text>
+                  <Text style={styles.totalValue}>{formatCFA(advance)} F</Text>
                 </View>
                 <View style={styles.totalRow}>
                   <Text style={styles.totalLabel}>SOLDE RESTANT</Text>
-                  <Text style={styles.totalValue}>{remaining.toLocaleString("fr-FR")} F</Text>
+                  <Text style={styles.totalValue}>{formatCFA(remaining)} F</Text>
                 </View>
                 <View style={[styles.totalRow, { borderBottomWidth: 0 }]}>
                   <Text style={styles.totalLabel}>TOTAL A REGLER</Text>
-                  <Text style={styles.totalValue}>{remaining.toLocaleString("fr-FR")} F</Text>
+                  <Text style={styles.totalValue}>{formatCFA(remaining)} F</Text>
                 </View>
               </>
             )}
