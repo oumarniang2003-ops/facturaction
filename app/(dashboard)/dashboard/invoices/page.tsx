@@ -80,6 +80,12 @@ export default async function InvoicesPage() {
                     />
                   </td>
                   <td className="px-4 py-3 text-right">
+                    <Link
+                      href={`/dashboard/invoices/${inv.id}/edit`}
+                      className="text-neutral-500 hover:text-brand hover:underline font-medium mr-3"
+                    >
+                      Modifier
+                    </Link>
                     <a
                       href={`/api/invoices/${inv.id}/pdf`}
                       target="_blank"
