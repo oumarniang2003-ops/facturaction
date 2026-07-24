@@ -5,6 +5,14 @@ import { redirect } from "next/navigation";
 import { DateSelector } from "./DateSelector";
 import Link from "next/link";
 
+function normalizeString(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
   SENT: "Envoyée",
@@ -60,6 +68,9 @@ export default async function ReportsPage({
     orderBy: { createdAt: "desc" },
   });
 
+  // Fetch catalog products to fallback for matching costPrice
+  const merchantProducts = await prisma.product.findMany({ where: { merchantId } });
+
   // Calculate totals and compile product sales metrics
   let totalRevenue = 0;
   let totalCost = 0;
@@ -71,7 +82,19 @@ export default async function ReportsPage({
       const name = item.description;
       const qty = Number(item.quantity);
       const itemRev = qty * Number(item.unitPrice);
-      const itemCost = qty * Number(item.costPrice);
+      
+      // Fallback: if item cost price is 0, lookup product in catalog accent-insensitively
+      let costPrice = Number(item.costPrice);
+      if (costPrice === 0) {
+        const matchedProduct = merchantProducts.find(
+          (p) => normalizeString(p.name) === normalizeString(name)
+        );
+        if (matchedProduct) {
+          costPrice = Number(matchedProduct.costPrice);
+        }
+      }
+
+      const itemCost = qty * costPrice;
       const itemProfit = itemRev - itemCost;
 
       totalCost += itemCost;

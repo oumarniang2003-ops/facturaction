@@ -4,6 +4,14 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getNextInvoiceNumber, computeInvoiceTotals, LineInput } from "@/lib/invoice-utils";
 
+function normalizeString(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 // GET : liste des factures du commerçant connecté UNIQUEMENT
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -75,7 +83,7 @@ export async function POST(req: Request) {
   const merchantProducts = await prisma.product.findMany({ where: { merchantId } });
   const dbItems = items.map((it) => {
     const matchedProduct = merchantProducts.find(
-      (p) => p.name.toLowerCase().trim() === it.description.toLowerCase().trim()
+      (p) => normalizeString(p.name) === normalizeString(it.description)
     );
     return {
       description: it.description,

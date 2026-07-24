@@ -5,6 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { computeInvoiceTotals, LineInput } from "@/lib/invoice-utils";
 import { InvoiceStatus } from "@prisma/client";
 
+function normalizeString(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
@@ -79,7 +87,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const merchantProducts = await prisma.product.findMany({ where: { merchantId } });
   const dbItems = items.map((it) => {
     const matchedProduct = merchantProducts.find(
-      (p) => p.name.toLowerCase().trim() === it.description.toLowerCase().trim()
+      (p) => normalizeString(p.name) === normalizeString(it.description)
     );
     return {
       description: it.description,
