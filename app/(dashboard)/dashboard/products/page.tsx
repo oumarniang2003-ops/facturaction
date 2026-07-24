@@ -72,7 +72,7 @@ export default function ProductsPage() {
                 </span>
               )}
             </div>
-            <span className="text-neutral-700">{p.unitPrice} € HT</span>
+            <span className="text-neutral-700">{Number(p.unitPrice).toLocaleString("fr-FR")} F HT</span>
           </div>
         ))}
         {products.length === 0 && (
