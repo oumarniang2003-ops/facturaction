@@ -21,6 +21,18 @@ const statusColors: Record<string, string> = {
   CANCELED: "bg-neutral-50 text-neutral-400 border-neutral-100",
 };
 
+function normalizeString(str: string): string {
+  let val = str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  if (val.length > 2 && (val.endsWith("s") || val.endsWith("x"))) {
+    val = val.slice(0, -1);
+  }
+  return val;
+}
+
 export default async function DashboardHome() {
   const session = await getServerSession(authOptions);
   const merchantId = (session as any).merchantId;
@@ -29,17 +41,17 @@ export default async function DashboardHome() {
     invoiceCount,
     clientCount,
     allProducts,
-    financials,
+    allInvoicesForMetrics,
     recentInvoices,
   ] = await Promise.all([
     prisma.invoice.count({ where: { merchantId } }),
     prisma.client.count({ where: { merchantId } }),
     prisma.product.findMany({
-      where: { merchantId, trackStock: true },
+      where: { merchantId },
     }),
-    prisma.invoice.aggregate({
+    prisma.invoice.findMany({
       where: { merchantId, type: "INVOICE", status: { not: "CANCELED" } },
-      _sum: { total: true, advanceReceived: true },
+      include: { items: true },
     }),
     prisma.invoice.findMany({
       where: { merchantId },
@@ -50,12 +62,36 @@ export default async function DashboardHome() {
   ]);
 
   // Filter low-stock products in JS (stockQty <= lowStockAlert)
-  const lowStockProducts = allProducts.filter((p) => p.stockQty <= p.lowStockAlert);
+  const lowStockProducts = allProducts.filter((p) => p.trackStock && p.stockQty <= p.lowStockAlert);
   const lowStockCount = lowStockProducts.length;
 
-  const totalInvoiced = Number(financials._sum.total ?? 0);
-  const totalPaid = Number(financials._sum.advanceReceived ?? 0);
+  let totalInvoiced = 0;
+  let totalPaid = 0;
+  let totalCost = 0;
+
+  for (const inv of allInvoicesForMetrics) {
+    totalInvoiced += Number(inv.total);
+    totalPaid += Number(inv.advanceReceived);
+    for (const item of inv.items) {
+      const qty = Number(item.quantity);
+      
+      // Fallback: if item cost price is 0, lookup product in catalog accent-insensitively
+      let costPrice = Number(item.costPrice);
+      if (costPrice === 0) {
+        const matchedProduct = allProducts.find(
+          (p) => normalizeString(p.name) === normalizeString(item.description)
+        );
+        if (matchedProduct) {
+          costPrice = Number(matchedProduct.costPrice);
+        }
+      }
+      totalCost += qty * costPrice;
+    }
+  }
+
   const totalRemaining = Math.max(0, totalInvoiced - totalPaid);
+  const totalProfit = totalInvoiced - totalCost;
+  const profitMarginPercent = totalInvoiced > 0 ? (totalProfit / totalInvoiced) * 100 : 0;
 
   const stats = [
     { label: "Factures & devis", value: invoiceCount, link: "/dashboard/invoices" },
@@ -73,7 +109,7 @@ export default async function DashboardHome() {
       </div>
 
       {/* Financial Dashboard Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-2xl border border-neutral-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-brand"></div>
           <span className="text-sm font-semibold text-neutral-500">Chiffre d'affaires facturé</span>
@@ -81,18 +117,29 @@ export default async function DashboardHome() {
             {totalInvoiced.toLocaleString("fr-FR")} F
           </span>
           <span className="text-xs text-neutral-400 mt-2">
-            Total des factures actives émises
+            Total des factures actives
+          </span>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-2 h-full bg-neutral-400"></div>
+          <span className="text-sm font-semibold text-neutral-500">Coût d'achat total</span>
+          <span className="text-2xl font-bold text-neutral-700 mt-3">
+            {totalCost.toLocaleString("fr-FR")} F
+          </span>
+          <span className="text-xs text-neutral-400 mt-2">
+            Coût d'achat des produits vendus
           </span>
         </div>
 
         <div className="bg-white rounded-2xl border border-neutral-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
-          <span className="text-sm font-semibold text-neutral-500">Total encaissé (Acomptes)</span>
-          <span className="text-2xl font-bold text-emerald-600 mt-3">
-            {totalPaid.toLocaleString("fr-FR")} F
+          <span className="text-sm font-semibold text-neutral-500">Bénéfice net estimé</span>
+          <span className={`text-2xl font-bold mt-3 ${totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            {totalProfit.toLocaleString("fr-FR")} F
           </span>
           <span className="text-xs text-neutral-400 mt-2">
-            Somme des avances de règlement reçues
+            Marge bénéficiaire : {profitMarginPercent.toFixed(1)}%
           </span>
         </div>
 
