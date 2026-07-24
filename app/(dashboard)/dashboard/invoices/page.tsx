@@ -44,8 +44,11 @@ export default async function InvoicesPage() {
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-neutral-500 text-left">
               <tr>
+                <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Numéro</th>
                 <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Téléphone</th>
+                <th className="px-4 py-3">Adresse</th>
                 <th className="px-4 py-3">Statut</th>
                 <th className="px-4 py-3 text-right">Total</th>
                 <th className="px-4 py-3 text-right">PDF</th>
@@ -55,10 +58,17 @@ export default async function InvoicesPage() {
             <tbody>
               {invoices.map((inv) => (
                 <tr key={inv.id} className="border-t border-neutral-100">
+                  <td className="px-4 py-3 text-neutral-500">
+                    {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
+                  </td>
                   <td className="px-4 py-3 font-medium text-ink">{inv.number}</td>
-                  <td className="px-4 py-3">{inv.client.name}</td>
+                  <td className="px-4 py-3 font-semibold text-ink">{inv.client.name}</td>
+                  <td className="px-4 py-3 text-neutral-600">{inv.client.phone || "—"}</td>
+                  <td className="px-4 py-3 text-neutral-500 max-w-[150px] truncate" title={inv.client.address || ""}>
+                    {inv.client.address || "—"}
+                  </td>
                   <td className="px-4 py-3">{statusLabel[inv.status]}</td>
-                  <td className="px-4 py-3 text-right">{Number(inv.total).toLocaleString("fr-FR")} F</td>
+                  <td className="px-4 py-3 text-right font-medium">{Number(inv.total).toLocaleString("fr-FR")} F</td>
                   <td className="px-4 py-3 text-right">
                     <a
                       href={`/api/invoices/${inv.id}/pdf`}
