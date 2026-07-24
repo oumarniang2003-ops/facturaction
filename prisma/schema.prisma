@@ -216,4 +216,6 @@ enum PaymentMethod {
   CASH
   TRANSFER
   CHECK
+  WAVE
+  ORANGE_MONEY
 }

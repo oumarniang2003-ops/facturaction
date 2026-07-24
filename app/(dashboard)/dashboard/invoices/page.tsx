@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SendInvoiceButton } from "@/components/SendInvoiceButton";
+import { RecordPaymentButton } from "@/components/RecordPaymentButton";
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -51,6 +52,7 @@ export default async function InvoicesPage() {
                 <th className="px-4 py-3">Adresse</th>
                 <th className="px-4 py-3">Statut</th>
                 <th className="px-4 py-3 text-right">Total</th>
+                <th className="px-4 py-3 text-center">Paiement</th>
                 <th className="px-4 py-3 text-right">PDF</th>
                 <th className="px-4 py-3 text-right">Email</th>
               </tr>
@@ -69,6 +71,14 @@ export default async function InvoicesPage() {
                   </td>
                   <td className="px-4 py-3">{statusLabel[inv.status]}</td>
                   <td className="px-4 py-3 text-right font-medium">{Number(inv.total).toLocaleString("fr-FR")} F</td>
+                  <td className="px-4 py-3 text-center">
+                    <RecordPaymentButton
+                      invoiceId={inv.id}
+                      invoiceNumber={inv.number}
+                      total={Number(inv.total)}
+                      advanceReceived={Number(inv.advanceReceived)}
+                    />
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <a
                       href={`/api/invoices/${inv.id}/pdf`}
