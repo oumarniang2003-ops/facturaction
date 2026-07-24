@@ -16,7 +16,7 @@ export default function NewInvoicePage() {
   const [type, setType] = useState<"QUOTE" | "INVOICE">("INVOICE");
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [lines, setLines] = useState<Line[]>([
-    { description: "", quantity: 1, unitPrice: 0, vatRate: 20 },
+    { description: "", quantity: 1, unitPrice: 0, vatRate: 0 },
   ]);
   const [advanceReceived, setAdvanceReceived] = useState<number | "">("");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
@@ -33,7 +33,7 @@ export default function NewInvoicePage() {
   }
 
   function addLine() {
-    setLines((prev) => [...prev, { description: "", quantity: 1, unitPrice: 0, vatRate: 20 }]);
+    setLines((prev) => [...prev, { description: "", quantity: 1, unitPrice: 0, vatRate: 0 }]);
   }
 
   const total = lines.reduce((sum, l) => sum + l.quantity * l.unitPrice * (1 + l.vatRate / 100), 0);
@@ -162,10 +162,9 @@ export default function NewInvoicePage() {
         <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
           {/* Table headers */}
           <div className="grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
-            <div className="col-span-5">Désignation</div>
+            <div className="col-span-7">Désignation</div>
             <div className="col-span-2 text-center">Quantité</div>
             <div className="col-span-3 text-right">P. Unitaire (F)</div>
-            <div className="col-span-2 text-right">TVA (%)</div>
           </div>
 
           {lines.map((line, i) => (
@@ -173,7 +172,7 @@ export default function NewInvoicePage() {
               <input
                 placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
                 required
-                className="col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                className="col-span-7 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                 value={line.description}
                 onChange={(e) => updateLine(i, { description: e.target.value })}
               />
@@ -194,15 +193,6 @@ export default function NewInvoicePage() {
                 className="col-span-3 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
                 value={line.unitPrice}
                 onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
-              />
-              <input
-                type="number"
-                min={0}
-                step="0.1"
-                placeholder="TVA %"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                value={line.vatRate}
-                onChange={(e) => updateLine(i, { vatRate: parseFloat(e.target.value) || 0 })}
               />
             </div>
           ))}
@@ -263,7 +253,7 @@ export default function NewInvoicePage() {
               </>
             )}
             {!(type === "INVOICE" && advance > 0) && (
-              <p className="text-lg font-bold text-ink">Total TTC : {total.toLocaleString("fr-FR")} F</p>
+              <p className="text-lg font-bold text-ink font-display">Total à régler : {total.toLocaleString("fr-FR")} F</p>
             )}
           </div>
           <button
