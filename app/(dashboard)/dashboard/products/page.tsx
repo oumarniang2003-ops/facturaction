@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 
 type Product = {
-  id: string; name: string; unitPrice: number; vatRate: number;
+  id: string; name: string; unitPrice: number; costPrice: number; vatRate: number;
   trackStock: boolean; stockQty: number; lowStock: boolean;
 };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState({ name: "", unitPrice: 0, vatRate: 20, trackStock: false, stockQty: 0 });
+  const [form, setForm] = useState({ name: "", unitPrice: 0, costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
 
   function load() {
@@ -24,7 +24,7 @@ export default function ProductsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setForm({ name: "", unitPrice: 0, vatRate: 20, trackStock: false, stockQty: 0 });
+    setForm({ name: "", unitPrice: 0, costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
     setOpen(false);
     load();
   }
@@ -42,20 +42,20 @@ export default function ProductsPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-neutral-200 p-4 mb-6 grid grid-cols-2 gap-3">
           <input required placeholder="Nom du produit" className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input type="number" step="0.01" placeholder="Prix unitaire HT" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-            value={form.unitPrice} onChange={(e) => setForm({ ...form, unitPrice: parseFloat(e.target.value) || 0 })} />
-          <input type="number" step="0.1" placeholder="TVA %" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-            value={form.vatRate} onChange={(e) => setForm({ ...form, vatRate: parseFloat(e.target.value) || 0 })} />
-          <label className="flex items-center gap-2 text-sm">
+          <input type="number" step="1" required placeholder="Prix de vente (F)" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            value={form.unitPrice || ""} onChange={(e) => setForm({ ...form, unitPrice: parseFloat(e.target.value) || 0 })} />
+          <input type="number" step="1" placeholder="Coût d'achat (F)" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            value={form.costPrice || ""} onChange={(e) => setForm({ ...form, costPrice: parseFloat(e.target.value) || 0 })} />
+          <label className="flex items-center gap-2 text-sm col-span-2">
             <input type="checkbox" checked={form.trackStock}
               onChange={(e) => setForm({ ...form, trackStock: e.target.checked })} />
             Suivre le stock
           </label>
           {form.trackStock && (
-            <input type="number" placeholder="Quantité initiale" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            <input type="number" placeholder="Quantité initiale" className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               value={form.stockQty} onChange={(e) => setForm({ ...form, stockQty: parseInt(e.target.value) || 0 })} />
           )}
-          <button type="submit" className="col-span-2 rounded-lg bg-ink text-white text-sm font-medium py-2">
+          <button type="submit" className="col-span-2 rounded-lg bg-brand hover:bg-brand-dark text-white text-sm font-semibold py-2">
             Enregistrer
           </button>
         </form>
@@ -72,7 +72,14 @@ export default function ProductsPage() {
                 </span>
               )}
             </div>
-            <span className="text-neutral-700">{Number(p.unitPrice).toLocaleString("fr-FR")} F HT</span>
+            <div className="text-right">
+              <span className="font-semibold text-ink">{Number(p.unitPrice).toLocaleString("fr-FR")} F</span>
+              {Number(p.costPrice) > 0 && (
+                <span className="block text-xs text-neutral-400 mt-0.5">
+                  Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F · Marge : {(Number(p.unitPrice) - Number(p.costPrice)).toLocaleString("fr-FR")} F
+                </span>
+              )}
+            </div>
           </div>
         ))}
         {products.length === 0 && (

@@ -71,6 +71,23 @@ export async function POST(req: Request) {
   const { items, subtotal, vatTotal, total } = computeInvoiceTotals(lines);
   const number = await getNextInvoiceNumber(merchantId);
 
+  // Match items with catalog products to retrieve costPrice and link productId
+  const merchantProducts = await prisma.product.findMany({ where: { merchantId } });
+  const dbItems = items.map((it) => {
+    const matchedProduct = merchantProducts.find(
+      (p) => p.name.toLowerCase().trim() === it.description.toLowerCase().trim()
+    );
+    return {
+      description: it.description,
+      quantity: it.quantity,
+      unitPrice: it.unitPrice,
+      costPrice: matchedProduct ? Number(matchedProduct.costPrice) : 0,
+      productId: matchedProduct ? matchedProduct.id : null,
+      vatRate: it.vatRate,
+      lineTotal: it.lineTotal,
+    };
+  });
+
   const invoice = await prisma.invoice.create({
     data: {
       merchantId,
@@ -87,13 +104,7 @@ export async function POST(req: Request) {
       advanceReceived: advanceReceived ? Number(advanceReceived) : 0,
       paymentMethod,
       items: {
-        create: items.map((it) => ({
-          description: it.description,
-          quantity: it.quantity,
-          unitPrice: it.unitPrice,
-          vatRate: it.vatRate,
-          lineTotal: it.lineTotal,
-        })),
+        create: dbItems,
       },
     },
     include: { items: true, client: true },

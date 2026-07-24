@@ -75,6 +75,23 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   const { items, subtotal, vatTotal, total } = computeInvoiceTotals(lines);
 
+  // Match items with catalog products to retrieve costPrice and link productId
+  const merchantProducts = await prisma.product.findMany({ where: { merchantId } });
+  const dbItems = items.map((it) => {
+    const matchedProduct = merchantProducts.find(
+      (p) => p.name.toLowerCase().trim() === it.description.toLowerCase().trim()
+    );
+    return {
+      description: it.description,
+      quantity: it.quantity,
+      unitPrice: it.unitPrice,
+      costPrice: matchedProduct ? Number(matchedProduct.costPrice) : 0,
+      productId: matchedProduct ? matchedProduct.id : null,
+      vatRate: it.vatRate,
+      lineTotal: it.lineTotal,
+    };
+  });
+
   // Calculate status based on updated total and advanceReceived
   const advance = advanceReceived ?? 0;
   let newStatus: InvoiceStatus = invoice.status;
@@ -111,7 +128,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         advanceReceived: advance,
         paymentMethod: type === "INVOICE" ? paymentMethod : null,
         items: {
-          create: items,
+          create: dbItems,
         },
       },
     });

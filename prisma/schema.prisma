@@ -115,6 +115,7 @@ model Product {
   name          String
   sku           String?
   unitPrice     Decimal  @db.Decimal(10, 2)
+  costPrice     Decimal  @db.Decimal(10, 2) @default(0.00)
   vatRate       Decimal  @db.Decimal(4, 2) @default(20.00)
   trackStock    Boolean  @default(false)
   stockQty      Int      @default(0)
@@ -196,8 +197,9 @@ model InvoiceItem {
   productId   String?
   description String
   quantity    Decimal  @db.Decimal(10, 2)
-  unitPrice   Decimal  @db.Decimal(10, 2)
-  vatRate     Decimal  @db.Decimal(4, 2)
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  costPrice     Decimal  @db.Decimal(10, 2) @default(0.00)
+  vatRate       Decimal  @db.Decimal(4, 2)
   lineTotal   Decimal  @db.Decimal(10, 2)
 }
 
