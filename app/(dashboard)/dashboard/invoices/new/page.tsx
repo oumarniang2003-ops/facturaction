@@ -10,6 +10,9 @@ export default function NewInvoicePage() {
   const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
   const [clientId, setClientId] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientAddress, setClientAddress] = useState("");
   const [type, setType] = useState<"QUOTE" | "INVOICE">("INVOICE");
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [lines, setLines] = useState<Line[]>([
@@ -50,6 +53,9 @@ export default function NewInvoicePage() {
         lines,
         advanceReceived: advance,
         paymentMethod: type === "INVOICE" ? paymentMethod : null,
+        clientName: clientId === "new" ? clientName : undefined,
+        clientPhone: clientId === "new" ? clientPhone : undefined,
+        clientAddress: clientId === "new" ? clientAddress : undefined,
       }),
     });
     setSaving(false);
@@ -73,6 +79,7 @@ export default function NewInvoicePage() {
               className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             >
               <option value="">Choisir un client</option>
+              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisie rapide)</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -106,6 +113,51 @@ export default function NewInvoicePage() {
             />
           </div>
         </div>
+
+        {clientId === "new" && (
+          <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 space-y-4">
+            <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Informations du Nouveau Client</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-neutral-500 mb-1">
+                  Nom du client *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: NBS Electronic"
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-neutral-500 mb-1">
+                  Téléphone du client
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: +221 77 721 19 87"
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-neutral-500 mb-1">
+                  Adresse du client
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Parcelles Assainies, Dakar"
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  value={clientAddress}
+                  onChange={(e) => setClientAddress(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
           {/* Table headers */}

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const merchantId = (session as any).merchantId;
   const body = await req.json();
-  const { clientId, type, issueDate, dueDate, notes, lines, advanceReceived, paymentMethod } = body as {
+  const { clientId, type, issueDate, dueDate, notes, lines, advanceReceived, paymentMethod, clientName, clientPhone, clientAddress } = body as {
     clientId: string;
     type: "QUOTE" | "INVOICE";
     issueDate?: string;
@@ -36,16 +36,36 @@ export async function POST(req: Request) {
     lines: LineInput[];
     advanceReceived?: number;
     paymentMethod?: string;
+    clientName?: string;
+    clientPhone?: string;
+    clientAddress?: string;
   };
 
   if (!clientId || !lines?.length) {
     return NextResponse.json({ error: "Client et lignes requis" }, { status: 400 });
   }
 
-  // Sécurité : vérifie que le client appartient bien à ce commerçant
-  const client = await prisma.client.findFirst({ where: { id: clientId, merchantId } });
-  if (!client) {
-    return NextResponse.json({ error: "Client introuvable" }, { status: 404 });
+  let finalClientId = clientId;
+
+  if (clientId === "new") {
+    if (!clientName) {
+      return NextResponse.json({ error: "Nom du client requis" }, { status: 400 });
+    }
+    const newClient = await prisma.client.create({
+      data: {
+        merchantId,
+        name: clientName,
+        phone: clientPhone || null,
+        address: clientAddress || null,
+      },
+    });
+    finalClientId = newClient.id;
+  } else {
+    // Sécurité : vérifie que le client appartient bien à ce commerçant
+    const client = await prisma.client.findFirst({ where: { id: clientId, merchantId } });
+    if (!client) {
+      return NextResponse.json({ error: "Client introuvable" }, { status: 404 });
+    }
   }
 
   const { items, subtotal, vatTotal, total } = computeInvoiceTotals(lines);
@@ -54,7 +74,7 @@ export async function POST(req: Request) {
   const invoice = await prisma.invoice.create({
     data: {
       merchantId,
-      clientId,
+      clientId: finalClientId,
       number,
       type: type ?? "INVOICE",
       status: "DRAFT",
