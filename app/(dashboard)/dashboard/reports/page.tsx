@@ -6,11 +6,15 @@ import { DateSelector } from "./DateSelector";
 import Link from "next/link";
 
 function normalizeString(str: string): string {
-  return str
+  let val = str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+  if (val.length > 2 && (val.endsWith("s") || val.endsWith("x"))) {
+    val = val.slice(0, -1);
+  }
+  return val;
 }
 
 const statusLabel: Record<string, string> = {

@@ -6,11 +6,15 @@ import { computeInvoiceTotals, LineInput } from "@/lib/invoice-utils";
 import { InvoiceStatus } from "@prisma/client";
 
 function normalizeString(str: string): string {
-  return str
+  let val = str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+  if (val.length > 2 && (val.endsWith("s") || val.endsWith("x"))) {
+    val = val.slice(0, -1);
+  }
+  return val;
 }
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {

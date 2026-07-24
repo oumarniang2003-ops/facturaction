@@ -5,11 +5,15 @@ import { prisma } from "@/lib/prisma";
 import { getNextInvoiceNumber, computeInvoiceTotals, LineInput } from "@/lib/invoice-utils";
 
 function normalizeString(str: string): string {
-  return str
+  let val = str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+  if (val.length > 2 && (val.endsWith("s") || val.endsWith("x"))) {
+    val = val.slice(0, -1);
+  }
+  return val;
 }
 
 // GET : liste des factures du commerçant connecté UNIQUEMENT
