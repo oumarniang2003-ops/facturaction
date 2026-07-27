@@ -10,7 +10,7 @@ module.exports = {
         amber: "#C97B2E",
       },
       fontFamily: {
-        display: ["'Fraunces'", "serif"],
+        display: ["'Plus Jakarta Sans'", "'DM Sans'", "sans-serif"],
         body: ["'Inter'", "sans-serif"],
       },
     },
