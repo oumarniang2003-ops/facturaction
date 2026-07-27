@@ -97,7 +97,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       description: it.description,
       quantity: it.quantity,
       unitPrice: it.unitPrice,
-      costPrice: matchedProduct ? Number(matchedProduct.costPrice) : 0,
+      costPrice: (it.costPrice !== undefined && it.costPrice !== null && !isNaN(Number(it.costPrice)))
+        ? Number(it.costPrice)
+        : (matchedProduct ? Number(matchedProduct.costPrice) : 0),
       productId: matchedProduct ? matchedProduct.id : null,
       vatRate: it.vatRate,
       lineTotal: it.lineTotal,

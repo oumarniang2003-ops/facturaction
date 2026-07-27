@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 
 type Client = { id: string; name: string };
-type Line = { description: string; quantity: number; unitPrice: number; vatRate: number };
+type Line = { description: string; quantity: number; unitPrice: number; costPrice: number; vatRate: number };
 
 export default function EditInvoicePage() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function EditInvoicePage() {
   const invoiceId = params.id as string;
 
   const [clients, setClients] = useState<Client[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [clientId, setClientId] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -19,7 +20,7 @@ export default function EditInvoicePage() {
   const [type, setType] = useState<"QUOTE" | "INVOICE">("INVOICE");
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [lines, setLines] = useState<Line[]>([
-    { description: "", quantity: 1, unitPrice: 0, vatRate: 0 },
+    { description: "", quantity: 1, unitPrice: 0, costPrice: 0, vatRate: 0 },
   ]);
   const [advanceReceived, setAdvanceReceived] = useState<number | "">("");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
@@ -31,6 +32,11 @@ export default function EditInvoicePage() {
     fetch("/api/clients")
       .then((r) => r.json())
       .then(setClients);
+
+    // Fetch products
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then(setProducts);
 
     // 2. Fetch invoice details
     fetch(`/api/invoices/${invoiceId}`)
@@ -47,6 +53,7 @@ export default function EditInvoicePage() {
             description: it.description,
             quantity: Number(it.quantity),
             unitPrice: Number(it.unitPrice),
+            costPrice: Number(it.costPrice) || 0,
             vatRate: Number(it.vatRate),
           }))
         );
@@ -65,10 +72,19 @@ export default function EditInvoicePage() {
   }
 
   function addLine() {
-    setLines((prev) => [...prev, { description: "", quantity: 1, unitPrice: 0, vatRate: 0 }]);
+    setLines((prev) => [...prev, { description: "", quantity: 1, unitPrice: 0, costPrice: 0, vatRate: 0 }]);
+  }
+
+  function removeLine(i: number) {
+    if (lines.length > 1) {
+      setLines((prev) => prev.filter((_, idx) => idx !== i));
+    }
   }
 
   const total = lines.reduce((sum, l) => sum + l.quantity * l.unitPrice * (1 + l.vatRate / 100), 0);
+  const totalCost = lines.reduce((sum, l) => sum + l.quantity * l.costPrice, 0);
+  const profit = total - totalCost;
+  const marginPercent = total > 0 ? (profit / total) * 100 : 0;
   const advance = advanceReceived === "" ? 0 : Number(advanceReceived);
   const remainingBalance = Math.max(0, total - advance);
 
@@ -200,9 +216,11 @@ export default function EditInvoicePage() {
         <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
           {/* Table headers */}
           <div className="grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
-            <div className="col-span-7">Désignation</div>
+            <div className="col-span-5">Désignation</div>
             <div className="col-span-2 text-center">Quantité</div>
-            <div className="col-span-3 text-right">P. Unitaire (F)</div>
+            <div className="col-span-2 text-right">P. Unitaire (F)</div>
+            <div className="col-span-2 text-right">P. Achat (F)</div>
+            <div className="col-span-1 text-center">Act.</div>
           </div>
 
           {lines.map((line, i) => (
@@ -210,9 +228,25 @@ export default function EditInvoicePage() {
               <input
                 placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
                 required
-                className="col-span-7 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                className="col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                 value={line.description}
-                onChange={(e) => updateLine(i, { description: e.target.value })}
+                list="products-datalist"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const matched = products.find(
+                    (p) => p.name.toLowerCase() === val.toLowerCase()
+                  );
+                  if (matched) {
+                    updateLine(i, {
+                      description: val,
+                      unitPrice: Number(matched.unitPrice) || 0,
+                      costPrice: Number(matched.costPrice) || 0,
+                      vatRate: Number(matched.vatRate) || 0,
+                    });
+                  } else {
+                    updateLine(i, { description: val });
+                  }
+                }}
               />
               <input
                 type="number"
@@ -228,10 +262,30 @@ export default function EditInvoicePage() {
                 min={0}
                 step="1"
                 placeholder="P. Unitaire"
-                className="col-span-3 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
                 value={line.unitPrice}
                 onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
               />
+              <input
+                type="number"
+                min={0}
+                step="1"
+                placeholder="P. Achat"
+                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                value={line.costPrice}
+                onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
+              />
+              <div className="col-span-1 text-center">
+                <button
+                  type="button"
+                  disabled={lines.length <= 1}
+                  onClick={() => removeLine(i)}
+                  className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
+                  title="Supprimer la ligne"
+                >
+                  &times;
+                </button>
+              </div>
             </div>
           ))}
           <button type="button" onClick={addLine} className="text-sm text-brand font-medium">
@@ -276,7 +330,7 @@ export default function EditInvoicePage() {
           </div>
         )}
 
-        <div className="border-t border-neutral-200 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="border-t border-neutral-200 pt-4 flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="space-y-1">
             <p className="text-sm text-neutral-500">
               Total de la commande : <span className="font-semibold text-ink">{total.toLocaleString("fr-FR")} F</span>
@@ -294,6 +348,24 @@ export default function EditInvoicePage() {
             {!(type === "INVOICE" && advance > 0) && (
               <p className="text-lg font-bold text-ink font-display">Total à régler : {total.toLocaleString("fr-FR")} F</p>
             )}
+
+            {/* Live Cost & Profit Calculations */}
+            <div className="mt-3 bg-neutral-50 rounded-xl p-3 border border-neutral-200 space-y-1.5 text-xs max-w-xs">
+              <div className="flex justify-between gap-8 text-neutral-500 font-medium">
+                <span>Coût d'achat estimé :</span>
+                <span>{totalCost.toLocaleString("fr-FR")} F</span>
+              </div>
+              <div className="flex justify-between gap-8 text-neutral-600 font-bold">
+                <span>Bénéfice net estimé :</span>
+                <span className={profit >= 0 ? "text-emerald-600" : "text-rose-600"}>
+                  {profit.toLocaleString("fr-FR")} F
+                </span>
+              </div>
+              <div className="flex justify-between gap-8 text-neutral-400 text-[10px]">
+                <span>Marge bénéficiaire :</span>
+                <span>{marginPercent.toFixed(1)}%</span>
+              </div>
+            </div>
           </div>
           <button
             type="submit"
@@ -304,6 +376,13 @@ export default function EditInvoicePage() {
           </button>
         </div>
       </form>
+
+      {/* Datalist for autocomplete */}
+      <datalist id="products-datalist">
+        {products.map((p) => (
+          <option key={p.id} value={p.name} />
+        ))}
+      </datalist>
     </div>
   );
 }

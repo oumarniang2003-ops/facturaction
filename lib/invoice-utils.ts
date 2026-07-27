@@ -25,6 +25,7 @@ export type LineInput = {
   description: string;
   quantity: number;
   unitPrice: number;
+  costPrice?: number;
   vatRate: number; // ex: 20 pour 20%
 };
 
