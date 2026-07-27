@@ -10,8 +10,8 @@ export default function NewInvoicePage() {
   const router = useRouter();
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-  const [clientId, setClientId] = useState("");
-  const [clientName, setClientName] = useState("");
+  const [clientId, setClientId] = useState("new");
+  const [clientName, setClientName] = useState("Client de passage");
   const [clientPhone, setClientPhone] = useState("");
   const [clientAddress, setClientAddress] = useState("");
   const [type, setType] = useState<"QUOTE" | "INVOICE">("INVOICE");
@@ -26,7 +26,15 @@ export default function NewInvoicePage() {
   useEffect(() => {
     fetch("/api/clients")
       .then((r) => r.json())
-      .then(setClients);
+      .then((data) => {
+        setClients(data);
+        const existingPassage = data.find(
+          (c: any) => c.name.toLowerCase() === "client de passage"
+        );
+        if (existingPassage) {
+          setClientId(existingPassage.id);
+        }
+      });
 
     fetch("/api/products")
       .then((r) => r.json())
@@ -88,15 +96,46 @@ export default function NewInvoicePage() {
             </label>
             <select
               required
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              value={
+                clientId === "new" && clientName === "Client de passage"
+                  ? "passage"
+                  : clients.find((c) => c.id === clientId)?.name.toLowerCase() === "client de passage"
+                  ? "passage"
+                  : clientId
+              }
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "passage") {
+                  const existingPassage = clients.find(
+                    (c) => c.name.toLowerCase() === "client de passage"
+                  );
+                  if (existingPassage) {
+                    setClientId(existingPassage.id);
+                  } else {
+                    setClientId("new");
+                  }
+                  setClientName("Client de passage");
+                } else if (val === "new") {
+                  setClientId("new");
+                  setClientName("");
+                  setClientPhone("");
+                  setClientAddress("");
+                } else {
+                  setClientId(val);
+                  setClientName("");
+                }
+              }}
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium"
             >
-              <option value="">Choisir un client</option>
-              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisie rapide)</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
+              <option value="passage">👤 Client de passage (Vente directe)</option>
+              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisir les coordonnées)</option>
+              {clients
+                .filter((c) => c.name.toLowerCase() !== "client de passage")
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -128,7 +167,7 @@ export default function NewInvoicePage() {
           </div>
         </div>
 
-        {clientId === "new" && (
+        {clientId === "new" && clientName !== "Client de passage" && (
           <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 space-y-4">
             <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Informations du Nouveau Client</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

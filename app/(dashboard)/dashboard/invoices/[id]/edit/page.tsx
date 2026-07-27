@@ -128,15 +128,46 @@ export default function EditInvoicePage() {
             </label>
             <select
               required
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              value={
+                clientId === "new" && clientName === "Client de passage"
+                  ? "passage"
+                  : clients.find((c) => c.id === clientId)?.name.toLowerCase() === "client de passage"
+                  ? "passage"
+                  : clientId
+              }
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "passage") {
+                  const existingPassage = clients.find(
+                    (c) => c.name.toLowerCase() === "client de passage"
+                  );
+                  if (existingPassage) {
+                    setClientId(existingPassage.id);
+                  } else {
+                    setClientId("new");
+                  }
+                  setClientName("Client de passage");
+                } else if (val === "new") {
+                  setClientId("new");
+                  setClientName("");
+                  setClientPhone("");
+                  setClientAddress("");
+                } else {
+                  setClientId(val);
+                  setClientName("");
+                }
+              }}
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium"
             >
-              <option value="">Choisir un client</option>
-              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisie rapide)</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
+              <option value="passage">👤 Client de passage (Vente directe)</option>
+              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisir les coordonnées)</option>
+              {clients
+                .filter((c) => c.name.toLowerCase() !== "client de passage")
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -168,7 +199,7 @@ export default function EditInvoicePage() {
           </div>
         </div>
 
-        {clientId === "new" && (
+        {clientId === "new" && clientName !== "Client de passage" && (
           <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 space-y-4">
             <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Informations du Nouveau Client</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
