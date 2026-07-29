@@ -19,6 +19,7 @@ export async function generateInvoicePdfBuffer(invoiceId: string, merchantId: st
     <InvoicePdf
       merchant={{
         businessName: invoice.merchant.businessName,
+        businessSubtitle: invoice.merchant.businessSubtitle,
         address: invoice.merchant.address,
         email: invoice.merchant.email,
         vatNumber: invoice.merchant.vatNumber,

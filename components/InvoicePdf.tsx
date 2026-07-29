@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
 });
 
 type InvoicePdfProps = {
-  merchant: { businessName: string; address?: string | null; email: string; vatNumber?: string | null; phone?: string | null };
+  merchant: { businessName: string; businessSubtitle?: string | null; address?: string | null; email: string; vatNumber?: string | null; phone?: string | null };
   client: { name: string; address?: string | null; email?: string | null; vatNumber?: string | null; phone?: string | null };
   invoice: {
     number: string;
@@ -344,7 +344,7 @@ export function InvoicePdf({ merchant, client, invoice, items }: InvoicePdfProps
         <View style={styles.headerContainer}>
           <Text style={styles.businessName}>{merchant.businessName.toUpperCase()}</Text>
           <Text style={styles.businessSubtitle}>
-            Vente tous matériaux Électroménagers & Accessoires Téléphones
+            {merchant.businessSubtitle || "Vente tous matériaux Électroménagers & Accessoires Téléphones"}
           </Text>
           <View style={styles.contactRow}>
             {merchant.phone && <Text>Tél: {merchant.phone}</Text>}
