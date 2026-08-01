@@ -18,7 +18,10 @@ type ProfileData = {
 };
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<"company" | "profile">("company");
+  const [activeTab, setActiveTab] = useState<"company" | "profile" | "danger">("company");
+  const [resetConfirmText, setResetConfirmText] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [resetMessage, setResetMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   
   // Loading states
   const [loading, setLoading] = useState(true);
@@ -157,6 +160,42 @@ export default function SettingsPage() {
     }
   }
 
+  const isConfirmValid =
+    resetConfirmText.trim().toUpperCase() === "REINITIALISER" ||
+    resetConfirmText.trim().toUpperCase() === "RÉINITIALISER";
+
+  async function handleResetData() {
+    if (!isConfirmValid || resetting) return;
+    
+    setResetting(true);
+    setResetMessage(null);
+
+    try {
+      const res = await fetch("/api/merchant/reset", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setResetMessage({
+          type: "success",
+          text: "Données réinitialisées ! Redirection vers la vue d'ensemble...",
+        });
+        setResetConfirmText("");
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 3000);
+      } else {
+        setResetMessage({ type: "error", text: data.error || "Une erreur est survenue." });
+      }
+    } catch (err) {
+      setResetMessage({ type: "error", text: "Erreur de connexion avec le serveur." });
+    } finally {
+      setResetting(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -196,6 +235,16 @@ export default function SettingsPage() {
           }`}
         >
           👤 Mon Profil
+        </button>
+        <button
+          onClick={() => setActiveTab("danger")}
+          className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all duration-200 ${
+            activeTab === "danger"
+              ? "border-red-600 text-red-600"
+              : "border-transparent text-neutral-400 hover:text-red-500"
+          }`}
+        >
+          ⚠️ Zone de danger
         </button>
       </div>
 
@@ -452,6 +501,79 @@ export default function SettingsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {activeTab === "danger" && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-bold text-red-600 font-display">Zone de danger (Réinitialisation)</h2>
+              <p className="text-xs text-neutral-400 mt-1">
+                Remettez votre boutique à zéro pour recommencer à l'utiliser comme neuve.
+              </p>
+            </div>
+
+            {!isOwner && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold flex items-center gap-2">
+                ⚠️ Action restreinte. Seul le propriétaire de l'établissement (rôle OWNER) peut réinitialiser la boutique.
+              </div>
+            )}
+
+            {isOwner && (
+              <>
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 space-y-2">
+                  <p className="font-bold">🚨 Attention : Cette action est irréversible !</p>
+                  <p className="text-xs leading-relaxed">
+                    Si vous réinitialisez la boutique :
+                  </p>
+                  <ul className="list-disc pl-5 text-xs space-y-1">
+                    <li>Tous vos <strong>produits</strong> et <strong>stocks</strong> seront définitivement supprimés.</li>
+                    <li>Tous vos <strong>clients</strong> seront supprimés.</li>
+                    <li>Toutes vos <strong>factures</strong>, <strong>devis</strong> et <strong>paiements</strong> seront supprimés.</li>
+                    <li>Le <strong>compteur de facturation</strong> sera remis à zéro (les prochains numéros de factures recommenceront à 1).</li>
+                    <li><strong>Votre compte utilisateur, les autres employés et votre abonnement resteront actifs.</strong></li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4 pt-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider block">
+                      Veuillez saisir <strong className="text-red-600">RÉINITIALISER</strong> ci-dessous pour confirmer :
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Saisissez REINITIALISER ou RÉINITIALISER"
+                      className="w-full md:w-1/2 rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all"
+                      value={resetConfirmText}
+                      onChange={(e) => setResetConfirmText(e.target.value)}
+                    />
+                  </div>
+
+                  {resetMessage && (
+                    <div
+                      className={`p-4 rounded-xl border text-sm font-medium ${
+                        resetMessage.type === "success"
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                          : "bg-rose-50 border-rose-200 text-rose-700"
+                      }`}
+                    >
+                      {resetMessage.text}
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      disabled={!isConfirmValid || resetting}
+                      onClick={handleResetData}
+                      className="rounded-lg bg-red-600 hover:bg-red-700 disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 shadow-sm transition-all flex items-center gap-2"
+                    >
+                      {resetting ? "Réinitialisation en cours..." : "🗑️ Réinitialiser toutes les données"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
