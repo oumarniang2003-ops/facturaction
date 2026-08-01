@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Product = {
   id: string; name: string; unitPrice: number; costPrice: number; vatRate: number;
@@ -31,12 +32,19 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="font-display text-2xl text-ink">Produits & stock</h1>
-        <button onClick={() => setOpen(!open)} className="rounded-lg bg-brand hover:bg-brand-dark text-white text-sm font-medium px-4 py-2">
+        <button onClick={() => setOpen(!open)} className="rounded-lg border border-neutral-300 text-ink text-sm font-medium px-4 py-2 hover:bg-white transition-colors">
           + Nouveau produit
         </button>
       </div>
+
+      <Link
+        href="/dashboard/sales/new"
+        className="block mb-6 rounded-xl bg-brand hover:bg-brand-dark text-white text-center font-semibold py-4 transition-colors"
+      >
+        ✓ J'ai vendu un produit
+      </Link>
 
       {open && (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-neutral-200 p-4 mb-6 grid grid-cols-2 gap-3">
@@ -72,13 +80,21 @@ export default function ProductsPage() {
                 </span>
               )}
             </div>
-            <div className="text-right">
-              <span className="font-semibold text-ink">{Number(p.unitPrice).toLocaleString("fr-FR")} F</span>
-              {Number(p.costPrice) > 0 && (
-                <span className="block text-xs text-neutral-400 mt-0.5">
-                  Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F · Marge : {(Number(p.unitPrice) - Number(p.costPrice)).toLocaleString("fr-FR")} F
-                </span>
-              )}
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <span className="font-semibold text-ink">{Number(p.unitPrice).toLocaleString("fr-FR")} F</span>
+                {Number(p.costPrice) > 0 && (
+                  <span className="block text-xs text-neutral-400 mt-0.5">
+                    Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F · Marge : {(Number(p.unitPrice) - Number(p.costPrice)).toLocaleString("fr-FR")} F
+                  </span>
+                )}
+              </div>
+              <Link
+                href={`/dashboard/sales/new?productId=${p.id}`}
+                className="shrink-0 rounded-lg bg-brand/10 text-brand text-xs font-semibold px-3 py-2 hover:bg-brand/20 transition-colors"
+              >
+                Vendre
+              </Link>
             </div>
           </div>
         ))}

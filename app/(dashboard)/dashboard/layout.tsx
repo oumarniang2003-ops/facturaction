@@ -15,6 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: "/dashboard/invoices", label: "Factures & devis" },
     { href: "/dashboard/clients", label: "Clients" },
     { href: "/dashboard/products", label: "Produits & stock" },
+    { href: "/dashboard/sales/new", label: "Quick Sale" },
     { href: "/dashboard/reports", label: "Rapports & Bénéfices" },
     ...(role === "OWNER" ? [{ href: "/dashboard/billing", label: "Mon abonnement" }] : []),
     { href: "/dashboard/settings", label: "Paramètres" },
