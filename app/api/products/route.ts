@@ -12,7 +12,6 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Signale les produits en stock bas côté API pour affichage direct
   const withAlerts = products.map((p) => ({
     ...p,
     lowStock: p.trackStock && p.stockQty <= p.lowStockAlert,
@@ -27,7 +26,14 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const product = await prisma.product.create({
-    data: { ...body, merchantId: (session as any).merchantId },
+    data: {
+      ...body,
+      // Le prix de vente n'est plus saisi à la création du produit : il sera
+      // précisé à chaque vente (voir /dashboard/sales/new). On garde 0 par
+      // défaut ici pour satisfaire le schéma sans imposer de valeur.
+      unitPrice: body.unitPrice ?? 0,
+      merchantId: (session as any).merchantId,
+    },
   });
   return NextResponse.json(product, { status: 201 });
 }

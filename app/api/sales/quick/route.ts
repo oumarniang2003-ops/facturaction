@@ -37,6 +37,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Produit et quantité requis" }, { status: 400 });
   }
 
+  if (sellPrice === undefined || sellPrice === null || Number(sellPrice) <= 0) {
+    return NextResponse.json({ error: "Le prix de vente est requis." }, { status: 400 });
+  }
+
   const product = await prisma.product.findFirst({ where: { id: productId, merchantId } });
   if (!product) {
     return NextResponse.json({ error: "Produit introuvable" }, { status: 404 });
@@ -74,7 +78,7 @@ export async function POST(req: Request) {
     if (!client) return NextResponse.json({ error: "Client introuvable" }, { status: 404 });
   }
 
-  const unitPrice = sellPrice !== undefined && sellPrice !== null ? Number(sellPrice) : Number(product.unitPrice);
+  const unitPrice = Number(sellPrice);
   const costPrice = Number(product.costPrice);
   const vatRate = Number(product.vatRate);
 

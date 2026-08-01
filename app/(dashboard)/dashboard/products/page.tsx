@@ -10,7 +10,7 @@ type Product = {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState({ name: "", unitPrice: 0, costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
+  const [form, setForm] = useState({ name: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
 
   function load() {
@@ -23,9 +23,11 @@ export default function ProductsPage() {
     await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      // Le prix de vente n'est plus demandé ici : il sera précisé au moment
+      // de chaque vente (le prix peut varier d'une vente à l'autre).
+      body: JSON.stringify({ ...form, unitPrice: 0 }),
     });
-    setForm({ name: "", unitPrice: 0, costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
+    setForm({ name: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
     setOpen(false);
     load();
   }
@@ -50,10 +52,11 @@ export default function ProductsPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-neutral-200 p-4 mb-6 grid grid-cols-2 gap-3">
           <input required placeholder="Nom du produit" className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input type="number" step="1" required placeholder="Prix de vente (F)" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-            value={form.unitPrice || ""} onChange={(e) => setForm({ ...form, unitPrice: parseFloat(e.target.value) || 0 })} />
-          <input type="number" step="1" placeholder="Coût d'achat (F)" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          <input type="number" step="1" required placeholder="Prix d'achat (F)" className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
             value={form.costPrice || ""} onChange={(e) => setForm({ ...form, costPrice: parseFloat(e.target.value) || 0 })} />
+          <p className="col-span-2 text-xs text-neutral-400 -mt-2">
+            Le prix de vente sera demandé à chaque vente, dans "Vente rapide".
+          </p>
           <label className="flex items-center gap-2 text-sm col-span-2">
             <input type="checkbox" checked={form.trackStock}
               onChange={(e) => setForm({ ...form, trackStock: e.target.checked })} />
@@ -82,12 +85,9 @@ export default function ProductsPage() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <span className="font-semibold text-ink">{Number(p.unitPrice).toLocaleString("fr-FR")} F</span>
-                {Number(p.costPrice) > 0 && (
-                  <span className="block text-xs text-neutral-400 mt-0.5">
-                    Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F · Marge : {(Number(p.unitPrice) - Number(p.costPrice)).toLocaleString("fr-FR")} F
-                  </span>
-                )}
+                <span className="text-xs text-neutral-500">
+                  Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F
+                </span>
               </div>
               <Link
                 href={`/dashboard/sales/new?productId=${p.id}`}

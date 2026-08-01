@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 type Product = {
-  id: string; name: string; unitPrice: number; costPrice: number;
+  id: string; name: string; costPrice: number;
   trackStock: boolean; stockQty: number;
 };
 type Client = { id: string; name: string };
@@ -40,7 +40,7 @@ export default function QuickSalePage() {
   }, []);
 
   const selectedProduct = products.find((p) => p.id === productId);
-  const effectivePrice = sellPrice !== "" ? Number(sellPrice) : Number(selectedProduct?.unitPrice ?? 0);
+  const effectivePrice = sellPrice === "" ? 0 : Number(sellPrice);
   const effectiveCost = Number(selectedProduct?.costPrice ?? 0);
   const estimatedProfit = (effectivePrice - effectiveCost) * quantity;
 
@@ -58,6 +58,12 @@ export default function QuickSalePage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (sellPrice === "" || Number(sellPrice) <= 0) {
+      setError("Indiquez le prix de vente pour cette vente.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -67,7 +73,7 @@ export default function QuickSalePage() {
       body: JSON.stringify({
         productId,
         quantity,
-        sellPrice: sellPrice === "" ? undefined : Number(sellPrice),
+        sellPrice: Number(sellPrice),
         clientId: clientMode === "existing" ? clientId : clientMode === "new" ? "new" : undefined,
         clientName: clientMode === "new" ? clientName : undefined,
         clientPhone: clientMode === "new" ? clientPhone : undefined,
@@ -83,11 +89,9 @@ export default function QuickSalePage() {
     }
 
     setResult(data);
-    // Rafraîchit la liste des produits pour voir le stock à jour
     fetch("/api/products").then((r) => r.json()).then(setProducts);
   }
 
-  // Écran de confirmation après une vente réussie
   if (result) {
     return (
       <div className="max-w-lg">
@@ -161,7 +165,7 @@ export default function QuickSalePage() {
             <option value="">Choisir un produit</option>
             {products.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.name} — {Number(p.unitPrice).toLocaleString("fr-FR")} F
+                {p.name}
                 {p.trackStock ? ` (${p.stockQty} en stock)` : ""}
               </option>
             ))}
@@ -185,7 +189,8 @@ export default function QuickSalePage() {
             <input
               type="number"
               min={0}
-              placeholder={selectedProduct ? String(selectedProduct.unitPrice) : "Prix catalogue"}
+              required
+              placeholder="Ex: 2500"
               className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
               value={sellPrice}
               onChange={(e) => setSellPrice(e.target.value === "" ? "" : parseFloat(e.target.value))}
@@ -193,7 +198,7 @@ export default function QuickSalePage() {
           </div>
         </div>
 
-        {selectedProduct && (
+        {selectedProduct && sellPrice !== "" && (
           <div className="bg-brand/5 rounded-lg px-4 py-3 flex justify-between items-center">
             <span className="text-sm text-neutral-600">Bénéfice estimé</span>
             <span className="font-semibold text-brand">{estimatedProfit.toLocaleString("fr-FR")} F</span>
