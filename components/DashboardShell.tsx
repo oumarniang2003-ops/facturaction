@@ -97,7 +97,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 md:p-8 overflow-x-hidden min-h-screen bg-paper">
+      <main className="flex-1 p-4 pb-28 md:p-8 overflow-x-hidden bg-paper">
         {children}
       </main>
     </div>
