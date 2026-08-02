@@ -207,25 +207,25 @@ export default function QuickSalePage() {
 
         <div>
           <label className="block text-sm font-medium text-ink mb-2">Client</label>
-          <div className="flex gap-2 mb-3">
+          <div className="grid grid-cols-2 sm:flex gap-2 mb-3">
             <button
               type="button"
               onClick={() => setClientMode("counter")}
-              className={`flex-1 rounded-lg border text-sm py-2 ${clientMode === "counter" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
+              className={`rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "counter" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
             >
               Vente comptoir
             </button>
             <button
               type="button"
               onClick={() => setClientMode("existing")}
-              className={`flex-1 rounded-lg border text-sm py-2 ${clientMode === "existing" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
+              className={`rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "existing" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
             >
               Client existant
             </button>
             <button
               type="button"
               onClick={() => setClientMode("new")}
-              className={`flex-1 rounded-lg border text-sm py-2 ${clientMode === "new" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
+              className={`col-span-2 rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "new" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
             >
               Nouveau client
             </button>

@@ -213,8 +213,8 @@ export default function NewInvoicePage() {
         )}
 
         <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
-          {/* Table headers */}
-          <div className="grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
+          {/* En-têtes de colonnes : visibles seulement à partir de la taille tablette */}
+          <div className="hidden md:grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
             <div className="col-span-5">Désignation</div>
             <div className="col-span-2 text-center">Quantité</div>
             <div className="col-span-2 text-right">P. Unitaire (F)</div>
@@ -223,11 +223,26 @@ export default function NewInvoicePage() {
           </div>
 
           {lines.map((line, i) => (
-            <div key={i} className="grid grid-cols-12 gap-2 items-center">
+            <div
+              key={i}
+              className="rounded-lg border border-neutral-200 p-3 space-y-2 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-2 md:items-center"
+            >
+              <div className="flex items-center justify-between md:hidden">
+                <span className="text-xs font-bold text-neutral-400">Article {i + 1}</span>
+                <button
+                  type="button"
+                  disabled={lines.length <= 1}
+                  onClick={() => removeLine(i)}
+                  className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-semibold"
+                >
+                  Supprimer
+                </button>
+              </div>
+
               <input
                 placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
                 required
-                className="col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                className="w-full md:col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
                 value={line.description}
                 list="products-datalist"
                 onChange={(e) => {
@@ -247,43 +262,55 @@ export default function NewInvoicePage() {
                   }
                 }}
               />
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="Qté"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-center"
-                value={line.quantity}
-                onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
-              />
-              <input
-                type="number"
-                min={0}
-                step="1"
-                placeholder="P. Unitaire"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                value={line.unitPrice}
-                onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
-              />
-              <input
-                type="number"
-                min={0}
-                step="1"
-                placeholder="P. Achat"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                value={line.costPrice}
-                onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
-              />
-              <div className="col-span-1 text-center">
-                <button
-                  type="button"
-                  disabled={lines.length <= 1}
-                  onClick={() => removeLine(i)}
-                  className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
-                  title="Supprimer la ligne"
-                >
-                  &times;
-                 </button>
+
+              <div className="grid grid-cols-2 gap-2 md:contents">
+                <div className="md:contents">
+                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Quantité</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="Qté"
+                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-center"
+                    value={line.quantity}
+                    onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="md:contents">
+                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Prix unitaire (F)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="1"
+                    placeholder="P. Unitaire"
+                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                    value={line.unitPrice}
+                    onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="md:contents">
+                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Prix d'achat (F)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="1"
+                    placeholder="P. Achat"
+                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                    value={line.costPrice}
+                    onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="hidden md:flex md:col-span-1 justify-center">
+                  <button
+                    type="button"
+                    disabled={lines.length <= 1}
+                    onClick={() => removeLine(i)}
+                    className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
+                    title="Supprimer la ligne"
+                  >
+                    &times;
+                  </button>
+                </div>
               </div>
             </div>
           ))}
