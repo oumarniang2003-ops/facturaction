@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Building2, User, AlertTriangle, Key, Mail, Phone, MapPin, Store, Check, Info } from "lucide-react";
 
 type MerchantData = {
   businessName: string;
@@ -112,7 +117,6 @@ export default function SettingsPage() {
 
       if (res.ok) {
         setCompanyMessage({ type: "success", text: "Paramètres de l'entreprise enregistrés avec succès !" });
-        // Eventuellement rafraichir le header/sidebar si besoin
       } else {
         setCompanyMessage({ type: "error", text: data.error || "Une erreur est survenue." });
       }
@@ -208,375 +212,373 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="font-display text-3xl text-ink">Paramètres</h1>
+        <h1 className="font-display text-3xl font-bold text-ink">Paramètres</h1>
         <p className="text-neutral-500 text-sm mt-1">
           Gérez les informations de votre entreprise ainsi que vos identifiants de connexion.
         </p>
       </div>
 
       {/* Tabs Menu */}
-      <div className="flex border-b border-neutral-200">
-        <button
+      <div className="flex gap-2 border-b border-neutral-200">
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab("company")}
-          className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all duration-200 ${
+          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "company"
               ? "border-brand text-brand"
               : "border-transparent text-neutral-400 hover:text-neutral-600"
           }`}
         >
-          💼 Mon Entreprise
-        </button>
-        <button
+          <Building2 className="size-4 mr-2" />
+          <span>Mon Entreprise</span>
+        </Button>
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab("profile")}
-          className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all duration-200 ${
+          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "profile"
               ? "border-brand text-brand"
               : "border-transparent text-neutral-400 hover:text-neutral-600"
           }`}
         >
-          👤 Mon Profil
-        </button>
-        <button
+          <User className="size-4 mr-2" />
+          <span>Mon Profil</span>
+        </Button>
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab("danger")}
-          className={`py-3 px-6 text-sm font-semibold border-b-2 transition-all duration-200 ${
+          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "danger"
               ? "border-red-600 text-red-600"
               : "border-transparent text-neutral-400 hover:text-red-500"
           }`}
         >
-          ⚠️ Zone de danger
-        </button>
+          <AlertTriangle className="size-4 mr-2" />
+          <span>Zone de danger</span>
+        </Button>
       </div>
 
       {/* Content Tabs */}
-      <div className="bg-white rounded-2xl border border-neutral-200 p-6 md:p-8 shadow-sm">
-        {activeTab === "company" && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-bold text-ink">Profil de l'entreprise</h2>
-              <p className="text-xs text-neutral-400 mt-1">
-                Ces informations apparaîtront sur vos factures, devis et reçus générés en PDF.
-              </p>
-            </div>
-
-            {!isOwner && (
-              <div className="p-3 bg-amber/10 border border-amber/20 rounded-xl text-xs text-amber font-semibold flex items-center gap-2">
-                ⚠️ Modification restreinte. Seul le propriétaire de l'établissement (rôle OWNER) peut modifier ces informations.
-              </div>
-            )}
-
-            {companyMessage && (
-              <div
-                className={`p-4 rounded-xl border text-sm font-medium ${
-                  companyMessage.type === "success"
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                    : "bg-rose-50 border-rose-200 text-rose-700"
-                }`}
-              >
-                {companyMessage.text}
-              </div>
-            )}
-
-            <form onSubmit={handleCompanySubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Nom de l'entreprise *
-                </label>
-                <input
-                  required
-                  type="text"
-                  disabled={!isOwner}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.businessName}
-                  onChange={(e) => setCompanyForm({ ...companyForm, businessName: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Secteur d'activité / Description (Sous-titre PDF)
-                </label>
-                <input
-                  type="text"
-                  disabled={!isOwner}
-                  placeholder="Ex: Vente tous matériaux Électroménagers..."
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.businessSubtitle}
-                  onChange={(e) => setCompanyForm({ ...companyForm, businessSubtitle: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Email de facturation *
-                </label>
-                <input
-                  required
-                  type="email"
-                  disabled={!isOwner}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.email}
-                  onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Téléphone
-                </label>
-                <input
-                  type="text"
-                  disabled={!isOwner}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.phone}
-                  onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5 md:col-span-2">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Adresse physique
-                </label>
-                <input
-                  type="text"
-                  disabled={!isOwner}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.address}
-                  onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  N° TVA / SIRET / Identifiant unique
-                </label>
-                <input
-                  type="text"
-                  disabled={!isOwner}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ${
-                    isOwner
-                      ? "border-neutral-300 bg-white text-ink"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
-                  }`}
-                  value={companyForm.vatNumber}
-                  onChange={(e) => setCompanyForm({ ...companyForm, vatNumber: e.target.value })}
-                />
-              </div>
-
-              {isOwner && (
-                <div className="md:col-span-2 pt-4">
-                  <button
-                    type="submit"
-                    disabled={savingCompany}
-                    className="w-full md:w-auto rounded-lg bg-brand hover:bg-brand-dark disabled:bg-neutral-300 text-white text-sm font-semibold px-6 py-2.5 shadow-sm transition-all"
-                  >
-                    {savingCompany ? "Enregistrement en cours..." : "Sauvegarder l'entreprise"}
-                  </button>
-                </div>
-              )}
-            </form>
-          </div>
-        )}
-
-        {activeTab === "profile" && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-bold text-ink">Mon Profil</h2>
-              <p className="text-xs text-neutral-400 mt-1">
-                Configurez vos accès et vos informations de connexion personnelles.
-              </p>
-            </div>
-
-            {profileMessage && (
-              <div
-                className={`p-4 rounded-xl border text-sm font-medium ${
-                  profileMessage.type === "success"
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                    : "bg-rose-50 border-rose-200 text-rose-700"
-                }`}
-              >
-                {profileMessage.text}
-              </div>
-            )}
-
-            <form onSubmit={handleProfileSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Nom complet
-                </label>
-                <input
-                  required
-                  type="text"
-                  className="w-full rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                  value={profileForm.name}
-                  onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Rôle de l'utilisateur
-                </label>
-                <input
-                  disabled
-                  type="text"
-                  className="w-full rounded-lg border border-neutral-200 bg-neutral-50 text-neutral-500 px-3 py-2 text-sm cursor-not-allowed"
-                  value={profileForm.role === "OWNER" ? "Propriétaire (OWNER)" : profileForm.role === "EMPLOYEE" ? "Employé" : "Comptable"}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Adresse e-mail
-                </label>
-                <input
-                  required
-                  type="email"
-                  className="w-full rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                  value={profileForm.email}
-                  onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                />
-              </div>
-
-              <div className="md:col-span-2 border-t border-neutral-100 my-2 pt-4">
-                <h3 className="text-sm font-bold text-ink">Changer le mot de passe</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
-                  Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe.
+      <Card className="bg-white border-neutral-200 shadow-sm rounded-2xl overflow-hidden">
+        <CardContent className="p-6 md:p-8">
+          {activeTab === "company" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+                  <Building2 className="size-5 text-brand" /> Profil de l'entreprise
+                </h2>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Ces informations apparaîtront sur vos factures, devis et reçus générés en PDF.
                 </p>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Nouveau mot de passe
-                </label>
-                <input
-                  type="password"
-                  placeholder="Minimum 6 caractères"
-                  className="w-full rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                  value={passwordForm.password}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
-                />
-              </div>
+              {!isOwner && (
+                <div className="p-3 bg-amber/10 border border-amber/20 rounded-xl text-xs text-amber font-semibold flex items-center gap-2">
+                  <Info className="size-4 text-amber shrink-0" />
+                  <span>Modification restreinte. Seul le propriétaire de l'établissement (rôle OWNER) peut modifier ces informations.</span>
+                </div>
+              )}
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
-                  Confirmer le mot de passe
-                </label>
-                <input
-                  type="password"
-                  placeholder="Minimum 6 caractères"
-                  className="w-full rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                />
-              </div>
-
-              <div className="md:col-span-2 pt-4">
-                <button
-                  type="submit"
-                  disabled={savingProfile}
-                  className="w-full md:w-auto rounded-lg bg-brand hover:bg-brand-dark disabled:bg-neutral-300 text-white text-sm font-semibold px-6 py-2.5 shadow-sm transition-all"
+              {companyMessage && (
+                <div
+                  className={`p-4 rounded-xl border text-sm font-medium ${
+                    companyMessage.type === "success"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-rose-50 border-rose-200 text-rose-700"
+                  }`}
                 >
-                  {savingProfile ? "Enregistrement en cours..." : "Sauvegarder le profil"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+                  {companyMessage.text}
+                </div>
+              )}
 
-        {activeTab === "danger" && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-bold text-red-600 font-display">Zone de danger (Réinitialisation)</h2>
-              <p className="text-xs text-neutral-400 mt-1">
-                Remettez votre boutique à zéro pour recommencer à l'utiliser comme neuve.
-              </p>
+              <form onSubmit={handleCompanySubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Nom de l'entreprise *
+                  </label>
+                  <Input
+                    required
+                    type="text"
+                    disabled={!isOwner}
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.businessName}
+                    onChange={(e) => setCompanyForm({ ...companyForm, businessName: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Secteur d'activité / Description (Sous-titre PDF)
+                  </label>
+                  <Input
+                    type="text"
+                    disabled={!isOwner}
+                    placeholder="Ex: Vente tous matériaux Électroménagers..."
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.businessSubtitle}
+                    onChange={(e) => setCompanyForm({ ...companyForm, businessSubtitle: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Email de facturation *
+                  </label>
+                  <Input
+                    required
+                    type="email"
+                    disabled={!isOwner}
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.email}
+                    onChange={(e) => setCompanyForm({ ...companyForm, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Téléphone
+                  </label>
+                  <Input
+                    type="text"
+                    disabled={!isOwner}
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.phone}
+                    onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Adresse physique
+                  </label>
+                  <Input
+                    type="text"
+                    disabled={!isOwner}
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.address}
+                    onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    N° TVA / SIRET / Identifiant unique
+                  </label>
+                  <Input
+                    type="text"
+                    disabled={!isOwner}
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={companyForm.vatNumber}
+                    onChange={(e) => setCompanyForm({ ...companyForm, vatNumber: e.target.value })}
+                  />
+                </div>
+
+                {isOwner && (
+                  <div className="md:col-span-2 pt-4">
+                    <Button
+                      type="submit"
+                      disabled={savingCompany}
+                      className="w-full md:w-auto h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg"
+                    >
+                      {savingCompany ? "Enregistrement..." : "Sauvegarder l'entreprise"}
+                    </Button>
+                  </div>
+                )}
+              </form>
             </div>
+          )}
 
-            {!isOwner && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold flex items-center gap-2">
-                ⚠️ Action restreinte. Seul le propriétaire de l'établissement (rôle OWNER) peut réinitialiser la boutique.
+          {activeTab === "profile" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+                  <User className="size-5 text-brand" /> Mon Profil
+                </h2>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Configurez vos accès et vos informations de connexion personnelles.
+                </p>
               </div>
-            )}
 
-            {isOwner && (
-              <>
-                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 space-y-2">
-                  <p className="font-bold">🚨 Attention : Cette action est irréversible !</p>
-                  <p className="text-xs leading-relaxed">
-                    Si vous réinitialisez la boutique :
+              {profileMessage && (
+                <div
+                  className={`p-4 rounded-xl border text-sm font-medium ${
+                    profileMessage.type === "success"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-rose-50 border-rose-200 text-rose-700"
+                  }`}
+                >
+                  {profileMessage.text}
+                </div>
+              )}
+
+              <form onSubmit={handleProfileSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Nom complet
+                  </label>
+                  <Input
+                    required
+                    type="text"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Rôle de l'utilisateur
+                  </label>
+                  <Input
+                    disabled
+                    type="text"
+                    className="h-10 border-neutral-200 bg-neutral-50 text-neutral-500 cursor-not-allowed"
+                    value={profileForm.role === "OWNER" ? "Propriétaire (OWNER)" : profileForm.role === "EMPLOYEE" ? "Employé" : "Comptable"}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Adresse e-mail
+                  </label>
+                  <Input
+                    required
+                    type="email"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="md:col-span-2 border-t border-neutral-100 my-2 pt-5">
+                  <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                    <Key className="size-4 text-neutral-400" />
+                    <span>Changer le mot de passe</span>
+                  </h3>
+                  <p className="text-xs text-neutral-400 mt-0.5 font-medium">
+                    Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe actuel.
                   </p>
-                  <ul className="list-disc pl-5 text-xs space-y-1">
-                    <li>Tous vos <strong>produits</strong> et <strong>stocks</strong> seront définitivement supprimés.</li>
-                    <li>Tous vos <strong>clients</strong> seront supprimés.</li>
-                    <li>Toutes vos <strong>factures</strong>, <strong>devis</strong> et <strong>paiements</strong> seront supprimés.</li>
-                    <li>Le <strong>compteur de facturation</strong> sera remis à zéro (les prochains numéros de factures recommenceront à 1).</li>
-                    <li><strong>Votre compte utilisateur, les autres employés et votre abonnement resteront actifs.</strong></li>
-                  </ul>
                 </div>
 
-                <div className="space-y-4 pt-2">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider block">
-                      Veuillez saisir <strong className="text-red-600">RÉINITIALISER</strong> ci-dessous pour confirmer :
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Saisissez REINITIALISER ou RÉINITIALISER"
-                      className="w-full md:w-1/2 rounded-lg border border-neutral-300 bg-white text-ink px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all"
-                      value={resetConfirmText}
-                      onChange={(e) => setResetConfirmText(e.target.value)}
-                    />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Nouveau mot de passe
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Minimum 6 caractères"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={passwordForm.password}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                    Confirmer le mot de passe
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Minimum 6 caractères"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                  />
+                </div>
+
+                <div className="md:col-span-2 pt-4">
+                  <Button
+                    type="submit"
+                    disabled={savingProfile}
+                    className="w-full md:w-auto h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg"
+                  >
+                    {savingProfile ? "Enregistrement..." : "Sauvegarder le profil"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {activeTab === "danger" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-bold text-red-600 font-display flex items-center gap-2">
+                  <AlertTriangle className="size-5 text-red-600" /> Zone de danger
+                </h2>
+                <p className="text-xs text-neutral-400 mt-1">
+                  Remettez votre boutique à zéro pour recommencer à l'utiliser comme neuve.
+                </p>
+              </div>
+
+              {!isOwner && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-semibold flex items-center gap-2">
+                  <Info className="size-4 text-rose-600 shrink-0" />
+                  <span>Action restreinte. Seul le propriétaire de l'établissement (rôle OWNER) peut réinitialiser la boutique.</span>
+                </div>
+              )}
+
+              {isOwner && (
+                <>
+                  <div className="p-4 bg-red-50/50 border border-red-200/60 rounded-xl text-xs text-red-950 space-y-2.5">
+                    <p className="font-bold text-red-700 flex items-center gap-1.5">
+                      <AlertTriangle className="size-4 text-red-700" /> Action irréversible !
+                    </p>
+                    <p className="leading-relaxed font-semibold">
+                      Si vous confirmez la réinitialisation :
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1 text-neutral-600 font-medium">
+                      <li>Tous vos <strong>produits</strong> et <strong>stocks</strong> seront définitivement supprimés.</li>
+                      <li>Tous vos <strong>clients</strong> seront supprimés.</li>
+                      <li>Toutes vos <strong>factures</strong>, <strong>devis</strong> et <strong>paiements</strong> seront supprimés.</li>
+                      <li>Le <strong>compteur de facturation</strong> sera remis à zéro (les prochains numéros de factures recommenceront à 1).</li>
+                      <li><strong>Votre compte utilisateur, les autres employés et votre abonnement resteront actifs.</strong></li>
+                    </ul>
                   </div>
 
-                  {resetMessage && (
-                    <div
-                      className={`p-4 rounded-xl border text-sm font-medium ${
-                        resetMessage.type === "success"
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                          : "bg-rose-50 border-rose-200 text-rose-700"
-                      }`}
-                    >
-                      {resetMessage.text}
+                  <div className="space-y-4 pt-2">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider block">
+                        Veuillez saisir <strong className="text-red-600">RÉINITIALISER</strong> ci-dessous pour confirmer :
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Saisissez REINITIALISER ou RÉINITIALISER"
+                        className="h-10 md:w-1/2 border-neutral-200 focus-visible:border-red-600 bg-white"
+                        value={resetConfirmText}
+                        onChange={(e) => setResetConfirmText(e.target.value)}
+                      />
                     </div>
-                  )}
 
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      disabled={!isConfirmValid || resetting}
-                      onClick={handleResetData}
-                      className="rounded-lg bg-red-600 hover:bg-red-700 disabled:bg-neutral-200 disabled:text-neutral-400 text-white text-sm font-semibold px-6 py-2.5 shadow-sm transition-all flex items-center gap-2"
-                    >
-                      {resetting ? "Réinitialisation en cours..." : "🗑️ Réinitialiser toutes les données"}
-                    </button>
+                    {resetMessage && (
+                      <div
+                        className={`p-4 rounded-xl border text-sm font-medium ${
+                          resetMessage.type === "success"
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                            : "bg-rose-50 border-rose-200 text-rose-700"
+                        }`}
+                      >
+                        {resetMessage.text}
+                      </div>
+                    )}
+
+                    <div className="pt-2">
+                      <Button
+                        type="button"
+                        disabled={!isConfirmValid || resetting}
+                        onClick={handleResetData}
+                        variant="destructive"
+                        className="h-10 px-5 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg flex items-center gap-2"
+                      >
+                        <span>{resetting ? "Réinitialisation..." : "Réinitialiser toutes les données"}</span>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+                </>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -4,6 +4,18 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SendInvoiceButton } from "@/components/SendInvoiceButton";
 import { RecordPaymentButton } from "@/components/RecordPaymentButton";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { FileText, Plus, Mail, Phone, MapPin, Edit, ExternalLink } from "lucide-react";
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -12,6 +24,15 @@ const statusLabel: Record<string, string> = {
   PARTIALLY_PAID: "Partiellement payée",
   OVERDUE: "En retard",
   CANCELED: "Annulée",
+};
+
+const statusBadgeStyles: Record<string, { bg: string; text: string; border: string }> = {
+  DRAFT: { bg: "bg-neutral-100/60", text: "text-neutral-600", border: "border-neutral-200" },
+  SENT: { bg: "bg-blue-50/70", text: "text-blue-700", border: "border-blue-100" },
+  PAID: { bg: "bg-emerald-50/70", text: "text-emerald-700", border: "border-emerald-100" },
+  PARTIALLY_PAID: { bg: "bg-sky-50/70", text: "text-sky-700", border: "border-sky-100" },
+  OVERDUE: { bg: "bg-rose-50/70", text: "text-rose-700", border: "border-rose-100" },
+  CANCELED: { bg: "bg-neutral-50/40", text: "text-neutral-400", border: "border-neutral-100" },
 };
 
 export default async function InvoicesPage() {
@@ -25,132 +46,184 @@ export default async function InvoicesPage() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl text-ink">Factures & devis</h1>
-        <Link
-          href="/dashboard/invoices/new"
-          className="rounded-lg bg-brand hover:bg-brand-dark text-white text-sm font-medium px-4 py-2 transition-colors"
-        >
-          + Nouvelle facture
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-ink flex items-center gap-2">
+            <FileText className="size-6 text-brand" /> Factures & devis
+          </h1>
+          <p className="text-sm text-neutral-500 mt-1">
+            Gérez vos documents de vente, suivez le statut de paiement de vos clients.
+          </p>
+        </div>
+        <Link href="/dashboard/invoices/new">
+          <Button 
+            className="h-10 px-4 font-semibold flex items-center gap-2 shadow-sm hover:shadow transition-all duration-200 rounded-lg"
+          >
+            <Plus className="size-4" />
+            <span>Nouvelle facture</span>
+          </Button>
         </Link>
       </div>
 
       {invoices.length === 0 ? (
-        <div className="bg-white rounded-xl border border-neutral-200 p-10 text-center text-neutral-500">
-          Aucune facture pour le moment. Créez la première pour la voir apparaître ici.
-        </div>
+        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl">
+          <CardContent className="p-10 text-center text-neutral-500 flex flex-col items-center justify-center">
+            <FileText className="size-8 text-neutral-300 mb-2" />
+            <p className="text-sm">Aucune facture pour le moment. Créez la première pour la voir apparaître ici.</p>
+          </CardContent>
+        </Card>
       ) : (
         <>
-          {/* Vue mobile : cartes empilées, plus lisible qu'un tableau à 10 colonnes sur petit écran */}
+          {/* Vue mobile : cartes empilées */}
           <div className="md:hidden space-y-3">
-            {invoices.map((inv) => (
-              <div key={inv.id} className="bg-white rounded-xl border border-neutral-200 p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-semibold text-ink">{inv.number}</p>
-                    <p className="text-xs text-neutral-500">
-                      {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
-                    </p>
-                  </div>
-                  <p className="font-semibold text-ink">{Number(inv.total).toLocaleString("fr-FR")} F</p>
-                </div>
+            {invoices.map((inv) => {
+              const badgeStyle = statusBadgeStyles[inv.status] || statusBadgeStyles.DRAFT;
+              return (
+                <Card key={inv.id} className="bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-ink text-sm">{inv.number}</p>
+                        <p className="text-[10px] text-neutral-400">
+                          {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
+                        </p>
+                      </div>
+                      <p className="font-bold text-ink text-sm">{Number(inv.total).toLocaleString("fr-FR")} F</p>
+                    </div>
 
-                <div className="text-sm text-neutral-700 mb-1">{inv.client.name}</div>
-                {inv.client.phone && (
-                  <div className="text-xs text-neutral-500 mb-2">{inv.client.phone}</div>
-                )}
+                    <div className="space-y-1">
+                      <div className="text-xs text-neutral-700 font-semibold">{inv.client.name}</div>
+                      {inv.client.phone && (
+                        <div className="text-[11px] text-neutral-500 flex items-center gap-1">
+                          <Phone className="size-3 text-neutral-400" />
+                          <span>{inv.client.phone}</span>
+                        </div>
+                      )}
+                    </div>
 
-                <span className="inline-block text-xs bg-neutral-100 text-neutral-600 rounded-full px-2.5 py-1 mb-3">
-                  {statusLabel[inv.status]}
-                </span>
+                    <Badge 
+                      variant="outline" 
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}
+                    >
+                      {statusLabel[inv.status]}
+                    </Badge>
 
-                <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-1">
-                  <div className="flex gap-3 text-sm">
-                    <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" className="text-brand font-medium">
-                      Voir PDF
-                    </a>
-                    <Link href={`/dashboard/invoices/${inv.id}/edit`} className="text-neutral-500 font-medium">
-                      Modifier
-                    </Link>
-                  </div>
-                  <SendInvoiceButton invoiceId={inv.id} />
-                </div>
+                    <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-1">
+                      <div className="flex gap-4 text-xs font-semibold">
+                        <a 
+                          href={`/api/invoices/${inv.id}/pdf`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-brand hover:underline flex items-center gap-1"
+                        >
+                          <ExternalLink className="size-3" />
+                          <span>PDF</span>
+                        </a>
+                        <Link 
+                          href={`/dashboard/invoices/${inv.id}/edit`} 
+                          className="text-neutral-500 hover:text-neutral-700 flex items-center gap-1"
+                        >
+                          <Edit className="size-3" />
+                          <span>Modifier</span>
+                        </Link>
+                      </div>
+                      <SendInvoiceButton invoiceId={inv.id} />
+                    </div>
 
-                <div className="mt-2">
-                  <RecordPaymentButton
-                    invoiceId={inv.id}
-                    invoiceNumber={inv.number}
-                    total={Number(inv.total)}
-                    advanceReceived={Number(inv.advanceReceived)}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Vue desktop : tableau complet, avec défilement horizontal de sécurité si l'écran est étroit */}
-          <div className="hidden md:block bg-white rounded-xl border border-neutral-200 overflow-x-auto">
-            <table className="w-full text-sm min-w-[900px]">
-              <thead className="bg-neutral-50 text-neutral-500 text-left">
-                <tr>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Numéro</th>
-                  <th className="px-4 py-3">Client</th>
-                  <th className="px-4 py-3">Téléphone</th>
-                  <th className="px-4 py-3">Adresse</th>
-                  <th className="px-4 py-3">Statut</th>
-                  <th className="px-4 py-3 text-right">Total</th>
-                  <th className="px-4 py-3 text-center">Paiement</th>
-                  <th className="px-4 py-3 text-right">PDF</th>
-                  <th className="px-4 py-3 text-right">Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-t border-neutral-100">
-                    <td className="px-4 py-3 text-neutral-500">
-                      {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-ink">{inv.number}</td>
-                    <td className="px-4 py-3 font-semibold text-ink">{inv.client.name}</td>
-                    <td className="px-4 py-3 text-neutral-600">{inv.client.phone || "—"}</td>
-                    <td className="px-4 py-3 text-neutral-500 max-w-[150px] truncate" title={inv.client.address || ""}>
-                      {inv.client.address || "—"}
-                    </td>
-                    <td className="px-4 py-3">{statusLabel[inv.status]}</td>
-                    <td className="px-4 py-3 text-right font-medium">{Number(inv.total).toLocaleString("fr-FR")} F</td>
-                    <td className="px-4 py-3 text-center">
+                    <div className="pt-1">
                       <RecordPaymentButton
                         invoiceId={inv.id}
                         invoiceNumber={inv.number}
                         total={Number(inv.total)}
                         advanceReceived={Number(inv.advanceReceived)}
                       />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/dashboard/invoices/${inv.id}/edit`}
-                        className="text-neutral-500 hover:text-brand hover:underline font-medium mr-3"
-                      >
-                        Modifier
-                      </Link>
-                      <a
-                        href={`/api/invoices/${inv.id}/pdf`}
-                        target="_blank"
-                        className="text-brand hover:underline font-medium"
-                      >
-                        Voir
-                      </a>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <SendInvoiceButton invoiceId={inv.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
+
+          {/* Vue desktop : tableau complet */}
+          <Card className="hidden md:block bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
+            <Table>
+              <TableHeader className="bg-neutral-50/75 border-b border-neutral-100">
+                <TableRow>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Date</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Numéro</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Client</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Téléphone</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Adresse</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10">Statut</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10 text-right">Total</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10 text-center">Paiement</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10 text-right">Actions</TableHead>
+                  <TableHead className="px-4 py-3 font-semibold text-neutral-500 text-[11px] uppercase tracking-wider h-10 text-right">Email</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-neutral-100">
+                {invoices.map((inv) => {
+                  const badgeStyle = statusBadgeStyles[inv.status] || statusBadgeStyles.DRAFT;
+                  return (
+                    <TableRow key={inv.id} className="hover:bg-neutral-50/40 transition-colors">
+                      <TableCell className="px-4 py-3 text-neutral-500 text-xs">
+                        {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 font-semibold text-ink text-xs">{inv.number}</TableCell>
+                      <TableCell className="px-4 py-3 font-semibold text-neutral-800 text-xs">{inv.client.name}</TableCell>
+                      <TableCell className="px-4 py-3 text-neutral-500 text-xs">{inv.client.phone || "—"}</TableCell>
+                      <TableCell className="px-4 py-3 text-neutral-500 text-xs max-w-[150px] truncate" title={inv.client.address || ""}>
+                        {inv.client.address || "—"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        <Badge 
+                          variant="outline" 
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold border ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}
+                        >
+                          {statusLabel[inv.status]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-right font-bold text-ink text-xs">
+                        {Number(inv.total).toLocaleString("fr-FR")} F
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-center">
+                        <RecordPaymentButton
+                          invoiceId={inv.id}
+                          invoiceNumber={inv.number}
+                          total={Number(inv.total)}
+                          advanceReceived={Number(inv.advanceReceived)}
+                        />
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-right text-xs">
+                        <div className="flex justify-end gap-3">
+                          <Link href={`/dashboard/invoices/${inv.id}/edit`}>
+                            <Button variant="outline" className="h-7 text-[11px] px-2.5 border-neutral-300 hover:bg-neutral-50 bg-white rounded-md font-semibold flex items-center gap-1">
+                              <Edit className="size-3 text-neutral-500" />
+                              <span>Modifier</span>
+                            </Button>
+                          </Link>
+                          <a
+                            href={`/api/invoices/${inv.id}/pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Button variant="outline" className="h-7 text-[11px] px-2.5 border-neutral-300 hover:bg-neutral-50 bg-white rounded-md font-semibold flex items-center gap-1">
+                              <ExternalLink className="size-3 text-neutral-500" />
+                              <span>PDF</span>
+                            </Button>
+                          </a>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-right">
+                        <SendInvoiceButton invoiceId={inv.id} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Card>
         </>
       )}
     </div>

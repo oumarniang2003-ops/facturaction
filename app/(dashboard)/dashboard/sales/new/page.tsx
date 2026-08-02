@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingCart, Check, FileText, ArrowRight, UserPlus, UserCheck, Users } from "lucide-react";
 
 type Product = {
   id: string; name: string; costPrice: number;
@@ -94,185 +99,205 @@ export default function QuickSalePage() {
 
   if (result) {
     return (
-      <div className="max-w-lg">
-        <div className="bg-white rounded-xl border border-neutral-200 p-6 text-center">
-          <div className="w-12 h-12 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto mb-4 text-2xl">
-            ✓
-          </div>
-          <h1 className="font-display text-2xl text-ink mb-1">Vente enregistrée !</h1>
-          <p className="text-neutral-500 text-sm mb-6">Facture {result.invoice.number}</p>
-
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-neutral-50 rounded-lg p-4">
-              <p className="text-xs text-neutral-500 mb-1">Vendu</p>
-              <p className="text-xl font-semibold text-ink">{result.revenue.toLocaleString("fr-FR")} F</p>
+      <div className="max-w-lg space-y-6">
+        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
+          <CardContent className="p-6 text-center space-y-6">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto text-xl">
+              <Check className="size-6" />
             </div>
-            <div className="bg-brand/5 rounded-lg p-4">
-              <p className="text-xs text-neutral-500 mb-1">Bénéfice réalisé</p>
-              <p className="text-xl font-semibold text-brand">{result.profit.toLocaleString("fr-FR")} F</p>
+            <div>
+              <h1 className="font-display text-2xl font-bold text-ink">Vente enregistrée !</h1>
+              <p className="text-neutral-500 text-sm mt-1">Facture {result.invoice.number}</p>
             </div>
-          </div>
 
-          {result.remainingStock !== null && (
-            <p className="text-sm text-neutral-500 mb-6">
-              Il reste {result.remainingStock} en stock pour ce produit.
-            </p>
-          )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-neutral-50/50 border border-neutral-200/50 rounded-xl p-4 text-center">
+                <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Montant Vendu</p>
+                <p className="text-lg font-bold text-ink">{result.revenue.toLocaleString("fr-FR")} F</p>
+              </div>
+              <div className="bg-emerald-50/30 border border-emerald-100 rounded-xl p-4 text-center">
+                <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Bénéfice réalisé</p>
+                <p className="text-lg font-bold text-emerald-700">{result.profit.toLocaleString("fr-FR")} F</p>
+              </div>
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <a
-              href={`/api/invoices/${result.invoice.id}/pdf`}
-              target="_blank"
-              className="rounded-lg bg-ink hover:bg-black text-white text-sm font-medium py-2.5 transition-colors"
-            >
-              Voir la facture (PDF)
-            </a>
-            <button
-              onClick={resetForm}
-              className="rounded-lg border border-neutral-300 text-ink text-sm font-medium py-2.5 hover:bg-neutral-50 transition-colors"
-            >
-              Enregistrer une autre vente
-            </button>
-            <Link
-              href="/dashboard/invoices"
-              className="text-sm text-neutral-500 hover:text-brand mt-1"
-            >
-              Retour aux factures
-            </Link>
-          </div>
-        </div>
+            {result.remainingStock !== null && (
+              <div className="p-2.5 bg-neutral-50 rounded-lg text-xs text-neutral-500 inline-block font-medium">
+                Stock restant pour ce produit : {result.remainingStock} unités.
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 pt-2">
+              <a
+                href={`/api/invoices/${result.invoice.id}/pdf`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full"
+              >
+                <Button className="w-full h-10 font-semibold flex items-center justify-center gap-1.5 rounded-lg shadow-sm">
+                  <FileText className="size-4" />
+                  <span>Voir la facture (PDF)</span>
+                </Button>
+              </a>
+              <Button
+                onClick={resetForm}
+                variant="outline"
+                className="w-full h-10 font-semibold border-neutral-300 hover:bg-neutral-50 bg-white rounded-lg"
+              >
+                Enregistrer une autre vente
+              </Button>
+              <Link href="/dashboard/invoices" className="text-xs text-neutral-500 hover:text-brand hover:underline font-semibold block pt-2">
+                Retour à la liste des factures
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-lg">
-      <h1 className="font-display text-2xl text-ink mb-2">Vente rapide</h1>
-      <p className="text-neutral-600 mb-6">
-        Enregistrez une vente en boutique en 1 minute : la facture et le
-        bénéfice sont calculés automatiquement.
-      </p>
+    <div className="max-w-lg space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold text-ink flex items-center gap-2">
+          <ShoppingCart className="size-6 text-brand" /> Vente rapide
+        </h1>
+        <p className="text-sm text-neutral-500 mt-1">
+          Enregistrez une vente directe au comptoir. La facture et le bénéfice net sont calculés automatiquement.
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-neutral-200 p-5 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-ink mb-1">Produit vendu</label>
-          <select
-            required
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-          >
-            <option value="">Choisir un produit</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-                {p.trackStock ? ` (${p.stockQty} en stock)` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1">Quantité</label>
-            <input
-              type="number"
-              min={1}
-              required
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-              value={quantity}
-              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1">Prix de vente (F)</label>
-            <input
-              type="number"
-              min={0}
-              required
-              placeholder="Ex: 2500"
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-              value={sellPrice}
-              onChange={(e) => setSellPrice(e.target.value === "" ? "" : parseFloat(e.target.value))}
-            />
-          </div>
-        </div>
-
-        {selectedProduct && sellPrice !== "" && (
-          <div className="bg-brand/5 rounded-lg px-4 py-3 flex justify-between items-center">
-            <span className="text-sm text-neutral-600">Bénéfice estimé</span>
-            <span className="font-semibold text-brand">{estimatedProfit.toLocaleString("fr-FR")} F</span>
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm font-medium text-ink mb-2">Client</label>
-          <div className="grid grid-cols-2 sm:flex gap-2 mb-3">
-            <button
-              type="button"
-              onClick={() => setClientMode("counter")}
-              className={`rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "counter" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
-            >
-              Vente comptoir
-            </button>
-            <button
-              type="button"
-              onClick={() => setClientMode("existing")}
-              className={`rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "existing" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
-            >
-              Client existant
-            </button>
-            <button
-              type="button"
-              onClick={() => setClientMode("new")}
-              className={`col-span-2 rounded-lg border text-xs sm:text-sm py-2 px-2 sm:flex-1 ${clientMode === "new" ? "border-brand bg-brand/5 text-brand font-medium" : "border-neutral-300 text-neutral-600"}`}
-            >
-              Nouveau client
-            </button>
-          </div>
-
-          {clientMode === "existing" && (
-            <select
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-            >
-              <option value="">Choisir un client</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          )}
-
-          {clientMode === "new" && (
-            <div className="grid grid-cols-2 gap-2">
-              <input
+      <Card className="bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
+        <CardContent className="p-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Produit vendu</label>
+              <select
                 required
-                placeholder="Nom du client"
-                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-              />
-              <input
-                placeholder="Téléphone (optionnel)"
-                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                value={clientPhone}
-                onChange={(e) => setClientPhone(e.target.value)}
-              />
+                value={productId}
+                onChange={(e) => setProductId(e.target.value)}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+              >
+                <option value="">Choisir un produit dans le catalogue</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} {p.trackStock ? `(${p.stockQty} en stock)` : ""}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
-        </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Quantité</label>
+                <Input
+                  type="number"
+                  min={1}
+                  required
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Prix de vente (F)</label>
+                <Input
+                  type="number"
+                  min={0}
+                  required
+                  placeholder="Ex: 2500"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  value={sellPrice}
+                  onChange={(e) => setSellPrice(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
 
-        <button
-          type="submit"
-          disabled={loading || !productId}
-          className="w-full rounded-lg bg-brand hover:bg-brand-dark text-white font-semibold py-3 transition-colors disabled:opacity-60"
-        >
-          {loading ? "Enregistrement..." : "✓ J'ai vendu ce produit"}
-        </button>
-      </form>
+            {selectedProduct && sellPrice !== "" && (
+              <div className="bg-emerald-50/30 border border-emerald-100 rounded-xl px-4 py-3 flex justify-between items-center text-xs font-semibold">
+                <span className="text-emerald-800">Bénéfice estimé :</span>
+                <span className="text-emerald-700 text-sm">{estimatedProfit.toLocaleString("fr-FR")} F</span>
+              </div>
+            )}
+
+            <div className="space-y-2.5 pt-2 border-t border-neutral-100">
+              <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider">Client</label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  type="button"
+                  variant={clientMode === "counter" ? "default" : "outline"}
+                  onClick={() => setClientMode("counter")}
+                  className="h-9 text-xs font-semibold border-neutral-300 rounded-lg flex items-center justify-center gap-1"
+                >
+                  <Users className="size-3.5 shrink-0" />
+                  <span>Comptoir</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={clientMode === "existing" ? "default" : "outline"}
+                  onClick={() => setClientMode("existing")}
+                  className="h-9 text-xs font-semibold border-neutral-300 rounded-lg flex items-center justify-center gap-1"
+                >
+                  <UserCheck className="size-3.5 shrink-0" />
+                  <span>Existant</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={clientMode === "new" ? "default" : "outline"}
+                  onClick={() => setClientMode("new")}
+                  className="h-9 text-xs font-semibold border-neutral-300 rounded-lg flex items-center justify-center gap-1"
+                >
+                  <UserPlus className="size-3.5 shrink-0" />
+                  <span>Nouveau</span>
+                </Button>
+              </div>
+
+              {clientMode === "existing" && (
+                <div className="pt-1.5">
+                  <select
+                    value={clientId}
+                    onChange={(e) => setClientId(e.target.value)}
+                    className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+                  >
+                    <option value="">Choisir un client existant</option>
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {clientMode === "new" && (
+                <div className="grid grid-cols-2 gap-3 pt-1.5">
+                  <Input
+                    required
+                    placeholder="Nom du client *"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Téléphone (optionnel)"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    value={clientPhone}
+                    onChange={(e) => setClientPhone(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+
+            {error && <p className="text-xs text-rose-600 font-semibold">{error}</p>}
+
+            <Button
+              type="submit"
+              disabled={loading || !productId}
+              className="w-full h-11 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-xl"
+            >
+              {loading ? "Enregistrement..." : "Confirmer la vente"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Trash2, FileText, User, Calendar, CreditCard, ChevronLeft } from "lucide-react";
+import Link from "next/link";
 
 type Line = { description: string; quantity: number; unitPrice: number; costPrice: number; vatRate: number };
 type Client = { id: string; name: string };
@@ -85,320 +91,361 @@ export default function NewInvoicePage() {
   }
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="font-display text-2xl text-ink mb-6">Nouvelle facture</h1>
+    <div className="max-w-3xl space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Link href="/dashboard/invoices">
+          <Button variant="outline" size="icon" className="h-9 w-9 border-neutral-200 bg-white">
+            <ChevronLeft className="size-4 text-neutral-500" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="font-display text-2xl font-bold text-ink">Nouveau document</h1>
+          <p className="text-sm text-neutral-500 mt-0.5">Créez un devis ou une facture pour vos clients.</p>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-              Client
-            </label>
-            <select
-              required
-              value={
-                clientId === "new" && clientName === "Client de passage"
-                  ? "passage"
-                  : clients.find((c) => c.id === clientId)?.name.toLowerCase() === "client de passage"
-                  ? "passage"
-                  : clientId
-              }
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === "passage") {
-                  const existingPassage = clients.find(
-                    (c) => c.name.toLowerCase() === "client de passage"
-                  );
-                  if (existingPassage) {
-                    setClientId(existingPassage.id);
-                  } else {
-                    setClientId("new");
-                  }
-                  setClientName("Client de passage");
-                } else if (val === "new") {
-                  setClientId("new");
-                  setClientName("");
-                  setClientPhone("");
-                  setClientAddress("");
-                } else {
-                  setClientId(val);
-                  setClientName("");
+        {/* Document Settings */}
+        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl">
+          <CardContent className="p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                Client
+              </label>
+              <select
+                required
+                value={
+                  clientId === "new" && clientName === "Client de passage"
+                    ? "passage"
+                    : clients.find((c) => c.id === clientId)?.name.toLowerCase() === "client de passage"
+                    ? "passage"
+                    : clientId
                 }
-              }}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium"
-            >
-              <option value="passage">👤 Client de passage (Vente directe)</option>
-              <option value="new" className="text-brand font-semibold">+ Nouveau client (Saisir les coordonnées)</option>
-              {clients
-                .filter((c) => c.name.toLowerCase() !== "client de passage")
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </select>
-          </div>
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "passage") {
+                    const existingPassage = clients.find(
+                      (c) => c.name.toLowerCase() === "client de passage"
+                    );
+                    if (existingPassage) {
+                      setClientId(existingPassage.id);
+                    } else {
+                      setClientId("new");
+                    }
+                    setClientName("Client de passage");
+                  } else if (val === "new") {
+                    setClientId("new");
+                    setClientName("");
+                    setClientPhone("");
+                    setClientAddress("");
+                  } else {
+                    setClientId(val);
+                    setClientName("");
+                  }
+                }}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+              >
+                <option value="passage">Client de passage (Vente directe)</option>
+                <option value="new">+ Nouveau client (Saisir coordonnées)</option>
+                {clients
+                  .filter((c) => c.name.toLowerCase() !== "client de passage")
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-              Type de document
-            </label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as "QUOTE" | "INVOICE")}
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-            >
-              <option value="INVOICE">Facture</option>
-              <option value="QUOTE">Devis</option>
-            </select>
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                Type de document
+              </label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as "QUOTE" | "INVOICE")}
+                className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+              >
+                <option value="INVOICE">Facture</option>
+                <option value="QUOTE">Devis</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-              Date de la facture
-            </label>
-            <input
-              type="date"
-              required
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-              value={issueDate}
-              onChange={(e) => setIssueDate(e.target.value)}
-            />
-          </div>
-        </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                Date d'émission
+              </label>
+              <Input
+                type="date"
+                required
+                className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                value={issueDate}
+                onChange={(e) => setIssueDate(e.target.value)}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
+        {/* Temporary New Client Info */}
         {clientId === "new" && clientName !== "Client de passage" && (
-          <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 space-y-4">
-            <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Informations du Nouveau Client</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-neutral-500 mb-1">
-                  Nom du client *
-                </label>
-                <input
+          <Card className="bg-neutral-50/50 border-neutral-200 shadow-sm rounded-xl">
+            <CardHeader className="pb-2 pt-4 px-5">
+              <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+                <User className="size-3.5 text-neutral-400" />
+                <span>Informations du Nouveau Client</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-5 pb-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500">Nom du client *</label>
+                <Input
                   type="text"
                   required
                   placeholder="Ex: NBS Electronic"
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-neutral-500 mb-1">
-                  Téléphone du client
-                </label>
-                <input
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500">Téléphone</label>
+                <Input
                   type="text"
                   placeholder="Ex: +221 77 721 19 87"
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-neutral-500 mb-1">
-                  Adresse du client
-                </label>
-                <input
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500">Adresse</label>
+                <Input
                   type="text"
                   placeholder="Ex: Parcelles Assainies, Dakar"
-                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
                   value={clientAddress}
                   onChange={(e) => setClientAddress(e.target.value)}
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
 
-        <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
-          {/* En-têtes de colonnes : visibles seulement à partir de la taille tablette */}
-          <div className="hidden md:grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
-            <div className="col-span-5">Désignation</div>
-            <div className="col-span-2 text-center">Quantité</div>
-            <div className="col-span-2 text-right">P. Unitaire (F)</div>
-            <div className="col-span-2 text-right">P. Achat (F)</div>
-            <div className="col-span-1 text-center">Act.</div>
-          </div>
+        {/* Line Items Table */}
+        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
+          <CardHeader className="pb-3 pt-5 px-5 border-b border-neutral-100 bg-neutral-50/30">
+            <CardTitle className="text-sm font-bold text-ink">Détails des prestations / articles</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-3">
+            {/* Header Labels (Desktop only) */}
+            <div className="hidden md:grid grid-cols-12 gap-3 text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+              <div className="col-span-5">Description / Article</div>
+              <div className="col-span-2 text-center">Quantité</div>
+              <div className="col-span-2 text-right">P. Unitaire (F)</div>
+              <div className="col-span-2 text-right">P. Achat (F)</div>
+              <div className="col-span-1 text-center">Action</div>
+            </div>
 
-          {lines.map((line, i) => (
-            <div
-              key={i}
-              className="rounded-lg border border-neutral-200 p-3 space-y-2 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-2 md:items-center"
-            >
-              <div className="flex items-center justify-between md:hidden">
-                <span className="text-xs font-bold text-neutral-400">Article {i + 1}</span>
-                <button
-                  type="button"
-                  disabled={lines.length <= 1}
-                  onClick={() => removeLine(i)}
-                  className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-semibold"
+            {/* Rows list */}
+            <div className="space-y-3">
+              {lines.map((line, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-neutral-200 p-4 space-y-3 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-3 md:items-center"
                 >
-                  Supprimer
-                </button>
-              </div>
+                  <div className="flex items-center justify-between md:hidden border-b border-neutral-100 pb-2 mb-1">
+                    <span className="text-xs font-bold text-neutral-500">Ligne {i + 1}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={lines.length <= 1}
+                      onClick={() => removeLine(i)}
+                      className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-semibold h-7 py-0.5 px-2 border-neutral-200 bg-white rounded"
+                    >
+                      Supprimer
+                    </Button>
+                  </div>
 
-              <input
-                placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
-                required
-                className="w-full md:col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                value={line.description}
-                list="products-datalist"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const matched = products.find(
-                    (p) => p.name.toLowerCase() === val.toLowerCase()
-                  );
-                  if (matched) {
-                    updateLine(i, {
-                      description: val,
-                      unitPrice: Number(matched.unitPrice) || 0,
-                      costPrice: Number(matched.costPrice) || 0,
-                      vatRate: Number(matched.vatRate) || 0,
-                    });
-                  } else {
-                    updateLine(i, { description: val });
-                  }
-                }}
-              />
+                  <div className="col-span-5">
+                    <Input
+                      placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
+                      required
+                      className="h-9 border-neutral-200 focus-visible:border-brand bg-white"
+                      value={line.description}
+                      list="products-datalist"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const matched = products.find(
+                          (p) => p.name.toLowerCase() === val.toLowerCase()
+                        );
+                        if (matched) {
+                          updateLine(i, {
+                            description: val,
+                            unitPrice: Number(matched.unitPrice) || 0,
+                            costPrice: Number(matched.costPrice) || 0,
+                            vatRate: Number(matched.vatRate) || 0,
+                          });
+                        } else {
+                          updateLine(i, { description: val });
+                        }
+                      }}
+                    />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-2 md:contents">
-                <div className="md:contents">
-                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Quantité</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    placeholder="Qté"
-                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-center"
-                    value={line.quantity}
-                    onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
-                  />
+                  <div className="grid grid-cols-3 gap-2.5 md:contents">
+                    <div className="flex flex-col gap-1 md:contents">
+                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Qté</label>
+                      <Input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        placeholder="Qté"
+                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-center md:col-span-2"
+                        value={line.quantity}
+                        onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 md:contents">
+                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Vente (F)</label>
+                      <Input
+                        type="number"
+                        min={0}
+                        step="1"
+                        placeholder="Vente"
+                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2"
+                        value={line.unitPrice}
+                        onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 md:contents">
+                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Achat (F)</label>
+                      <Input
+                        type="number"
+                        min={0}
+                        step="1"
+                        placeholder="Achat"
+                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2"
+                        value={line.costPrice}
+                        onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="hidden md:flex md:col-span-1 justify-center">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={lines.length <= 1}
+                        onClick={() => removeLine(i)}
+                        className="text-rose-500 hover:text-rose-700 disabled:opacity-30 h-8 w-8 p-0"
+                        title="Supprimer la ligne"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div className="md:contents">
-                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Prix unitaire (F)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step="1"
-                    placeholder="P. Unitaire"
-                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                    value={line.unitPrice}
-                    onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div className="md:contents">
-                  <label className="block text-[10px] text-neutral-400 mb-1 md:hidden">Prix d'achat (F)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step="1"
-                    placeholder="P. Achat"
-                    className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                    value={line.costPrice}
-                    onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div className="hidden md:flex md:col-span-1 justify-center">
-                  <button
-                    type="button"
-                    disabled={lines.length <= 1}
-                    onClick={() => removeLine(i)}
-                    className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
-                    title="Supprimer la ligne"
-                  >
-                    &times;
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-          <button type="button" onClick={addLine} className="text-sm text-brand font-medium">
-            + Ajouter une ligne
-          </button>
-        </div>
 
-        {type === "INVOICE" && (
-          <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-                Acompte / Avance reçue (F CFA)
-              </label>
-              <input
-                type="number"
-                min={0}
-                step="1"
-                placeholder="Ex: 5000"
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                value={advanceReceived}
-                onChange={(e) => setAdvanceReceived(e.target.value === "" ? "" : parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-                Mode de paiement
-              </label>
-              <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            <div className="pt-2 border-t border-neutral-100 mt-2">
+              <Button 
+                type="button" 
+                onClick={addLine} 
+                variant="outline" 
+                className="h-8 text-xs font-semibold border-neutral-300 hover:bg-neutral-50 bg-white rounded-lg flex items-center gap-1"
               >
-                <option value="CASH">Espèces</option>
-                <option value="CHECK">Chèque</option>
-                <option value="WAVE">Wave</option>
-                <option value="ORANGE_MONEY">Orange Money</option>
-                <option value="CARD">Carte Bancaire</option>
-                <option value="TRANSFER">Virement</option>
-              </select>
+                <Plus className="size-3.5" />
+                <span>Ajouter une ligne</span>
+              </Button>
             </div>
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* Payment options for invoices */}
+        {type === "INVOICE" && (
+          <Card className="bg-neutral-50/50 border-neutral-200 shadow-sm rounded-xl">
+            <CardContent className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Acompte / Avance reçue (F CFA)
+                </label>
+                <Input
+                  type="number"
+                  min={0}
+                  step="1"
+                  placeholder="Ex: 5000 (laissez vide si 0)"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  value={advanceReceived}
+                  onChange={(e) => setAdvanceReceived(e.target.value === "" ? "" : parseFloat(e.target.value) || 0)}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  Mode de paiement
+                </label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+                >
+                  <option value="CASH">Espèces</option>
+                  <option value="CHECK">Chèque</option>
+                  <option value="WAVE">Wave</option>
+                  <option value="ORANGE_MONEY">Orange Money</option>
+                  <option value="CARD">Carte Bancaire</option>
+                  <option value="TRANSFER">Virement</option>
+                </select>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
-        <div className="border-t border-neutral-200 pt-4 flex flex-col md:flex-row md:items-start justify-between gap-4">
+        {/* Totals & Submit */}
+        <div className="border-t border-neutral-200 pt-5 flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-1">
-            <p className="text-sm text-neutral-500">
-              Total de la commande : <span className="font-semibold text-ink">{total.toLocaleString("fr-FR")} F</span>
+            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Détails financiers</p>
+            <p className="text-sm text-neutral-600">
+              Total HT & Taxes : <span className="font-semibold text-ink">{total.toLocaleString("fr-FR")} F</span>
             </p>
             {type === "INVOICE" && advance > 0 && (
               <>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-600">
                   Avance reçue : <span className="font-semibold text-emerald-600">-{advance.toLocaleString("fr-FR")} F</span>
                 </p>
-                <p className="text-lg font-bold text-ink">
+                <p className="text-xl font-bold text-ink">
                   Solde restant : {remainingBalance.toLocaleString("fr-FR")} F
                 </p>
               </>
             )}
             {!(type === "INVOICE" && advance > 0) && (
-              <p className="text-lg font-bold text-ink font-display">Total à régler : {total.toLocaleString("fr-FR")} F</p>
+              <p className="text-xl font-bold text-ink font-display">Total à régler : {total.toLocaleString("fr-FR")} F</p>
             )}
 
-            {/* Live Cost & Profit Calculations */}
-            <div className="mt-3 bg-neutral-50 rounded-xl p-3 border border-neutral-200 space-y-1.5 text-xs max-w-xs">
-              <div className="flex justify-between gap-8 text-neutral-500 font-medium">
+            {/* Margin/Profit summary */}
+            <div className="mt-3 bg-neutral-100/50 rounded-xl p-3 border border-neutral-200/60 space-y-1 text-xs max-w-xs">
+              <div className="flex justify-between gap-8 text-neutral-500">
                 <span>Coût d'achat estimé :</span>
-                <span>{totalCost.toLocaleString("fr-FR")} F</span>
+                <span className="font-medium">{totalCost.toLocaleString("fr-FR")} F</span>
               </div>
-              <div className="flex justify-between gap-8 text-neutral-600 font-bold">
-                <span>Bénéfice net estimé :</span>
+              <div className="flex justify-between gap-8 text-neutral-700 font-bold">
+                <span>Bénéfice estimé :</span>
                 <span className={profit >= 0 ? "text-emerald-600" : "text-rose-600"}>
                   {profit.toLocaleString("fr-FR")} F
                 </span>
               </div>
               <div className="flex justify-between gap-8 text-neutral-400 text-[10px]">
-                <span>Marge bénéficiaire :</span>
+                <span>Marge estimée :</span>
                 <span>{marginPercent.toFixed(1)}%</span>
               </div>
             </div>
           </div>
-          <button
+          <Button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-brand hover:bg-brand-dark text-white font-medium px-5 py-2.5 transition-colors disabled:opacity-60 self-end"
+            className="h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg self-end"
           >
-            {saving ? "Enregistrement..." : "Créer la facture"}
-          </button>
+            {saving ? "Enregistrement..." : type === "INVOICE" ? "Créer la facture" : "Créer le devis"}
+          </Button>
         </div>
       </form>
 
