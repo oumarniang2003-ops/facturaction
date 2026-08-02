@@ -77,28 +77,33 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
       {/* Sidebar Drawer - Desktop and Mobile overlay */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-ink text-white flex flex-col transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen md:z-auto shrink-0
+          fixed inset-y-0 left-0 z-50 w-64 bg-ink text-white flex flex-col transform transition-transform duration-300 ease-in-out md:translate-x-0 md:sticky md:top-0 md:h-screen md:z-auto shrink-0
           ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Desktop Header */}
-        <div className="px-6 py-6 border-b border-white/5 hidden md:block">
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md">
-              <FileText className="size-4 text-white" />
+        <div className="px-6 py-5 border-b border-white/5 hidden md:block">
+          <div className="flex items-center gap-2.5">
+            <div className="size-9 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
+              <FileText className="size-4.5 text-white" />
             </div>
-            <p className="font-display text-lg font-bold tracking-tight">{merchantName}</p>
+            <div className="overflow-hidden">
+              <p className="font-display text-base font-bold tracking-tight truncate text-white">{merchantName}</p>
+              <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Espace commerçant</p>
+            </div>
           </div>
-          <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-2.5">Espace commerçant</p>
         </div>
         
         {/* Mobile Header Inside Drawer */}
-        <div className="px-6 py-6 border-b border-white/5 flex justify-between items-center md:hidden">
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md">
-              <FileText className="size-4 text-white" />
+        <div className="px-6 py-5 border-b border-white/5 flex justify-between items-center md:hidden">
+          <div className="flex items-center gap-2.5">
+            <div className="size-9 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
+              <FileText className="size-4.5 text-white" />
             </div>
-            <p className="font-display text-lg font-bold tracking-tight">{merchantName}</p>
+            <div>
+              <p className="font-display text-base font-bold tracking-tight text-white">{merchantName}</p>
+              <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Espace commerçant</p>
+            </div>
           </div>
           <button
             onClick={() => setMobileMenuOpen(false)}
@@ -110,7 +115,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         </div>
 
         {/* Links Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {links.map((l) => {
             const isActive = pathname === l.href;
             return (
@@ -119,14 +124,14 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
                 href={l.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`
-                  flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-all duration-200 font-semibold
+                  flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-all duration-200 font-semibold group
                   ${isActive 
-                    ? "bg-brand text-white shadow-md shadow-brand/10" 
+                    ? "bg-brand text-white shadow-md shadow-brand/20 font-bold" 
                     : "text-neutral-400 hover:bg-white/5 hover:text-white"
                   }
                 `}
               >
-                <div className={`shrink-0 ${isActive ? "text-white" : "text-neutral-500 group-hover:text-white"}`}>
+                <div className={`shrink-0 transition-colors ${isActive ? "text-white" : "text-neutral-400 group-hover:text-white"}`}>
                   {getLinkIcon(l.href)}
                 </div>
                 <span>{l.label}</span>
@@ -139,7 +144,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         <div className="p-4 border-t border-white/5">
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="w-full flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+            className="w-full flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
           >
             <LogOut className="size-4.5" />
             <span>Déconnexion</span>
