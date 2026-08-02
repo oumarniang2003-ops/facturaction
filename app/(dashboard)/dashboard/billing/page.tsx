@@ -30,10 +30,13 @@ export default function BillingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-ink flex items-center gap-2">
-          <CreditCard className="size-6 text-brand" /> Mon abonnement
+        <h1 className="font-display text-3xl font-bold text-ink flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+            <CreditCard className="size-5 text-brand" />
+          </div>
+          <span>Mon abonnement</span>
         </h1>
-        <p className="text-sm text-neutral-500 mt-1">
+        <p className="text-sm text-neutral-500 mt-1.5 font-semibold">
           Chaque boutique choisit et paie son propre plan, indépendamment.
         </p>
       </div>
@@ -42,38 +45,38 @@ export default function BillingPage() {
         {plans.map((p) => (
           <Card 
             key={p.id} 
-            className={`bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden flex flex-col justify-between relative ${p.popular ? "ring-2 ring-brand border-transparent" : ""}`}
+            className={`bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden flex flex-col justify-between relative ${p.popular ? "ring-2 ring-brand border-transparent shadow-[0_8px_30px_rgb(91,79,232,0.12)]" : ""}`}
           >
             {p.popular && (
-              <Badge className="absolute top-3 right-3 bg-brand text-white font-semibold text-[10px] uppercase tracking-wider py-0.5 px-2 hover:bg-brand">
+              <Badge className="absolute top-4 right-4 bg-gradient-to-r from-brand to-[#7C6FF0] text-white font-extrabold text-[10px] uppercase tracking-wider py-1 px-3 rounded-full hover:from-brand hover:to-[#7C6FF0]">
                 Populaire
               </Badge>
             )}
             <div>
-              <CardHeader className="pb-4 pt-5 px-6">
+              <CardHeader className="pb-4 pt-6 px-6">
                 <CardTitle className="font-display text-lg font-bold text-ink flex items-center gap-1.5">
                   {p.popular && <Zap className="size-4 text-brand fill-brand" />}
                   <span>{p.name}</span>
                 </CardTitle>
-                <div className="text-3xl font-extrabold text-brand mt-3">{p.price}</div>
+                <div className="text-3xl font-display font-extrabold text-brand mt-3">{p.price}</div>
               </CardHeader>
-              <CardContent className="px-6 pb-6 border-t border-neutral-100/60 pt-4">
-                <ul className="space-y-2.5 text-xs text-neutral-600 font-medium">
+              <CardContent className="px-6 pb-6 border-t border-neutral-100/60 pt-5">
+                <ul className="space-y-3 text-xs text-neutral-600 font-semibold">
                   {p.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2">
-                      <CheckCircle2 className="size-4 text-brand shrink-0 mt-0.5" />
+                    <li key={f} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="size-4 text-mint shrink-0 mt-0.5" />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
             </div>
-            <CardFooter className="px-6 pb-5 pt-0">
+            <CardFooter className="px-6 pb-6 pt-0">
               <Button
                 onClick={() => subscribe(p.id)}
                 disabled={loadingPlan === p.id}
                 variant={p.popular ? "default" : "outline"}
-                className={`w-full h-10 font-semibold shadow-xs rounded-lg ${!p.popular ? "border-neutral-300 hover:bg-neutral-50 bg-white" : ""}`}
+                className={`w-full h-11 font-bold rounded-full ${p.popular ? "bg-gradient-to-r from-brand to-[#7C6FF0] text-white shadow-md shadow-brand/20 hover:opacity-95" : "border-neutral-200 hover:bg-neutral-50 bg-white"}`}
               >
                 {loadingPlan === p.id ? "Redirection..." : "Choisir ce plan"}
               </Button>

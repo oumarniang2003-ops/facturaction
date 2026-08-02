@@ -13,7 +13,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, AlertTriangle, CheckCircle, Package } from "lucide-react";
+import { 
+  TrendingUp, 
+  AlertTriangle, 
+  CheckCircle, 
+  Package, 
+  FileText, 
+  Users, 
+  ArrowUpRight, 
+  DollarSign, 
+  Receipt,
+  ArrowRight
+} from "lucide-react";
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -25,12 +36,12 @@ const statusLabel: Record<string, string> = {
 };
 
 const statusBadgeStyles: Record<string, { bg: string; text: string; border: string }> = {
-  DRAFT: { bg: "bg-neutral-100/60", text: "text-neutral-600", border: "border-neutral-200" },
-  SENT: { bg: "bg-blue-50/70", text: "text-blue-700", border: "border-blue-100" },
-  PAID: { bg: "bg-emerald-50/70", text: "text-emerald-700", border: "border-emerald-100" },
-  PARTIALLY_PAID: { bg: "bg-sky-50/70", text: "text-sky-700", border: "border-sky-100" },
-  OVERDUE: { bg: "bg-rose-50/70", text: "text-rose-700", border: "border-rose-100" },
-  CANCELED: { bg: "bg-neutral-50/40", text: "text-neutral-400", border: "border-neutral-100" },
+  DRAFT: { bg: "bg-neutral-100", text: "text-neutral-600", border: "border-neutral-200" },
+  SENT: { bg: "bg-brand/10", text: "text-brand", border: "border-brand/20" },
+  PAID: { bg: "bg-mint/10", text: "text-mint", border: "border-mint/20" },
+  PARTIALLY_PAID: { bg: "bg-gold/10", text: "text-gold", border: "border-gold/20" },
+  OVERDUE: { bg: "bg-amber/10", text: "text-amber", border: "border-amber/20" },
+  CANCELED: { bg: "bg-neutral-50", text: "text-neutral-400", border: "border-neutral-100" },
 };
 
 function normalizeString(str: string): string {
@@ -73,7 +84,6 @@ export default async function DashboardHome() {
     }),
   ]);
 
-  // Filter low-stock products in JS (stockQty <= lowStockAlert)
   const lowStockProducts = allProducts.filter((p) => p.trackStock && p.stockQty <= p.lowStockAlert);
   const lowStockCount = lowStockProducts.length;
 
@@ -87,7 +97,6 @@ export default async function DashboardHome() {
     for (const item of inv.items) {
       const qty = Number(item.quantity);
       
-      // Fallback: if item cost price is 0, lookup product in catalog accent-insensitively
       let costPrice = Number(item.costPrice);
       if (costPrice === 0) {
         const matchedProduct = allProducts.find(
@@ -105,12 +114,6 @@ export default async function DashboardHome() {
   const totalProfit = totalInvoiced - totalCost;
   const profitMarginPercent = totalInvoiced > 0 ? (totalProfit / totalInvoiced) * 100 : 0;
 
-  const stats = [
-    { label: "Factures & devis", value: invoiceCount, link: "/dashboard/invoices" },
-    { label: "Clients enregistrés", value: clientCount, link: "/dashboard/clients" },
-    { label: "Produits en stock bas", value: lowStockCount, link: "/dashboard/products" },
-  ];
-
   return (
     <div className="space-y-8">
       <div>
@@ -121,63 +124,74 @@ export default async function DashboardHome() {
       </div>
 
       {/* Financial Dashboard Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-brand"></div>
-          <CardHeader className="pb-2 pt-5 px-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Chiffre d'affaires */}
+        <Card className="relative overflow-hidden shadow-[0_8px_30px_rgb(91,79,232,0.06)] border-neutral-200/60 bg-white rounded-3xl">
+          <CardHeader className="pb-2 pt-6 px-6 flex flex-row items-center justify-between">
             <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Chiffre d'affaires</span>
+            <div className="w-9 h-9 rounded-full bg-mint/10 flex items-center justify-center shrink-0">
+              <DollarSign className="size-4.5 text-mint" />
+            </div>
           </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-ink">
+          <CardContent className="px-6 pb-6">
+            <div className="text-2xl font-display font-extrabold text-ink">
               {totalInvoiced.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               Total des factures actives
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-neutral-400"></div>
-          <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Coût d'achat total</span>
+        {/* Coût d'achat total */}
+        <Card className="relative overflow-hidden shadow-[0_8px_30px_rgb(91,79,232,0.06)] border-neutral-200/60 bg-white rounded-3xl">
+          <CardHeader className="pb-2 pt-6 px-6 flex flex-row items-center justify-between">
+            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Coûts d'achat</span>
+            <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+              <Package className="size-4.5 text-brand" />
+            </div>
           </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-neutral-700">
+          <CardContent className="px-6 pb-6">
+            <div className="text-2xl font-display font-extrabold text-neutral-700">
               {totalCost.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               Achat des produits vendus
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
-          <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Bénéfice net estimé</span>
+        {/* Bénéfice net estimé */}
+        <Card className="relative overflow-hidden shadow-[0_8px_30px_rgb(91,79,232,0.12)] border-neutral-200/40 bg-white rounded-3xl ring-2 ring-brand/10">
+          <CardHeader className="pb-2 pt-6 px-6 flex flex-row items-center justify-between">
+            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Bénéfice net</span>
+            <div className="w-9 h-9 rounded-full bg-mint/10 flex items-center justify-center shrink-0">
+              <TrendingUp className="size-4.5 text-mint" />
+            </div>
           </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+          <CardContent className="px-6 pb-6">
+            <div className={`text-2xl font-display font-extrabold ${totalProfit >= 0 ? "text-mint" : "text-amber"}`}>
               {totalProfit.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2 flex items-center gap-1">
-              <TrendingUp className="size-3 text-emerald-500" />
+            <div className="text-xs mt-2 flex items-center gap-1 font-extrabold text-mint bg-mint/5 px-2 py-0.5 rounded-full w-fit">
               <span>Marge : {profitMarginPercent.toFixed(1)}%</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-amber"></div>
-          <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Reste à recouvrer</span>
+        {/* Reste à recouvrer */}
+        <Card className="relative overflow-hidden shadow-[0_8px_30px_rgb(91,79,232,0.06)] border-neutral-200/60 bg-white rounded-3xl">
+          <CardHeader className="pb-2 pt-6 px-6 flex flex-row items-center justify-between">
+            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Reste à percevoir</span>
+            <div className="w-9 h-9 rounded-full bg-amber/10 flex items-center justify-center shrink-0">
+              <AlertTriangle className="size-4.5 text-amber" />
+            </div>
           </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-amber">
+          <CardContent className="px-6 pb-6">
+            <div className="text-2xl font-display font-extrabold text-amber">
               {totalRemaining.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               Solde restant dû par vos clients
             </div>
           </CardContent>
@@ -185,34 +199,78 @@ export default async function DashboardHome() {
       </div>
 
       {/* Business Activity Counts */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stats.map((s) => (
-          <Link key={s.label} href={s.link} className="group">
-            <Card className="hover:bg-neutral-50/50 border-neutral-200 transition-all duration-200 cursor-pointer shadow-sm">
-              <CardContent className="p-4 flex justify-between items-center">
-                <div>
-                  <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">{s.label}</p>
-                  <p className="text-xl font-bold text-ink mt-1">{s.value}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Invoices link */}
+        <Link href="/dashboard/invoices" className="group">
+          <Card className="hover:bg-white/80 border-neutral-200/60 transition-all duration-200 cursor-pointer shadow-sm rounded-3xl">
+            <CardContent className="p-5 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+                  <FileText className="size-5 text-brand" />
                 </div>
-                <span className="text-xs font-semibold text-brand group-hover:underline flex items-center gap-1">
-                  Gérer &rarr;
-                </span>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+                <div>
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Factures & devis</p>
+                  <p className="text-xl font-display font-extrabold text-ink mt-0.5">{invoiceCount}</p>
+                </div>
+              </div>
+              <span className="w-8 h-8 rounded-full bg-neutral-50 group-hover:bg-brand group-hover:text-white flex items-center justify-center text-neutral-400 transition-colors shadow-inner">
+                <ArrowRight className="size-4" />
+              </span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Clients link */}
+        <Link href="/dashboard/clients" className="group">
+          <Card className="hover:bg-white/80 border-neutral-200/60 transition-all duration-200 cursor-pointer shadow-sm rounded-3xl">
+            <CardContent className="p-5 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
+                  <Users className="size-5 text-gold" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Clients enregistrés</p>
+                  <p className="text-xl font-display font-extrabold text-ink mt-0.5">{clientCount}</p>
+                </div>
+              </div>
+              <span className="w-8 h-8 rounded-full bg-neutral-50 group-hover:bg-brand group-hover:text-white flex items-center justify-center text-neutral-400 transition-colors shadow-inner">
+                <ArrowRight className="size-4" />
+              </span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Stock alerts link */}
+        <Link href="/dashboard/products" className="group">
+          <Card className="hover:bg-white/80 border-neutral-200/60 transition-all duration-200 cursor-pointer shadow-sm rounded-3xl">
+            <CardContent className="p-5 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${lowStockCount > 0 ? "bg-amber/10 text-amber animate-pulse" : "bg-mint/10 text-mint"}`}>
+                  <Package className="size-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Stock critique</p>
+                  <p className="text-xl font-display font-extrabold text-ink mt-0.5">{lowStockCount}</p>
+                </div>
+              </div>
+              <span className="w-8 h-8 rounded-full bg-neutral-50 group-hover:bg-brand group-hover:text-white flex items-center justify-center text-neutral-400 transition-colors shadow-inner">
+                <ArrowRight className="size-4" />
+              </span>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Main Grid: Recent Invoices & Stock alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Side: Recent Invoices */}
-        <Card className="lg:col-span-2 bg-white border-neutral-200 shadow-sm overflow-hidden flex flex-col justify-between">
+        <Card className="lg:col-span-2 bg-white border-neutral-200/60 shadow-sm overflow-hidden flex flex-col justify-between rounded-3xl">
           <div>
-            <CardHeader className="flex flex-row justify-between items-center pb-3 border-b border-neutral-100 px-6 pt-5">
-              <CardTitle className="text-base font-bold text-ink">Derniers documents</CardTitle>
+            <CardHeader className="flex flex-row justify-between items-center pb-4 border-b border-neutral-100 px-6 pt-5">
+              <CardTitle className="text-base font-bold text-ink font-display">Derniers documents</CardTitle>
               <Link href="/dashboard/invoices">
-                <Button variant="link" className="text-xs font-semibold text-brand p-0 h-auto">
+                <Button variant="outline" className="text-xs font-bold rounded-full h-8 px-4 border-neutral-200 hover:bg-neutral-50">
                   Voir tout
                 </Button>
               </Link>
@@ -220,47 +278,47 @@ export default async function DashboardHome() {
 
             <CardContent className="p-0">
               {recentInvoices.length === 0 ? (
-                <p className="text-sm text-neutral-400 text-center py-10">Aucune facture enregistrée.</p>
+                <p className="text-sm text-neutral-400 text-center py-10 font-semibold">Aucune facture enregistrée.</p>
               ) : (
                 <Table>
-                  <TableHeader className="bg-neutral-50/60">
-                    <TableRow>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10">Date</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10">Numéro</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10">Client</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">Montant</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-center">Statut</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">PDF</TableHead>
+                  <TableHeader className="bg-neutral-50/50">
+                    <TableRow className="border-b border-neutral-100 hover:bg-transparent">
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10">Date</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10">Numéro</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10">Client</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10 text-right">Montant</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10 text-center">Statut</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-10 text-right">PDF</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody className="divide-y divide-neutral-100">
+                  <TableBody className="divide-y divide-neutral-100/60">
                     {recentInvoices.map((inv) => {
                       const colorSet = statusBadgeStyles[inv.status] || statusBadgeStyles.DRAFT;
                       return (
-                        <TableRow key={inv.id} className="hover:bg-neutral-50/40 transition-colors">
-                          <TableCell className="px-6 py-3 text-neutral-500 text-xs">
+                        <TableRow key={inv.id} className="hover:bg-neutral-50/20 border-b border-neutral-100/40 transition-colors">
+                          <TableCell className="px-6 py-3.5 text-neutral-500 text-xs font-medium">
                             {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
                           </TableCell>
-                          <TableCell className="px-6 py-3 font-medium text-ink text-xs">{inv.number}</TableCell>
-                          <TableCell className="px-6 py-3 text-neutral-700 text-xs">{inv.client.name}</TableCell>
-                          <TableCell className="px-6 py-3 text-right font-medium text-ink text-xs">
+                          <TableCell className="px-6 py-3.5 font-bold text-ink text-xs">{inv.number}</TableCell>
+                          <TableCell className="px-6 py-3.5 text-neutral-600 text-xs font-semibold">{inv.client.name}</TableCell>
+                          <TableCell className="px-6 py-3.5 text-right font-bold text-ink text-xs">
                             {Number(inv.total).toLocaleString("fr-FR")} F
                           </TableCell>
-                          <TableCell className="px-6 py-3 text-center">
+                          <TableCell className="px-6 py-3.5 text-center">
                             <Badge 
                               variant="outline" 
-                              className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold border ${colorSet.bg} ${colorSet.text} ${colorSet.border}`}
+                              className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold border ${colorSet.bg} ${colorSet.text} ${colorSet.border}`}
                             >
                               {statusLabel[inv.status]}
                             </Badge>
                           </TableCell>
-                          <TableCell className="px-6 py-3 text-right">
+                          <TableCell className="px-6 py-3.5 text-right">
                             <a
                               href={`/api/invoices/${inv.id}/pdf`}
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <Button variant="link" className="text-brand p-0 h-auto text-xs font-semibold">
+                              <Button variant="link" className="text-brand p-0 h-auto text-xs font-bold hover:underline">
                                 Voir
                               </Button>
                             </a>
@@ -276,12 +334,12 @@ export default async function DashboardHome() {
         </Card>
 
         {/* Right Side: Stock Alerts */}
-        <Card className="bg-white border-neutral-200 shadow-sm flex flex-col justify-between overflow-hidden">
+        <Card className="bg-white border-neutral-200/60 shadow-sm flex flex-col justify-between overflow-hidden rounded-3xl">
           <div>
-            <CardHeader className="flex flex-row justify-between items-center pb-3 border-b border-neutral-100 px-6 pt-5">
-              <CardTitle className="text-base font-bold text-ink">Alertes de stock</CardTitle>
+            <CardHeader className="flex flex-row justify-between items-center pb-4 border-b border-neutral-100 px-6 pt-5">
+              <CardTitle className="text-base font-bold text-ink font-display">Alertes de stock</CardTitle>
               <Link href="/dashboard/products">
-                <Button variant="link" className="text-xs font-semibold text-brand p-0 h-auto">
+                <Button variant="outline" className="text-xs font-bold rounded-full h-8 px-4 border-neutral-200 hover:bg-neutral-50">
                   Inventaire
                 </Button>
               </Link>
@@ -290,27 +348,27 @@ export default async function DashboardHome() {
             <CardContent className="p-6 pb-2">
               {lowStockProducts.length === 0 ? (
                 <div className="text-center py-8 space-y-2 flex flex-col items-center">
-                  <div className="p-3 bg-emerald-50 rounded-full text-emerald-600 border border-emerald-100">
+                  <div className="w-12 h-12 rounded-full bg-mint/10 text-mint flex items-center justify-center border border-mint/20">
                     <CheckCircle className="size-6" />
                   </div>
-                  <p className="text-sm font-semibold text-neutral-700 mt-2">Stock optimal</p>
-                  <p className="text-xs text-neutral-400">Tous les produits ont un niveau de stock suffisant.</p>
+                  <p className="text-sm font-bold text-ink mt-2">Stock optimal</p>
+                  <p className="text-xs text-neutral-400 font-medium">Tous les produits ont un niveau de stock suffisant.</p>
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1">
                   {lowStockProducts.slice(0, 5).map((p) => (
-                    <div key={p.id} className="flex justify-between items-center p-2.5 rounded-lg bg-rose-50/50 border border-rose-100">
+                    <div key={p.id} className="flex justify-between items-center p-3 rounded-2xl bg-amber/5 border border-amber/10">
                       <div className="space-y-0.5">
-                        <p className="text-xs font-semibold text-rose-950">{p.name}</p>
-                        <p className="text-[10px] text-rose-800/70">Seuil alerte : {p.lowStockAlert} unités</p>
+                        <p className="text-xs font-bold text-neutral-800">{p.name}</p>
+                        <p className="text-[10px] text-neutral-400 font-semibold">Alerte sous : {p.lowStockAlert} unités</p>
                       </div>
-                      <Badge variant="outline" className="px-2 py-0.5 text-xs font-bold rounded-md bg-rose-100 text-rose-700 border-rose-200">
+                      <Badge variant="outline" className="px-2.5 py-0.5 text-xs font-extrabold rounded-full bg-white text-amber border-amber/20 shadow-sm">
                         {p.stockQty} Restant{p.stockQty > 1 && "s"}
                       </Badge>
                     </div>
                   ))}
                   {lowStockProducts.length > 5 && (
-                    <p className="text-xs text-neutral-400 text-center italic mt-2">
+                    <p className="text-xs text-neutral-400 text-center italic mt-2 font-medium">
                       Et {lowStockProducts.length - 5} autres produits en alerte...
                     </p>
                   )}
@@ -320,8 +378,8 @@ export default async function DashboardHome() {
           </div>
 
           {lowStockProducts.length > 0 && (
-            <div className="mx-6 mb-6 p-2.5 rounded-lg bg-rose-50 border border-rose-100 text-[11px] text-rose-800 font-semibold flex items-center gap-1.5 justify-center">
-              <AlertTriangle className="size-3.5 text-rose-700 shrink-0" />
+            <div className="mx-6 mb-6 p-3 rounded-2xl bg-amber/5 border border-amber/10 text-[11px] text-amber font-bold flex items-center gap-1.5 justify-center">
+              <AlertTriangle className="size-3.5 text-amber shrink-0" />
               <span>Réapprovisionnement nécessaire</span>
             </div>
           )}

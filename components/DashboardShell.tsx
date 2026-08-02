@@ -2,6 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { 
+  LayoutDashboard, 
+  FileText, 
+  Users, 
+  Package, 
+  Zap, 
+  BarChart3, 
+  CreditCard, 
+  Settings,
+  LogOut,
+  Menu,
+  X 
+} from "lucide-react";
 
 type LinkItem = {
   href: string;
@@ -17,29 +32,45 @@ type DashboardShellProps = {
 
 export function DashboardShell({ merchantName, role, links, children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  function getLinkIcon(href: string) {
+    switch (href) {
+      case "/dashboard":
+        return <LayoutDashboard className="size-4.5" />;
+      case "/dashboard/invoices":
+        return <FileText className="size-4.5" />;
+      case "/dashboard/clients":
+        return <Users className="size-4.5" />;
+      case "/dashboard/products":
+        return <Package className="size-4.5" />;
+      case "/dashboard/sales/new":
+        return <Zap className="size-4.5" />;
+      case "/dashboard/reports":
+        return <BarChart3 className="size-4.5" />;
+      case "/dashboard/billing":
+        return <CreditCard className="size-4.5" />;
+      case "/dashboard/settings":
+        return <Settings className="size-4.5" />;
+      default:
+        return <FileText className="size-4.5" />;
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-paper font-body">
       {/* Mobile Top Header */}
-      <div className="md:hidden flex items-center justify-between bg-ink text-white px-6 py-4 sticky top-0 z-40 border-b border-white/10 shadow-sm">
+      <div className="md:hidden flex items-center justify-between bg-ink text-white px-6 py-4 sticky top-0 z-40 border-b border-white/5 shadow-sm">
         <div>
-          <p className="font-display text-base font-bold tracking-tight">{merchantName}</p>
-          <p className="text-[10px] text-white/50">Espace commerçant</p>
+          <p className="font-display text-base font-bold tracking-tight text-white">{merchantName}</p>
+          <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">Espace commerçant</p>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-white/80 hover:text-white focus:outline-none transition-colors"
+          className="p-2 text-neutral-300 hover:text-white focus:outline-none transition-colors"
           aria-label="Toggle navigation menu"
         >
-          {mobileMenuOpen ? (
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
+          {mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </button>
       </div>
 
@@ -51,41 +82,69 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         `}
       >
         {/* Desktop Header */}
-        <div className="px-6 py-6 border-b border-white/10 hidden md:block">
-          <p className="font-display text-lg font-bold">{merchantName}</p>
-          <p className="text-xs text-white/50 mt-1">Espace commerçant</p>
+        <div className="px-6 py-6 border-b border-white/5 hidden md:block">
+          <div className="flex items-center gap-2">
+            <div className="size-8 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md">
+              <FileText className="size-4 text-white" />
+            </div>
+            <p className="font-display text-lg font-bold tracking-tight">{merchantName}</p>
+          </div>
+          <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-2.5">Espace commerçant</p>
         </div>
         
         {/* Mobile Header Inside Drawer */}
-        <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center md:hidden">
-          <div>
-            <p className="font-display text-lg font-bold">{merchantName}</p>
-            <p className="text-xs text-white/50 mt-1">Espace commerçant</p>
+        <div className="px-6 py-6 border-b border-white/5 flex justify-between items-center md:hidden">
+          <div className="flex items-center gap-2">
+            <div className="size-8 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md">
+              <FileText className="size-4 text-white" />
+            </div>
+            <p className="font-display text-lg font-bold tracking-tight">{merchantName}</p>
           </div>
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="text-white/60 hover:text-white p-2 focus:outline-none transition-colors"
+            className="text-neutral-400 hover:text-white p-2 focus:outline-none transition-colors"
             aria-label="Close menu"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="size-6" />
           </button>
         </div>
 
         {/* Links Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block rounded-md px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors font-medium"
-            >
-              {l.label}
-            </Link>
-          ))}
+        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+          {links.map((l) => {
+            const isActive = pathname === l.href;
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`
+                  flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-all duration-200 font-semibold
+                  ${isActive 
+                    ? "bg-brand text-white shadow-md shadow-brand/10" 
+                    : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                  }
+                `}
+              >
+                <div className={`shrink-0 ${isActive ? "text-white" : "text-neutral-500 group-hover:text-white"}`}>
+                  {getLinkIcon(l.href)}
+                </div>
+                <span>{l.label}</span>
+              </Link>
+            );
+          })}
         </nav>
+
+        {/* Footer / Sign Out Button */}
+        <div className="p-4 border-t border-white/5">
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="w-full flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+          >
+            <LogOut className="size-4.5" />
+            <span>Déconnexion</span>
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Menu Overlay Backdrop */}

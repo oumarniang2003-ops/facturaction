@@ -39,12 +39,12 @@ const statusLabel: Record<string, string> = {
 };
 
 const statusBadgeStyles: Record<string, { bg: string; text: string; border: string }> = {
-  DRAFT: { bg: "bg-neutral-100/60", text: "text-neutral-600", border: "border-neutral-200" },
-  SENT: { bg: "bg-blue-50/70", text: "text-blue-700", border: "border-blue-100" },
-  PAID: { bg: "bg-emerald-50/70", text: "text-emerald-700", border: "border-emerald-100" },
-  PARTIALLY_PAID: { bg: "bg-sky-50/70", text: "text-sky-700", border: "border-sky-100" },
-  OVERDUE: { bg: "bg-rose-50/70", text: "text-rose-700", border: "border-rose-100" },
-  CANCELED: { bg: "bg-neutral-50/40", text: "text-neutral-400", border: "border-neutral-100" },
+  DRAFT: { bg: "bg-neutral-100", text: "text-neutral-600", border: "border-neutral-200" },
+  SENT: { bg: "bg-brand/10", text: "text-brand", border: "border-brand/20" },
+  PAID: { bg: "bg-mint/10", text: "text-mint", border: "border-mint/20" },
+  PARTIALLY_PAID: { bg: "bg-gold/10", text: "text-gold", border: "border-gold/20" },
+  OVERDUE: { bg: "bg-amber/10", text: "text-amber", border: "border-amber/20" },
+  CANCELED: { bg: "bg-neutral-50", text: "text-neutral-400", border: "border-neutral-100" },
 };
 
 export default async function ReportsPage({
@@ -147,12 +147,15 @@ export default async function ReportsPage({
   return (
     <div className="space-y-8">
       {/* Header with Date Selector */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-neutral-200/60">
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink flex items-center gap-2">
-            <BarChart3 className="size-6 text-brand" /> Rapports Journaliers
+          <h1 className="font-display text-3xl font-bold text-ink flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+              <BarChart3 className="size-5 text-brand" />
+            </div>
+            <span>Rapports Journaliers</span>
           </h1>
-          <p className="text-neutral-500 text-sm mt-1 capitalize font-medium">
+          <p className="text-neutral-500 text-sm mt-1.5 capitalize font-semibold">
             {formattedDate}
           </p>
         </div>
@@ -160,63 +163,63 @@ export default async function ReportsPage({
       </div>
 
       {/* Financial Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-brand"></div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-brand rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Chiffre d'affaires (CA)</span>
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Chiffre d'affaires (CA)</span>
           </CardHeader>
           <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-ink">
+            <div className="text-2xl font-display font-extrabold text-ink">
               {totalRevenue.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               {invoices.length} facture{invoices.length > 1 ? "s" : ""} émise{invoices.length > 1 ? "s" : ""}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-neutral-400"></div>
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-neutral-400 rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Coût d'achat marchandises</span>
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Coût d'achat marchandises</span>
           </CardHeader>
           <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-neutral-700">
+            <div className="text-2xl font-display font-extrabold text-neutral-700">
               {totalCost.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               Valeur d'achat des produits vendus
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-mint rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Bénéfice net</span>
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Bénéfice net</span>
           </CardHeader>
           <CardContent className="px-6 pb-5">
-            <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            <div className={`text-2xl font-display font-extrabold ${totalProfit >= 0 ? "text-mint" : "text-amber"}`}>
               {totalProfit.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2 flex items-center gap-1 font-medium text-emerald-600 bg-emerald-50 rounded-full px-2 py-0.5 w-fit">
+            <div className="text-xs mt-2 flex items-center gap-1 font-bold text-mint bg-mint/10 rounded-full px-2.5 py-1 w-fit">
               <TrendingUp className="size-3" />
               <span>Marge : {profitMarginPercent.toFixed(1)}%</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200 bg-white">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-sky-500"></div>
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gold rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Panier moyen</span>
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Panier moyen</span>
           </CardHeader>
           <CardContent className="px-6 pb-5">
-            <div className="text-2xl font-bold text-sky-600">
+            <div className="text-2xl font-display font-extrabold text-gold">
               {averageBasket.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2">
+            <div className="text-xs text-neutral-400 mt-2 font-semibold">
               Valeur moyenne par facture
             </div>
           </CardContent>
@@ -227,38 +230,38 @@ export default async function ReportsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left column: Products sold details */}
-        <Card className="lg:col-span-2 bg-white border-neutral-200 shadow-sm overflow-hidden flex flex-col justify-between">
+        <Card className="lg:col-span-2 bg-white border-neutral-200/60 shadow-sm overflow-hidden flex flex-col justify-between rounded-3xl">
           <div>
-            <CardHeader className="pb-3 pt-5 px-6 border-b border-neutral-100">
-              <CardTitle className="text-base font-bold text-ink">Détail des marchandises vendues</CardTitle>
+            <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60">
+              <CardTitle className="text-base font-bold text-ink font-display">Détail des marchandises vendues</CardTitle>
             </CardHeader>
 
             <CardContent className="p-0">
               {soldProducts.length === 0 ? (
-                <p className="text-sm text-neutral-400 text-center py-12">Aucun produit vendu pour cette journée.</p>
+                <p className="text-sm text-neutral-400 text-center py-14 font-semibold">Aucun produit vendu pour cette journée.</p>
               ) : (
                 <Table>
-                  <TableHeader className="bg-neutral-50/60">
-                    <TableRow>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10">Désignation</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-center">Quantité</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">CA Généré</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">Coût Achat</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">Bénéfice</TableHead>
-                      <TableHead className="px-6 py-3 font-semibold text-[11px] text-neutral-500 uppercase tracking-wider h-10 text-right">Marge</TableHead>
+                  <TableHeader className="bg-neutral-50/50">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11">Désignation</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11 text-center">Quantité</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11 text-right">CA Généré</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11 text-right">Coût Achat</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11 text-right">Bénéfice</TableHead>
+                      <TableHead className="px-6 py-3 font-bold text-[10px] text-neutral-400 uppercase tracking-wider h-11 text-right">Marge</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody className="divide-y divide-neutral-100">
+                  <TableBody className="divide-y divide-neutral-100/60">
                     {soldProducts.map((p) => (
-                      <TableRow key={p.name} className="hover:bg-neutral-50/40 transition-colors">
-                        <TableCell className="px-6 py-3 font-semibold text-ink text-xs">{p.name}</TableCell>
-                        <TableCell className="px-6 py-3 text-center font-bold text-neutral-700 text-xs">{p.quantity}</TableCell>
-                        <TableCell className="px-6 py-3 text-right font-medium text-xs">{p.revenue.toLocaleString("fr-FR")} F</TableCell>
-                        <TableCell className="px-6 py-3 text-right text-neutral-500 text-xs">{p.cost.toLocaleString("fr-FR")} F</TableCell>
-                        <TableCell className={`px-6 py-3 text-right font-bold text-xs ${p.profit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      <TableRow key={p.name} className="hover:bg-neutral-50/20 transition-colors">
+                        <TableCell className="px-6 py-3.5 font-bold text-ink text-xs">{p.name}</TableCell>
+                        <TableCell className="px-6 py-3.5 text-center font-extrabold text-neutral-700 text-xs">{p.quantity}</TableCell>
+                        <TableCell className="px-6 py-3.5 text-right font-semibold text-xs">{p.revenue.toLocaleString("fr-FR")} F</TableCell>
+                        <TableCell className="px-6 py-3.5 text-right text-neutral-500 text-xs font-medium">{p.cost.toLocaleString("fr-FR")} F</TableCell>
+                        <TableCell className={`px-6 py-3.5 text-right font-extrabold text-xs ${p.profit >= 0 ? "text-mint" : "text-amber"}`}>
                           {p.profit.toLocaleString("fr-FR")} F
                         </TableCell>
-                        <TableCell className="px-6 py-3 text-right text-neutral-400 font-medium text-xs">
+                        <TableCell className="px-6 py-3.5 text-right text-neutral-400 font-bold text-xs">
                           {p.marginPercent.toFixed(0)}%
                         </TableCell>
                       </TableRow>
@@ -271,37 +274,37 @@ export default async function ReportsPage({
         </Card>
 
         {/* Right column: Invoices list for the day */}
-        <Card className="bg-white border-neutral-200 shadow-sm flex flex-col justify-between overflow-hidden">
+        <Card className="bg-white border-neutral-200/60 shadow-sm flex flex-col justify-between overflow-hidden rounded-3xl">
           <div>
-            <CardHeader className="pb-3 pt-5 px-6 border-b border-neutral-100">
-              <CardTitle className="text-base font-bold text-ink">Factures de la journée</CardTitle>
+            <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60">
+              <CardTitle className="text-base font-bold text-ink font-display">Factures de la journée</CardTitle>
             </CardHeader>
 
             <CardContent className="p-4">
               {invoices.length === 0 ? (
-                <p className="text-sm text-neutral-400 text-center py-12">Aucune facture émise ce jour.</p>
+                <p className="text-sm text-neutral-400 text-center py-14 font-semibold">Aucune facture émise ce jour.</p>
               ) : (
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                   {invoices.map((inv) => {
                     const colorSet = statusBadgeStyles[inv.status] || statusBadgeStyles.DRAFT;
                     return (
-                      <Card key={inv.id} className="border border-neutral-200/80 bg-white hover:border-brand transition-colors rounded-xl overflow-hidden shadow-xs">
-                        <CardContent className="p-3.5 space-y-2">
+                      <Card key={inv.id} className="border border-neutral-200/60 bg-white hover:border-brand/40 transition-colors rounded-2xl overflow-hidden shadow-xs">
+                        <CardContent className="p-4 space-y-2.5">
                           <div className="flex justify-between items-center">
                             <span className="text-xs font-bold text-ink">{inv.number}</span>
                             <Badge 
                               variant="outline" 
-                              className={`rounded-full px-2 py-0.5 text-[9px] font-semibold border ${colorSet.bg} ${colorSet.text} ${colorSet.border}`}
+                              className={`rounded-full px-2.5 py-0.5 text-[9px] font-extrabold border ${colorSet.bg} ${colorSet.text} ${colorSet.border}`}
                             >
                               {statusLabel[inv.status]}
                             </Badge>
                           </div>
                           <div className="flex justify-between items-center text-xs">
-                            <span className="text-neutral-500 font-medium">{inv.client.name}</span>
-                            <span className="font-bold text-ink">{Number(inv.total).toLocaleString("fr-FR")} F</span>
+                            <span className="text-neutral-500 font-semibold">{inv.client.name}</span>
+                            <span className="font-display font-extrabold text-ink">{Number(inv.total).toLocaleString("fr-FR")} F</span>
                           </div>
-                          <div className="flex justify-between items-center pt-2 border-t border-neutral-100 text-[10px] text-neutral-400">
-                            <span>Avance: {Number(inv.advanceReceived).toLocaleString("fr-FR")} F</span>
+                          <div className="flex justify-between items-center pt-2.5 border-t border-neutral-100/60 text-[10px] text-neutral-400">
+                            <span className="font-semibold">Avance: {Number(inv.advanceReceived).toLocaleString("fr-FR")} F</span>
                             <Link href={`/dashboard/invoices/${inv.id}/edit`}>
                               <Button variant="link" className="text-brand p-0 h-auto text-[10px] font-bold flex items-center gap-0.5">
                                 <span>Détails</span>

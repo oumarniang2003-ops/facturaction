@@ -4,10 +4,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#1B2320",
-        paper: "#F7F5F0",
-        brand: { DEFAULT: "#2F6F4E", dark: "#1F4D36" },
-        amber: "#C97B2E",
+        ink: "#161A23",
+        paper: "#F6F5FB",
+        brand: { DEFAULT: "#5B4FE8", dark: "#4338CA" },
+        amber: "#FF6B4A",  // repurposed to a vivid coral, used for secondary accents/alerts
+        mint: "#16C79A",   // NEW: success / money-positive accent
+        gold: "#FFB020",   // NEW: highlight / rating accent
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
@@ -43,8 +45,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        display: ["'Plus Jakarta Sans'", "'DM Sans'", "sans-serif"],
-        body: ["'Inter'", "sans-serif"],
+        display: ["var(--font-space-grotesk)", "sans-serif"],
+        body: ["var(--font-inter)", "sans-serif"],
       },
     },
   },

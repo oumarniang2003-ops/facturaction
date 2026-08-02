@@ -212,18 +212,23 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold text-ink">Paramètres</h1>
-        <p className="text-neutral-500 text-sm mt-1">
+        <h1 className="font-display text-3xl font-bold text-ink flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+            <Building2 className="size-5 text-brand" />
+          </div>
+          <span>Paramètres</span>
+        </h1>
+        <p className="text-neutral-500 text-sm mt-1.5 font-semibold">
           Gérez les informations de votre entreprise ainsi que vos identifiants de connexion.
         </p>
       </div>
 
       {/* Tabs Menu */}
-      <div className="flex gap-2 border-b border-neutral-200">
+      <div className="flex gap-2 border-b border-neutral-200/60">
         <Button
           variant="ghost"
           onClick={() => setActiveTab("company")}
-          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
+          className={`h-11 px-5 py-2 text-sm font-bold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "company"
               ? "border-brand text-brand"
               : "border-transparent text-neutral-400 hover:text-neutral-600"
@@ -235,7 +240,7 @@ export default function SettingsPage() {
         <Button
           variant="ghost"
           onClick={() => setActiveTab("profile")}
-          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
+          className={`h-11 px-5 py-2 text-sm font-bold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "profile"
               ? "border-brand text-brand"
               : "border-transparent text-neutral-400 hover:text-neutral-600"
@@ -247,10 +252,10 @@ export default function SettingsPage() {
         <Button
           variant="ghost"
           onClick={() => setActiveTab("danger")}
-          className={`h-11 px-4 py-2 text-sm font-semibold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
+          className={`h-11 px-5 py-2 text-sm font-bold rounded-none border-b-2 bg-transparent hover:bg-transparent shadow-none transition-all duration-200 ${
             activeTab === "danger"
-              ? "border-red-600 text-red-600"
-              : "border-transparent text-neutral-400 hover:text-red-500"
+              ? "border-amber text-amber"
+              : "border-transparent text-neutral-400 hover:text-amber"
           }`}
         >
           <AlertTriangle className="size-4 mr-2" />
@@ -259,7 +264,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Content Tabs */}
-      <Card className="bg-white border-neutral-200 shadow-sm rounded-2xl overflow-hidden">
+      <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
         <CardContent className="p-6 md:p-8">
           {activeTab === "company" && (
             <div className="space-y-6">
@@ -293,28 +298,28 @@ export default function SettingsPage() {
 
               <form onSubmit={handleCompanySubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                     Nom de l'entreprise *
                   </label>
                   <Input
                     required
                     type="text"
                     disabled={!isOwner}
-                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                     value={companyForm.businessName}
                     onChange={(e) => setCompanyForm({ ...companyForm, businessName: e.target.value })}
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                     Secteur d'activité / Description (Sous-titre PDF)
                   </label>
                   <Input
                     type="text"
                     disabled={!isOwner}
                     placeholder="Ex: Vente tous matériaux Électroménagers..."
-                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                     value={companyForm.businessSubtitle}
                     onChange={(e) => setCompanyForm({ ...companyForm, businessSubtitle: e.target.value })}
                   />
@@ -378,7 +383,7 @@ export default function SettingsPage() {
                     <Button
                       type="submit"
                       disabled={savingCompany}
-                      className="w-full md:w-auto h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg"
+                      className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
                     >
                       {savingCompany ? "Enregistrement..." : "Sauvegarder l'entreprise"}
                     </Button>
@@ -490,7 +495,7 @@ export default function SettingsPage() {
                   <Button
                     type="submit"
                     disabled={savingProfile}
-                    className="w-full md:w-auto h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg"
+                    className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
                   >
                     {savingProfile ? "Enregistrement..." : "Sauvegarder le profil"}
                   </Button>
@@ -567,7 +572,7 @@ export default function SettingsPage() {
                         disabled={!isConfirmValid || resetting}
                         onClick={handleResetData}
                         variant="destructive"
-                        className="h-10 px-5 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg flex items-center gap-2"
+                        className="h-11 px-6 font-bold shadow-sm hover:shadow transition-all duration-200 rounded-full flex items-center gap-2"
                       >
                         <span>{resetting ? "Réinitialisation..." : "Réinitialiser toutes les données"}</span>
                       </Button>

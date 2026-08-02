@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, FileText, User, Calendar, CreditCard, ChevronLeft } from "lucide-react";
+import { Plus, Trash2, FileText, User, Calendar, CreditCard, ChevronLeft, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 type Line = { description: string; quantity: number; unitPrice: number; costPrice: number; vatRate: number };
@@ -95,22 +95,22 @@ export default function NewInvoicePage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard/invoices">
-          <Button variant="outline" size="icon" className="h-9 w-9 border-neutral-200 bg-white">
+          <Button variant="outline" size="icon" className="h-9 w-9 border-neutral-200 bg-white rounded-full">
             <ChevronLeft className="size-4 text-neutral-500" />
           </Button>
         </Link>
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink">Nouveau document</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Créez un devis ou une facture pour vos clients.</p>
+          <h1 className="font-display text-3xl font-bold text-ink">Nouveau document</h1>
+          <p className="text-sm text-neutral-500 mt-0.5 font-semibold">Créez un devis ou une facture pour vos clients.</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Document Settings */}
-        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl">
-          <CardContent className="p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl">
+          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                 Client
               </label>
               <select
@@ -144,7 +144,7 @@ export default function NewInvoicePage() {
                     setClientName("");
                   }
                 }}
-                className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+                className="w-full rounded-full border border-neutral-200 bg-white px-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
               >
                 <option value="passage">Client de passage (Vente directe)</option>
                 <option value="new">+ Nouveau client (Saisir coordonnées)</option>
@@ -159,13 +159,13 @@ export default function NewInvoicePage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                 Type de document
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as "QUOTE" | "INVOICE")}
-                className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+                className="w-full rounded-full border border-neutral-200 bg-white px-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
               >
                 <option value="INVOICE">Facture</option>
                 <option value="QUOTE">Devis</option>
@@ -173,13 +173,13 @@ export default function NewInvoicePage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                 Date d'émission
               </label>
               <Input
                 type="date"
                 required
-                className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold text-neutral-700"
                 value={issueDate}
                 onChange={(e) => setIssueDate(e.target.value)}
               />
@@ -189,21 +189,21 @@ export default function NewInvoicePage() {
 
         {/* Temporary New Client Info */}
         {clientId === "new" && clientName !== "Client de passage" && (
-          <Card className="bg-neutral-50/50 border-neutral-200 shadow-sm rounded-xl">
-            <CardHeader className="pb-2 pt-4 px-5">
-              <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-                <User className="size-3.5 text-neutral-400" />
+          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-3xl">
+            <CardHeader className="pb-2 pt-5 px-6">
+              <CardTitle className="text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                <User className="size-4 text-neutral-400" />
                 <span>Informations du Nouveau Client</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-5 pb-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="px-6 pb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-neutral-500">Nom du client *</label>
                 <Input
                   type="text"
                   required
                   placeholder="Ex: NBS Electronic"
-                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                 />
@@ -213,7 +213,7 @@ export default function NewInvoicePage() {
                 <Input
                   type="text"
                   placeholder="Ex: +221 77 721 19 87"
-                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
@@ -223,7 +223,7 @@ export default function NewInvoicePage() {
                 <Input
                   type="text"
                   placeholder="Ex: Parcelles Assainies, Dakar"
-                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                   value={clientAddress}
                   onChange={(e) => setClientAddress(e.target.value)}
                 />
@@ -233,13 +233,13 @@ export default function NewInvoicePage() {
         )}
 
         {/* Line Items Table */}
-        <Card className="bg-white border-neutral-200 shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="pb-3 pt-5 px-5 border-b border-neutral-100 bg-neutral-50/30">
-            <CardTitle className="text-sm font-bold text-ink">Détails des prestations / articles</CardTitle>
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+          <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60 bg-neutral-50/50">
+            <CardTitle className="text-sm font-bold text-ink font-display">Détails des prestations / articles</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-3">
+          <CardContent className="p-6 space-y-4">
             {/* Header Labels (Desktop only) */}
-            <div className="hidden md:grid grid-cols-12 gap-3 text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+            <div className="hidden md:grid grid-cols-12 gap-3 text-[10px] font-bold text-neutral-400 uppercase tracking-wider px-2">
               <div className="col-span-5">Description / Article</div>
               <div className="col-span-2 text-center">Quantité</div>
               <div className="col-span-2 text-right">P. Unitaire (F)</div>
@@ -248,11 +248,11 @@ export default function NewInvoicePage() {
             </div>
 
             {/* Rows list */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               {lines.map((line, i) => (
                 <div
                   key={i}
-                  className="rounded-xl border border-neutral-200 p-4 space-y-3 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-3 md:items-center"
+                  className="rounded-2xl border border-neutral-200/80 p-4 space-y-3 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-3 md:items-center"
                 >
                   <div className="flex items-center justify-between md:hidden border-b border-neutral-100 pb-2 mb-1">
                     <span className="text-xs font-bold text-neutral-500">Ligne {i + 1}</span>
@@ -261,7 +261,7 @@ export default function NewInvoicePage() {
                       variant="outline"
                       disabled={lines.length <= 1}
                       onClick={() => removeLine(i)}
-                      className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-semibold h-7 py-0.5 px-2 border-neutral-200 bg-white rounded"
+                      className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-bold h-7 py-0.5 px-3 border-neutral-200 bg-white rounded-full"
                     >
                       Supprimer
                     </Button>
@@ -271,7 +271,7 @@ export default function NewInvoicePage() {
                     <Input
                       placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
                       required
-                      className="h-9 border-neutral-200 focus-visible:border-brand bg-white"
+                      className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full font-semibold px-4"
                       value={line.description}
                       list="products-datalist"
                       onChange={(e) => {
@@ -295,37 +295,37 @@ export default function NewInvoicePage() {
 
                   <div className="grid grid-cols-3 gap-2.5 md:contents">
                     <div className="flex flex-col gap-1 md:contents">
-                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Qté</label>
+                      <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">Qté</label>
                       <Input
                         type="number"
                         min={0}
                         step="0.01"
                         placeholder="Qté"
-                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-center md:col-span-2"
+                        className="h-10 border-neutral-200 focus-visible:border-brand bg-white text-center md:col-span-2 rounded-full font-semibold px-2"
                         value={line.quantity}
                         onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
                       />
                     </div>
                     <div className="flex flex-col gap-1 md:contents">
-                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Vente (F)</label>
+                      <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">Vente (F)</label>
                       <Input
                         type="number"
                         min={0}
                         step="1"
                         placeholder="Vente"
-                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2"
+                        className="h-10 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2 rounded-full font-semibold px-3"
                         value={line.unitPrice}
                         onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
                       />
                     </div>
                     <div className="flex flex-col gap-1 md:contents">
-                      <label className="block text-[10px] text-neutral-400 font-semibold md:hidden">Achat (F)</label>
+                      <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">Achat (F)</label>
                       <Input
                         type="number"
                         min={0}
                         step="1"
                         placeholder="Achat"
-                        className="h-9 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2"
+                        className="h-10 border-neutral-200 focus-visible:border-brand bg-white text-right md:col-span-2 rounded-full font-semibold px-3"
                         value={line.costPrice}
                         onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
                       />
@@ -336,7 +336,7 @@ export default function NewInvoicePage() {
                         variant="ghost"
                         disabled={lines.length <= 1}
                         onClick={() => removeLine(i)}
-                        className="text-rose-500 hover:text-rose-700 disabled:opacity-30 h-8 w-8 p-0"
+                        className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 disabled:opacity-30 h-9 w-9 rounded-full p-0 flex items-center justify-center"
                         title="Supprimer la ligne"
                       >
                         <Trash2 className="size-4" />
@@ -347,12 +347,12 @@ export default function NewInvoicePage() {
               ))}
             </div>
 
-            <div className="pt-2 border-t border-neutral-100 mt-2">
+            <div className="pt-3 border-t border-neutral-100 mt-2">
               <Button 
                 type="button" 
                 onClick={addLine} 
                 variant="outline" 
-                className="h-8 text-xs font-semibold border-neutral-300 hover:bg-neutral-50 bg-white rounded-lg flex items-center gap-1"
+                className="h-9 text-xs font-bold border-neutral-300 hover:bg-neutral-50 bg-white rounded-full flex items-center gap-1 px-4"
               >
                 <Plus className="size-3.5" />
                 <span>Ajouter une ligne</span>
@@ -363,10 +363,10 @@ export default function NewInvoicePage() {
 
         {/* Payment options for invoices */}
         {type === "INVOICE" && (
-          <Card className="bg-neutral-50/50 border-neutral-200 shadow-sm rounded-xl">
-            <CardContent className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-3xl">
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                   Acompte / Avance reçue (F CFA)
                 </label>
                 <Input
@@ -374,19 +374,19 @@ export default function NewInvoicePage() {
                   min={0}
                   step="1"
                   placeholder="Ex: 5000 (laissez vide si 0)"
-                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white"
+                  className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
                   value={advanceReceived}
                   onChange={(e) => setAdvanceReceived(e.target.value === "" ? "" : parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                   Mode de paiement
                 </label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full rounded-lg border border-neutral-200 bg-white px-3 h-10 text-sm font-medium outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
+                  className="w-full rounded-full border border-neutral-200 bg-white px-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
                 >
                   <option value="CASH">Espèces</option>
                   <option value="CHECK">Chèque</option>
@@ -401,18 +401,18 @@ export default function NewInvoicePage() {
         )}
 
         {/* Totals & Submit */}
-        <div className="border-t border-neutral-200 pt-5 flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="border-t border-neutral-200/60 pt-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="space-y-1">
-            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">Détails financiers</p>
-            <p className="text-sm text-neutral-600">
-              Total HT & Taxes : <span className="font-semibold text-ink">{total.toLocaleString("fr-FR")} F</span>
+            <p className="text-xs text-neutral-400 font-bold uppercase tracking-wider">Détails financiers</p>
+            <p className="text-sm text-neutral-600 font-semibold">
+              Total HT & Taxes : <span className="font-bold text-ink">{total.toLocaleString("fr-FR")} F</span>
             </p>
             {type === "INVOICE" && advance > 0 && (
               <>
-                <p className="text-sm text-neutral-600">
-                  Avance reçue : <span className="font-semibold text-emerald-600">-{advance.toLocaleString("fr-FR")} F</span>
+                <p className="text-sm text-neutral-600 font-semibold">
+                  Avance reçue : <span className="font-bold text-mint">-{advance.toLocaleString("fr-FR")} F</span>
                 </p>
-                <p className="text-xl font-bold text-ink">
+                <p className="text-xl font-bold text-ink font-display">
                   Solde restant : {remainingBalance.toLocaleString("fr-FR")} F
                 </p>
               </>
@@ -422,27 +422,27 @@ export default function NewInvoicePage() {
             )}
 
             {/* Margin/Profit summary */}
-            <div className="mt-3 bg-neutral-100/50 rounded-xl p-3 border border-neutral-200/60 space-y-1 text-xs max-w-xs">
-              <div className="flex justify-between gap-8 text-neutral-500">
-                <span>Coût d'achat estimé :</span>
-                <span className="font-medium">{totalCost.toLocaleString("fr-FR")} F</span>
+            <div className="mt-4 bg-white border border-neutral-200/60 rounded-2xl p-4 space-y-1.5 text-xs max-w-xs shadow-sm">
+              <div className="flex justify-between gap-8 text-neutral-500 font-semibold">
+                <span>Achat estimé :</span>
+                <span className="font-bold">{totalCost.toLocaleString("fr-FR")} F</span>
               </div>
               <div className="flex justify-between gap-8 text-neutral-700 font-bold">
                 <span>Bénéfice estimé :</span>
-                <span className={profit >= 0 ? "text-emerald-600" : "text-rose-600"}>
+                <span className={profit >= 0 ? "text-mint" : "text-amber"}>
                   {profit.toLocaleString("fr-FR")} F
                 </span>
               </div>
-              <div className="flex justify-between gap-8 text-neutral-400 text-[10px]">
+              <div className="flex justify-between gap-8 text-neutral-400 font-bold text-[10px] uppercase tracking-wider mt-1 border-t border-neutral-100 pt-1.5">
                 <span>Marge estimée :</span>
-                <span>{marginPercent.toFixed(1)}%</span>
+                <span className="text-mint">{marginPercent.toFixed(1)}%</span>
               </div>
             </div>
           </div>
           <Button
             type="submit"
             disabled={saving}
-            className="h-10 px-6 font-semibold shadow-sm hover:shadow transition-all duration-200 rounded-lg self-end"
+            className="h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white self-end"
           >
             {saving ? "Enregistrement..." : type === "INVOICE" ? "Créer la facture" : "Créer le devis"}
           </Button>

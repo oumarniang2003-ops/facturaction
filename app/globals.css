@@ -1,37 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&display=swap');
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --ink: #1B2320;      /* vert-noir profond, sérieux */
-  --paper: #F7F5F0;    /* fond clair chaud */
-  --brand: #2F6F4E;    /* vert émeraude — confiance / argent / commerce */
-  --brand-dark: #1F4D36;
-  --amber: #C97B2E;    /* accent chaleureux pour alertes/CTA secondaires */
+  --ink: #161A23;      /* deep dark ink */
+  --paper: #F6F5FB;    /* light purplish background */
+  --brand: #5B4FE8;    /* vibrant brand purple */
+  --brand-dark: #4338CA;
+  --amber: #FF6B4A;    /* vivid coral */
+  --mint: #16C79A;     /* success mint */
+  --gold: #FFB020;     /* highlight gold */
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-feature-settings: "cv11", "ss01";
 }
 
 @layer base {
   .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    --font-heading: var(--font-space-grotesk);
+    --font-sans: var(--font-inter);
   }
   :root {
-    --background: oklch(1 0 0);
+    --background: oklch(0.98 0.01 270);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: #2F6F4E;
+    --primary: #5B4FE8;
     --primary-foreground: #ffffff;
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -48,7 +48,7 @@ body {
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
+    --radius: 1rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -65,7 +65,7 @@ body {
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: #2F6F4E;
+    --primary: #5B4FE8;
     --primary-foreground: #ffffff;
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
