@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DateSelector } from "./DateSelector";
+import { DeleteSaleButton } from "./DeleteSaleButton";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -304,14 +305,17 @@ export default async function ReportsPage({
                             <span className="font-display font-extrabold text-ink">{Number(inv.total).toLocaleString("fr-FR")} F</span>
                           </div>
                           <div className="flex justify-between items-center pt-2.5 border-t border-neutral-100/60 text-[10px] text-neutral-400">
-                            <span className="font-semibold">Avance: {Number(inv.advanceReceived).toLocaleString("fr-FR")} F</span>
-                            <Link href={`/dashboard/invoices/${inv.id}/edit`}>
-                              <Button variant="link" className="text-brand p-0 h-auto text-[10px] font-bold flex items-center gap-0.5">
-                                <span>Détails</span>
-                                <Eye className="size-3" />
-                              </Button>
-                            </Link>
-                          </div>
+                             <span className="font-semibold">Avance: {Number(inv.advanceReceived).toLocaleString("fr-FR")} F</span>
+                             <div className="flex items-center gap-3">
+                               <Link href={`/dashboard/invoices/${inv.id}/edit`}>
+                                 <Button variant="link" className="text-brand p-0 h-auto text-[10px] font-bold flex items-center gap-0.5">
+                                   <span>Détails</span>
+                                   <Eye className="size-3" />
+                                 </Button>
+                               </Link>
+                               <DeleteSaleButton invoiceId={inv.id} invoiceNumber={inv.number} />
+                             </div>
+                           </div>
                         </CardContent>
                       </Card>
                     );
