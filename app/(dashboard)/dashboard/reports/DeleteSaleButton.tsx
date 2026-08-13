@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 interface DeleteSaleButtonProps {
   invoiceId: string;
   invoiceNumber: string;
+  variant?: "compact" | "button";
 }
 
-export function DeleteSaleButton({ invoiceId, invoiceNumber }: DeleteSaleButtonProps) {
+export function DeleteSaleButton({ invoiceId, invoiceNumber, variant = "compact" }: DeleteSaleButtonProps) {
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export function DeleteSaleButton({ invoiceId, invoiceNumber }: DeleteSaleButtonP
               <AlertTriangle className="size-5 text-red-500" />
             </div>
             <div>
-              <h2 className="font-bold text-ink text-base">Supprimer la vente ?</h2>
+              <h2 className="font-bold text-ink text-base">Supprimer cette vente ?</h2>
               <p className="text-xs text-neutral-500 mt-0.5">Facture <span className="font-bold text-neutral-700">{invoiceNumber}</span></p>
             </div>
           </div>
@@ -89,6 +90,19 @@ export function DeleteSaleButton({ invoiceId, invoiceNumber }: DeleteSaleButtonP
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (variant === "button") {
+    return (
+      <Button
+        variant="outline"
+        onClick={() => setShowConfirm(true)}
+        className="h-8 text-[11px] px-3 border-red-200 hover:bg-red-50 hover:border-red-300 bg-white rounded-full font-bold flex items-center gap-1 text-red-500 transition-colors"
+      >
+        <Trash2 className="size-3.5" />
+        <span>Supprimer</span>
+      </Button>
     );
   }
 

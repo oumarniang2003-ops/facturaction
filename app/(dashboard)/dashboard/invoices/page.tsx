@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SendInvoiceButton } from "@/components/SendInvoiceButton";
 import { RecordPaymentButton } from "@/components/RecordPaymentButton";
+import { DeleteSaleButton } from "@/app/(dashboard)/dashboard/reports/DeleteSaleButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Phone, Edit, ExternalLink } from "lucide-react";
+import { FileText, Plus, Phone, Edit, ExternalLink, Trash2 } from "lucide-react";
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -135,6 +136,7 @@ export default async function InvoicesPage() {
                           <Edit className="size-3.5" />
                           <span>Modifier</span>
                         </Link>
+                        <DeleteSaleButton invoiceId={inv.id} invoiceNumber={inv.number} variant="button" />
                       </div>
                       <SendInvoiceButton invoiceId={inv.id} />
                     </div>
@@ -221,6 +223,7 @@ export default async function InvoicesPage() {
                               <span>PDF</span>
                             </Button>
                           </a>
+                          <DeleteSaleButton invoiceId={inv.id} invoiceNumber={inv.number} variant="button" />
                         </div>
                       </TableCell>
                       <TableCell className="px-4 py-3.5 text-right">
