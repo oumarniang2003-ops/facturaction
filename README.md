@@ -30,6 +30,14 @@ des autres (architecture **multi-tenant**).
 - **Rôles** (`lib/permissions.ts`) : matrice de permissions OWNER /
   EMPLOYEE / ACCOUNTANT, déjà appliquée sur la gestion de l'abonnement
   (seul le propriétaire peut changer de plan) et sur l'affichage du menu
+- **Panneau Super Admin** (`app/(admin)/admin`) : tant que Stripe n'est pas
+  branché, cette page liste tous les commerçants inscrits (boutique,
+  propriétaire, date d'inscription, dernière connexion, nombre de factures/
+  clients) et permet de changer manuellement leur plan et leur statut
+  d'abonnement (Essai / Actif / Impayé / Suspendu). Un commerçant passé en
+  "Suspendu" ne peut plus se connecter (`lib/auth.ts`). Accès réservé aux
+  utilisateurs avec `isSuperAdmin = true` — voir "Devenir super admin"
+  ci-dessous.
 
 ## Installation
 
@@ -41,6 +49,17 @@ npm run dev
 ```
 
 Ouvrez http://localhost:3000
+
+### Devenir super admin
+
+Créez d'abord un compte normal via `/signup`, puis promouvez-le :
+
+```bash
+npm run admin:promote -- votre@email.com
+```
+
+Reconnectez-vous : l'onglet "Super Admin" apparaît dans le menu et donne
+accès à `/admin`, la liste de tous les commerçants inscrits sur le SaaS.
 
 ## Ce qu'il vous reste à faire
 
@@ -79,7 +98,8 @@ app/
   page.tsx                    → landing publique
   (auth)/signup, login        → inscription / connexion
   (dashboard)/dashboard/...   → espace commerçant (protégé)
-  api/                        → toutes les routes backend
+  (admin)/admin                → panneau super admin (protégé, isSuperAdmin)
+  api/                         → toutes les routes backend
 lib/
   auth.ts                     → NextAuth + injection du merchantId
   prisma.ts                   → client base de données

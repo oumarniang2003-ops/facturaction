@@ -11,7 +11,8 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "admin:promote": "node scripts/make-admin.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

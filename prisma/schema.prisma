@@ -39,14 +39,16 @@ model Subscription {
 }
 
 model User {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   merchantId   String
   name         String
-  email        String   @unique
+  email        String    @unique
   passwordHash String
-  role         Role     @default(OWNER)
-  createdAt    DateTime @default(now())
-  merchant     Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  role         Role      @default(OWNER)
+  isSuperAdmin Boolean   @default(false)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  merchant     Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
 }
 
 model Client {

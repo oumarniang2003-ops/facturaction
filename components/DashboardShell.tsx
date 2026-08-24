@@ -11,11 +11,12 @@ import {
   Package, 
   Zap, 
   BarChart3, 
-  CreditCard, 
+  CreditCard,
   Settings,
   LogOut,
   Menu,
-  X 
+  X,
+  Shield
 } from "lucide-react";
 
 type LinkItem = {
@@ -52,6 +53,8 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         return <CreditCard className="size-4.5" />;
       case "/dashboard/settings":
         return <Settings className="size-4.5" />;
+      case "/admin":
+        return <Shield className="size-4.5" />;
       default:
         return <FileText className="size-4.5" />;
     }

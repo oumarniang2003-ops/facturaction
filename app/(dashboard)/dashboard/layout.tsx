@@ -9,6 +9,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const merchantName = (session as any).merchantName;
   const role = (session as any).role;
+  const isSuperAdmin = (session as any).isSuperAdmin;
 
   const links = [
     { href: "/dashboard", label: "Vue d'ensemble" },
@@ -19,6 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: "/dashboard/reports", label: "Rapports & Bénéfices" },
     ...(role === "OWNER" ? [{ href: "/dashboard/billing", label: "Mon abonnement" }] : []),
     { href: "/dashboard/settings", label: "Paramètres" },
+    ...(isSuperAdmin ? [{ href: "/admin", label: "Super Admin" }] : []),
   ];
 
   return (
