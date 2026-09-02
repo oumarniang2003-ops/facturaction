@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { MonthSelector } from "./MonthSelector";
+import { RevenueTrendChart } from "./RevenueTrendChart";
 import {
   TrendingUp,
   AlertTriangle,
@@ -76,12 +77,17 @@ export default async function DashboardHome({
   const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0, 0);
   const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
+  // Fenêtre glissante des 12 derniers mois (indépendante du mois sélectionné) pour le graphique de tendance
+  const trendStart = new Date(now.getFullYear(), now.getMonth() - 11, 1, 0, 0, 0, 0);
+  const trendEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
   const [
     invoiceCount,
     clientCount,
     allProducts,
     allInvoicesForMetrics,
     recentInvoices,
+    trendInvoices,
   ] = await Promise.all([
     prisma.invoice.count({ where: { merchantId } }),
     prisma.client.count({ where: { merchantId } }),
@@ -103,6 +109,15 @@ export default async function DashboardHome({
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    prisma.invoice.findMany({
+      where: {
+        merchantId,
+        type: "INVOICE",
+        status: { not: "CANCELED" },
+        issueDate: { gte: trendStart, lte: trendEnd },
+      },
+      include: { items: true },
+    }),
   ]);
 
   const formattedMonth = startOfMonth.toLocaleDateString("fr-FR", {
@@ -113,6 +128,14 @@ export default async function DashboardHome({
   const lowStockProducts = allProducts.filter((p) => p.trackStock && p.stockQty <= p.lowStockAlert);
   const lowStockCount = lowStockProducts.length;
 
+  function resolveCostPrice(itemCostPrice: number, description: string) {
+    if (itemCostPrice !== 0) return itemCostPrice;
+    const matchedProduct = allProducts.find(
+      (p) => normalizeString(p.name) === normalizeString(description)
+    );
+    return matchedProduct ? Number(matchedProduct.costPrice) : 0;
+  }
+
   let totalInvoiced = 0;
   let totalPaid = 0;
   let totalCost = 0;
@@ -122,19 +145,44 @@ export default async function DashboardHome({
     totalPaid += Number(inv.advanceReceived);
     for (const item of inv.items) {
       const qty = Number(item.quantity);
-      
-      let costPrice = Number(item.costPrice);
-      if (costPrice === 0) {
-        const matchedProduct = allProducts.find(
-          (p) => normalizeString(p.name) === normalizeString(item.description)
-        );
-        if (matchedProduct) {
-          costPrice = Number(matchedProduct.costPrice);
-        }
-      }
+      const costPrice = resolveCostPrice(Number(item.costPrice), item.description);
       totalCost += qty * costPrice;
     }
   }
+
+  // Regroupement des 12 derniers mois pour le graphique de tendance
+  const trendBuckets: { key: string; label: string; revenue: number; profit: number }[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    trendBuckets.push({
+      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+      label: d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+      revenue: 0,
+      profit: 0,
+    });
+  }
+  const trendByKey = new Map(trendBuckets.map((b) => [b.key, b]));
+
+  for (const inv of trendInvoices) {
+    const d = new Date(inv.issueDate);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const bucket = trendByKey.get(key);
+    if (!bucket) continue;
+
+    const revenue = Number(inv.total);
+    let cost = 0;
+    for (const item of inv.items) {
+      cost += Number(item.quantity) * resolveCostPrice(Number(item.costPrice), item.description);
+    }
+    bucket.revenue += revenue;
+    bucket.profit += revenue - cost;
+  }
+
+  const trendData = trendBuckets.map((b) => ({
+    month: b.label,
+    revenue: b.revenue,
+    profit: b.profit,
+  }));
 
   const totalRemaining = Math.max(0, totalInvoiced - totalPaid);
   const totalProfit = totalInvoiced - totalCost;
@@ -226,6 +274,16 @@ export default async function DashboardHome({
           </CardContent>
         </Card>
       </div>
+
+      {/* Revenue Trend Chart */}
+      <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+        <CardHeader className="pb-2 pt-5 px-6 border-b border-neutral-100">
+          <CardTitle className="text-base font-bold text-ink font-display">Évolution sur 12 mois</CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-4 pt-4">
+          <RevenueTrendChart data={trendData} />
+        </CardContent>
+      </Card>
 
       {/* Business Activity Counts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
