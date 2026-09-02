@@ -13,15 +13,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle, 
-  Package, 
-  FileText, 
-  Users, 
-  ArrowUpRight, 
-  DollarSign, 
+import { MonthSelector } from "./MonthSelector";
+import {
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Package,
+  FileText,
+  Users,
+  ArrowUpRight,
+  DollarSign,
   Receipt,
   ArrowRight
 } from "lucide-react";
@@ -56,9 +57,24 @@ function normalizeString(str: string): string {
   return val;
 }
 
-export default async function DashboardHome() {
+export default async function DashboardHome({
+  searchParams,
+}: {
+  searchParams: { month?: string };
+}) {
   const session = await getServerSession(authOptions);
   const merchantId = (session as any).merchantId;
+
+  // Default to the current month if none selected (format attendu : YYYY-MM)
+  const now = new Date();
+  const selectedMonth =
+    searchParams.month && /^\d{4}-\d{2}$/.test(searchParams.month)
+      ? searchParams.month
+      : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  const [year, month] = selectedMonth.split("-").map(Number);
+  const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0, 0);
+  const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
   const [
     invoiceCount,
@@ -73,7 +89,12 @@ export default async function DashboardHome() {
       where: { merchantId },
     }),
     prisma.invoice.findMany({
-      where: { merchantId, type: "INVOICE", status: { not: "CANCELED" } },
+      where: {
+        merchantId,
+        type: "INVOICE",
+        status: { not: "CANCELED" },
+        issueDate: { gte: startOfMonth, lte: endOfMonth },
+      },
       include: { items: true },
     }),
     prisma.invoice.findMany({
@@ -83,6 +104,11 @@ export default async function DashboardHome() {
       take: 5,
     }),
   ]);
+
+  const formattedMonth = startOfMonth.toLocaleDateString("fr-FR", {
+    month: "long",
+    year: "numeric",
+  });
 
   const lowStockProducts = allProducts.filter((p) => p.trackStock && p.stockQty <= p.lowStockAlert);
   const lowStockCount = lowStockProducts.length;
@@ -116,11 +142,14 @@ export default async function DashboardHome() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-3xl font-bold text-ink">Vue d'ensemble</h1>
-        <p className="text-neutral-500 text-sm mt-1">
-          Suivi de l'activité et état de la trésorerie de votre boutique.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-ink">Vue d'ensemble</h1>
+          <p className="text-neutral-500 text-sm mt-1 capitalize">
+            Chiffres de <span className="font-semibold">{formattedMonth}</span>, état du stock et des clients au global.
+          </p>
+        </div>
+        <MonthSelector initialMonth={selectedMonth} />
       </div>
 
       {/* Financial Dashboard Cards */}
@@ -137,8 +166,8 @@ export default async function DashboardHome() {
             <div className="text-2xl font-display font-extrabold text-ink">
               {totalInvoiced.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-2 font-semibold">
-              Total des factures actives
+            <div className="text-xs text-neutral-400 mt-2 font-semibold capitalize">
+              Factures de {formattedMonth}
             </div>
           </CardContent>
         </Card>
