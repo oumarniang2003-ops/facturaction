@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Check, FileText, ArrowRight, UserPlus, UserCheck, Users, Info } from "lucide-react";
+import { ShoppingCart, Check, FileText, ArrowRight, UserPlus, UserCheck, Users, Info, Search } from "lucide-react";
+
+function normalize(str: string): string {
+  return str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
 
 type Product = {
   id: string; name: string; costPrice: number;
@@ -28,6 +32,9 @@ export default function QuickSalePage() {
   const [clients, setClients] = useState<Client[]>([]);
 
   const [productId, setProductId] = useState(searchParams.get("productId") ?? "");
+  const [productQuery, setProductQuery] = useState("");
+  const [productOpen, setProductOpen] = useState(false);
+  const productBoxRef = useRef<HTMLDivElement>(null);
   const [quantity, setQuantity] = useState(1);
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [clientMode, setClientMode] = useState<"counter" | "existing" | "new">("counter");
@@ -44,6 +51,34 @@ export default function QuickSalePage() {
     fetch("/api/clients").then((r) => r.json()).then(setClients);
   }, []);
 
+  // Pré-remplit le champ de recherche si un produit arrive déjà sélectionné via l'URL
+  useEffect(() => {
+    if (productId && !productQuery) {
+      const p = products.find((x) => x.id === productId);
+      if (p) setProductQuery(p.name);
+    }
+  }, [products, productId, productQuery]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (productBoxRef.current && !productBoxRef.current.contains(e.target as Node)) {
+        setProductOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredProducts = productQuery.trim() === ""
+    ? products
+    : products.filter((p) => normalize(p.name).includes(normalize(productQuery)));
+
+  function selectProduct(p: Product) {
+    setProductId(p.id);
+    setProductQuery(p.name);
+    setProductOpen(false);
+  }
+
   const selectedProduct = products.find((p) => p.id === productId);
   const effectivePrice = sellPrice === "" ? 0 : Number(sellPrice);
   const effectiveCost = Number(selectedProduct?.costPrice ?? 0);
@@ -51,6 +86,7 @@ export default function QuickSalePage() {
 
   function resetForm() {
     setProductId("");
+    setProductQuery("");
     setQuantity(1);
     setSellPrice("");
     setClientMode("counter");
@@ -173,21 +209,53 @@ export default function QuickSalePage() {
       <Card className="bg-white border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl overflow-hidden">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 relative" ref={productBoxRef}>
               <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Produit vendu</label>
-              <select
-                required
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                className="w-full rounded-full border border-neutral-200 bg-white px-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 cursor-pointer"
-              >
-                <option value="">Choisir un produit dans le catalogue</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} {p.trackStock ? `(${p.stockQty} en stock)` : ""}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un produit..."
+                  className="w-full rounded-full border border-neutral-200 bg-white pl-10 pr-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700"
+                  value={productQuery}
+                  onFocus={() => setProductOpen(true)}
+                  onChange={(e) => {
+                    setProductQuery(e.target.value);
+                    setProductId("");
+                    setProductOpen(true);
+                  }}
+                />
+              </div>
+
+              {productOpen && (
+                <div className="absolute z-20 top-full mt-1.5 w-full bg-white border border-neutral-200 rounded-2xl shadow-lg max-h-64 overflow-y-auto py-1.5">
+                  {filteredProducts.length === 0 ? (
+                    <p className="px-4 py-3 text-xs text-neutral-400 font-semibold">Aucun produit trouvé.</p>
+                  ) : (
+                    filteredProducts.map((p) => (
+                      <button
+                        type="button"
+                        key={p.id}
+                        onClick={() => selectProduct(p)}
+                        className={`w-full flex items-center justify-between px-4 py-2.5 text-left text-sm font-semibold hover:bg-brand/5 transition-colors ${
+                          p.id === productId ? "bg-brand/5 text-brand" : "text-neutral-700"
+                        }`}
+                      >
+                        <span>{p.name}</span>
+                        {p.trackStock && (
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                              p.stockQty <= 0 ? "bg-rose-50 text-rose-500" : "bg-neutral-100 text-neutral-400"
+                            }`}
+                          >
+                            {p.stockQty} en stock
+                          </span>
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
