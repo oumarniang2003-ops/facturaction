@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { ManageCategoryDialog } from "./ManageCategoryDialog";
 
 type Product = {
   id: string; name: string; category: string | null; unitPrice: number; costPrice: number; vatRate: number;
@@ -20,6 +21,7 @@ export default function ProductsPage() {
   const [form, setForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [manageCategory, setManageCategory] = useState<string | null>(null);
 
   // Edit product state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -167,7 +169,7 @@ export default function ProductsPage() {
             return (
               <button
                 key={c}
-                onClick={() => setActiveCategory(c)}
+                onClick={() => { setActiveCategory(c); setManageCategory(c); }}
                 className={`h-8 px-4 rounded-full text-xs font-bold transition-colors ${
                   activeCategory === c
                     ? "bg-brand text-white"
@@ -392,7 +394,11 @@ export default function ProductsPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-ink text-sm">{p.name}</span>
                   {p.category && (
-                    <Badge variant="outline" className="bg-brand/5 text-brand border-brand/15 text-[10px] font-extrabold rounded-full py-0.5 px-2.5">
+                    <Badge
+                      variant="outline"
+                      onClick={() => { setActiveCategory(p.category); setManageCategory(p.category); }}
+                      className="bg-brand/5 text-brand border-brand/15 text-[10px] font-extrabold rounded-full py-0.5 px-2.5 cursor-pointer hover:bg-brand/10 transition-colors"
+                    >
                       {p.category}
                     </Badge>
                   )}
@@ -469,6 +475,17 @@ export default function ProductsPage() {
           loading={deleting}
           onConfirm={handleDelete}
           onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+
+      {manageCategory && (
+        <ManageCategoryDialog
+          category={manageCategory}
+          products={products}
+          onClose={() => setManageCategory(null)}
+          onToggled={(productId, newCategory) =>
+            setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, category: newCategory } : p)))
+          }
         />
       )}
     </div>
