@@ -75,7 +75,7 @@ export default async function InvoicesPage({
         </div>
         <Link href="/dashboard/invoices/new">
           <Button
-            className="h-10 px-5 font-bold flex items-center gap-2 shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+            className="h-10 px-5 font-bold flex items-center gap-2 shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
           >
             <Plus className="size-4.5" />
             <span>Nouvelle facture</span>

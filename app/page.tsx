@@ -20,8 +20,8 @@ export default function Home() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-paper/80 border-b border-ink/5 px-4 py-4 lg:px-16 lg:py-5">
         <nav className="max-w-6xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-            <div className="inline-flex flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] w-9 h-9 shadow-md shadow-brand/10">
-              <FileText className="text-white size-5" />
+            <div className="inline-flex flex-shrink-0 items-center justify-center rounded-[10px] bg-paper w-9 h-9 shadow-md shadow-brand/10 p-1.5">
+              <img src="/logo-mark.png" alt="Factura" className="w-full h-full object-contain" />
             </div>
             <span className="font-display font-bold tracking-tight text-xl">Factura</span>
           </Link>
@@ -35,7 +35,7 @@ export default function Home() {
             <Link className="text-sm font-bold text-neutral-600 hover:text-brand transition-colors" href="/login">
               Connexion
             </Link>
-            <Link className="bg-gradient-to-r from-brand to-[#7C6FF0] hover:opacity-95 text-white font-bold text-sm px-6 py-2.5 rounded-full shadow-md shadow-brand/20 transition-all hover:scale-[1.02] active:scale-[0.98]" href="/signup">
+            <Link className="bg-brand hover:opacity-95 text-white font-bold text-sm px-6 py-2.5 rounded-full shadow-md shadow-brand/20 transition-all hover:scale-[1.02] active:scale-[0.98]" href="/signup">
               Essai gratuit
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row w-full justify-center items-center mt-2">
-            <Link className="w-full sm:w-auto bg-gradient-to-r from-brand to-[#7C6FF0] hover:opacity-95 text-white font-bold text-base px-10 py-4 rounded-full text-center shadow-lg shadow-brand/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2" href="/signup">
+            <Link className="w-full sm:w-auto bg-brand hover:opacity-95 text-white font-bold text-base px-10 py-4 rounded-full text-center shadow-lg shadow-brand/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2" href="/signup">
               <span>Créer mon premier reçu</span>
               <ArrowRight className="size-5" />
             </Link>
@@ -326,7 +326,7 @@ export default function Home() {
               </div>
 
               {/* Pro Plan */}
-              <div className="bg-brand text-white rounded-2xl p-6 flex flex-col justify-between gap-6 flex-1 shadow-[0_8px_30px_rgb(91,79,232,0.18)] relative overflow-hidden lg:p-8 hover:scale-[1.02] transition-transform">
+              <div className="bg-brand text-white rounded-2xl p-6 flex flex-col justify-between gap-6 flex-1 shadow-[0_8px_30px_rgb(193,51,23,0.18)] relative overflow-hidden lg:p-8 hover:scale-[1.02] transition-transform">
                 <div className="absolute top-4 right-4 bg-amber text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                   Recommandé
                 </div>
@@ -401,7 +401,7 @@ export default function Home() {
 
         {/* CTA Banner */}
         <section className="px-4 py-16 bg-brand text-white flex flex-col items-center gap-6 text-center lg:px-16 lg:py-24 lg:gap-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand to-[#7C6FF0] opacity-90 -z-10" />
+          <div className="absolute inset-0 bg-brand opacity-90 -z-10" />
           <div className="flex flex-col gap-3 lg:gap-4 lg:max-w-2xl mx-auto">
             <h2 className="text-3xl font-display font-extrabold text-white leading-tight lg:text-4xl">
               Prêt à reprendre le contrôle de votre commerce ?
@@ -423,8 +423,8 @@ export default function Home() {
           <div className="flex flex-col gap-8 md:flex-row md:justify-between">
             <div className="flex flex-col gap-4 max-w-xs">
               <div className="flex items-center gap-2.5">
-                <div className="inline-flex flex-shrink-0 items-center justify-center rounded-full bg-white w-7 h-7 shadow-sm">
-                  <FileText className="text-brand size-4" />
+                <div className="inline-flex flex-shrink-0 items-center justify-center rounded-[8px] bg-paper w-7 h-7 shadow-sm p-1">
+                  <img src="/logo-mark.png" alt="Factura" className="w-full h-full object-contain" />
                 </div>
                 <span className="font-display font-bold tracking-tight text-white">Factura</span>
               </div>

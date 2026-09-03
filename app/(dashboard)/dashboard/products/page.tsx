@@ -185,7 +185,7 @@ export default function ProductsPage() {
       >
         <Button 
           variant="default"
-          className="w-full h-12 font-bold text-base shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+          className="w-full h-12 font-bold text-base shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 flex items-center justify-center gap-2 rounded-full bg-brand text-white"
         >
           <ShoppingCart className="size-5" />
           <span>Enregistrer une nouvelle vente</span>
@@ -211,7 +211,7 @@ export default function ProductsPage() {
 
       {/* Form: Ajouter un produit */}
       {open && (
-        <Card className="p-6 border border-neutral-200/60 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl animate-in fade-in-50 duration-200">
+        <Card className="p-6 border border-neutral-200/60 bg-white shadow-[0_8px_30px_rgb(193,51,23,0.04)] rounded-2xl animate-in fade-in-50 duration-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-neutral-100/60">
             <h2 className="text-sm font-bold text-ink flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-brand/10 flex items-center justify-center">
@@ -298,7 +298,7 @@ export default function ProductsPage() {
             )}
             <Button 
               type="submit" 
-              className="col-span-2 h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+              className="col-span-2 h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
             >
               Enregistrer le produit
             </Button>
@@ -309,7 +309,7 @@ export default function ProductsPage() {
       {/* Form: Modifier un produit */}
       {editingProduct && (
         <div ref={editFormRef} className="scroll-mt-6">
-        <Card className="p-6 border border-brand/30 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-2xl animate-in fade-in-50 duration-200">
+        <Card className="p-6 border border-brand/30 bg-white shadow-[0_8px_30px_rgb(193,51,23,0.08)] rounded-2xl animate-in fade-in-50 duration-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-neutral-100/60">
             <h2 className="text-sm font-bold text-ink flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-brand/10 flex items-center justify-center">
@@ -389,7 +389,7 @@ export default function ProductsPage() {
               <Button 
                 type="submit" 
                 disabled={savingEdit}
-                className="flex-1 h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+                className="flex-1 h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
               >
                 {savingEdit ? "Sauvegarde..." : "Mettre à jour le produit"}
               </Button>

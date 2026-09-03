@@ -45,10 +45,10 @@ export default function BillingPage() {
         {plans.map((p) => (
           <Card 
             key={p.id} 
-            className={`bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden flex flex-col justify-between relative ${p.popular ? "ring-2 ring-brand border-transparent shadow-[0_8px_30px_rgb(91,79,232,0.12)]" : ""}`}
+            className={`bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden flex flex-col justify-between relative ${p.popular ? "ring-2 ring-brand border-transparent shadow-[0_8px_30px_rgb(193,51,23,0.12)]" : ""}`}
           >
             {p.popular && (
-              <Badge className="absolute top-4 right-4 bg-gradient-to-r from-brand to-[#7C6FF0] text-white font-extrabold text-[10px] uppercase tracking-wider py-1 px-3 rounded-full hover:from-brand hover:to-[#7C6FF0]">
+              <Badge className="absolute top-4 right-4 bg-brand text-white font-extrabold text-[10px] uppercase tracking-wider py-1 px-3 rounded-full">
                 Populaire
               </Badge>
             )}
@@ -76,7 +76,7 @@ export default function BillingPage() {
                 onClick={() => subscribe(p.id)}
                 disabled={loadingPlan === p.id}
                 variant={p.popular ? "default" : "outline"}
-                className={`w-full h-11 font-bold rounded-full ${p.popular ? "bg-gradient-to-r from-brand to-[#7C6FF0] text-white shadow-md shadow-brand/20 hover:opacity-95" : "border-neutral-200 hover:bg-neutral-50 bg-white"}`}
+                className={`w-full h-11 font-bold rounded-full ${p.popular ? "bg-brand text-white shadow-md shadow-brand/20 hover:opacity-95" : "border-neutral-200 hover:bg-neutral-50 bg-white"}`}
               >
                 {loadingPlan === p.id ? "Redirection..." : "Choisir ce plan"}
               </Button>

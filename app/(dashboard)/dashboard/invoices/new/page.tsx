@@ -442,7 +442,7 @@ export default function NewInvoicePage() {
           <Button
             type="submit"
             disabled={saving}
-            className="h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white self-end"
+            className="h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white self-end"
           >
             {saving ? "Enregistrement..." : type === "INVOICE" ? "Créer la facture" : "Créer le devis"}
           </Button>

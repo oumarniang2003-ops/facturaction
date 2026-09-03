@@ -383,7 +383,7 @@ export default function SettingsPage() {
                     <Button
                       type="submit"
                       disabled={savingCompany}
-                      className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+                      className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
                     >
                       {savingCompany ? "Enregistrement..." : "Sauvegarder l'entreprise"}
                     </Button>
@@ -495,7 +495,7 @@ export default function SettingsPage() {
                   <Button
                     type="submit"
                     disabled={savingProfile}
-                    className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+                    className="w-full md:w-auto h-11 px-8 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
                   >
                     {savingProfile ? "Enregistrement..." : "Sauvegarder le profil"}
                   </Button>

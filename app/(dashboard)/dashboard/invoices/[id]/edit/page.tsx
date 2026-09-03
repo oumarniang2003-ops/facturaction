@@ -134,7 +134,7 @@ export default function EditInvoicePage() {
         </p>
         <Link
           href="/dashboard/invoices"
-          className="h-10 px-5 inline-flex items-center font-bold text-sm rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white shadow-md shadow-brand/20"
+          className="h-10 px-5 inline-flex items-center font-bold text-sm rounded-full bg-brand text-white shadow-md shadow-brand/20"
         >
           Retour aux factures
         </Link>

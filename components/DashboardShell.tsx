@@ -87,8 +87,8 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         {/* Desktop Header */}
         <div className="px-6 py-5 border-b border-white/5 hidden md:block">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-[10px] bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
-              <FileText className="size-4.5 text-white" />
+            <div className="size-9 rounded-[10px] bg-paper flex items-center justify-center shadow-md shadow-brand/20 shrink-0 p-1.5">
+              <img src="/logo-mark.png" alt="Factura" className="w-full h-full object-contain" />
             </div>
             <div className="overflow-hidden">
               <p className="font-display text-base font-bold tracking-tight truncate text-white">{merchantName}</p>
@@ -100,8 +100,8 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         {/* Mobile Header Inside Drawer */}
         <div className="px-6 py-5 border-b border-white/5 flex justify-between items-center md:hidden">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-[10px] bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
-              <FileText className="size-4.5 text-white" />
+            <div className="size-9 rounded-[10px] bg-paper flex items-center justify-center shadow-md shadow-brand/20 shrink-0 p-1.5">
+              <img src="/logo-mark.png" alt="Factura" className="w-full h-full object-contain" />
             </div>
             <div>
               <p className="font-display text-base font-bold tracking-tight text-white">{merchantName}</p>

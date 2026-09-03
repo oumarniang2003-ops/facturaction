@@ -4,12 +4,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#14151F",
-        paper: "#FAF9F6",
-        brand: { DEFAULT: "#4F3FE0", dark: "#3B2DBD" },
-        amber: "#E0A63A",  // warning / reste-a-percevoir / stock bas
-        mint: "#0EA37A",   // success / money-positive accent
-        gold: "#FFB020",   // highlight / rating accent
+        // Palette issue du vrai logo Factura (recu plie + motif tisse terre cuite/or)
+        ink: "#241611",
+        paper: "#F8EFE0",
+        brand: { DEFAULT: "#C13317", dark: "#96280F" },
+        amber: "#DC7822",  // warning / reste-a-percevoir / stock bas (or du logo)
+        mint: "#1E6B4F",   // success / money-positive accent (vert foret, contraste avec le rouge)
+        gold: "#E3971E",   // highlight / rating accent
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",

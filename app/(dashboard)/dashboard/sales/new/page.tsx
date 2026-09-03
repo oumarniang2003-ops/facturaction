@@ -173,7 +173,7 @@ export default function QuickSalePage() {
                 rel="noreferrer"
                 className="w-full"
               >
-                <Button className="w-full h-11 font-bold flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white shadow-md shadow-brand/20">
+                <Button className="w-full h-11 font-bold flex items-center justify-center gap-1.5 rounded-full bg-brand text-white shadow-md shadow-brand/20">
                   <FileText className="size-4" />
                   <span>Voir la facture (PDF)</span>
                 </Button>
@@ -209,7 +209,7 @@ export default function QuickSalePage() {
         </p>
       </div>
 
-      <Card className="bg-white border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border-neutral-200/60 shadow-[0_8px_30px_rgb(193,51,23,0.04)] rounded-2xl overflow-hidden">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-1.5 relative" ref={productBoxRef}>
@@ -369,7 +369,7 @@ export default function QuickSalePage() {
             <Button
               type="submit"
               disabled={loading || !productId}
-              className="w-full h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
+              className="w-full h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
             >
               {loading ? "Enregistrement..." : "Confirmer la vente"}
             </Button>

@@ -5,13 +5,13 @@
 @tailwind utilities;
 
 :root {
-  --ink: #161A23;      /* deep dark ink */
-  --paper: #F6F5FB;    /* light purplish background */
-  --brand: #5B4FE8;    /* vibrant brand purple */
-  --brand-dark: #4338CA;
-  --amber: #FF6B4A;    /* vivid coral */
-  --mint: #16C79A;     /* success mint */
-  --gold: #FFB020;     /* highlight gold */
+  --ink: #241611;      /* deep warm ink */
+  --paper: #F8EFE0;    /* warm cream background */
+  --brand: #C13317;    /* terracotta brand red */
+  --brand-dark: #96280F;
+  --amber: #DC7822;    /* warm gold */
+  --mint: #1E6B4F;     /* forest green success */
+  --gold: #E3971E;     /* highlight gold */
 }
 
 body {
@@ -31,7 +31,7 @@ body {
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: #5B4FE8;
+    --primary: #C13317;
     --primary-foreground: #ffffff;
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -65,7 +65,7 @@ body {
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: #5B4FE8;
+    --primary: #C13317;
     --primary-foreground: #ffffff;
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);

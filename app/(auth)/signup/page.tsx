@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { FileText, UserPlus, Store } from "lucide-react";
+import { UserPlus, Store } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -50,13 +50,13 @@ export default function SignupPage() {
       <div className="w-full max-w-md space-y-6 relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-3">
-          <div className="w-14 h-14 bg-gradient-to-tr from-brand to-[#7C6FF0] text-white rounded-2xl flex items-center justify-center shadow-md shadow-brand/20">
-            <FileText className="size-7" />
+          <div className="w-14 h-14 bg-paper rounded-2xl flex items-center justify-center shadow-md shadow-brand/20 p-2.5">
+            <img src="/logo-mark.png" alt="Factura" className="w-full h-full object-contain" />
           </div>
-          <span className="font-display text-2xl font-extrabold text-ink tracking-tight">FacturAction</span>
+          <span className="font-display text-2xl font-extrabold text-ink tracking-tight">Factura</span>
         </div>
 
-        <Card className="bg-white/80 backdrop-blur-md border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-2xl overflow-hidden">
+        <Card className="bg-white/80 backdrop-blur-md border-neutral-200/60 shadow-[0_8px_30px_rgb(193,51,23,0.08)] rounded-2xl overflow-hidden">
           <CardHeader className="pb-4 pt-7 px-7 text-center">
             <CardTitle className="font-display text-xl font-bold text-ink">Créer un compte</CardTitle>
             <CardDescription className="text-xs text-neutral-500 mt-1.5 flex items-center gap-1.5 justify-center font-semibold">
@@ -115,7 +115,7 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white flex items-center justify-center gap-2"
+                className="w-full h-11 font-bold shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white flex items-center justify-center gap-2"
               >
                 <UserPlus className="size-4" />
                 <span>{loading ? "Création du compte..." : "Créer mon compte"}</span>
