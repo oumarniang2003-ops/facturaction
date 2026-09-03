@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X, Loader2 } from "lucide-react";
+import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X, Loader2, Search, ChevronRight } from "lucide-react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ManageCategoryDialog } from "./ManageCategoryDialog";
 
@@ -15,13 +15,21 @@ type Product = {
   trackStock: boolean; stockQty: number; lowStock: boolean;
 };
 
+const UNCATEGORIZED = "Sans catégorie";
+
+function normalize(str: string): string {
+  return str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [form, setForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [lastCategory, setLastCategory] = useState<string | null>(null);
   const [manageCategory, setManageCategory] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Edit product state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -45,9 +53,40 @@ export default function ProductsPage() {
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   ).sort((a, b) => a.localeCompare(b, "fr"));
 
-  const visibleProducts = activeCategory
-    ? products.filter((p) => p.category === activeCategory)
-    : products;
+  const searchedProducts = search.trim() === ""
+    ? products
+    : products.filter((p) => normalize(p.name).includes(normalize(search)));
+
+  const groupsMap = new Map<string, Product[]>();
+  for (const p of searchedProducts) {
+    const key = p.category || UNCATEGORIZED;
+    if (!groupsMap.has(key)) groupsMap.set(key, []);
+    groupsMap.get(key)!.push(p);
+  }
+  const groups = Array.from(groupsMap.entries()).sort((a, b) => {
+    if (a[0] === UNCATEGORIZED) return 1;
+    if (b[0] === UNCATEGORIZED) return -1;
+    return a[0].localeCompare(b[0], "fr");
+  });
+  const isSearching = search.trim() !== "";
+
+  function toggleExpanded(key: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+        if (key !== UNCATEGORIZED) setLastCategory(key);
+      }
+      return next;
+    });
+  }
+
+  function openManage(category: string) {
+    setManageCategory(category);
+    setLastCategory(category);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -122,7 +161,7 @@ export default function ProductsPage() {
             setOpen(willOpen);
             setEditingProduct(null);
             if (willOpen) {
-              setForm((f) => ({ ...f, category: activeCategory ?? "" }));
+              setForm((f) => ({ ...f, category: lastCategory ?? "" }));
             }
           }}
           variant="outline"
@@ -152,36 +191,16 @@ export default function ProductsPage() {
         ))}
       </datalist>
 
-      {categories.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className={`h-8 px-4 rounded-full text-xs font-bold transition-colors ${
-              activeCategory === null
-                ? "bg-brand text-white"
-                : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
-            }`}
-          >
-            Toutes ({products.length})
-          </button>
-          {categories.map((c) => {
-            const count = products.filter((p) => p.category === c).length;
-            return (
-              <button
-                key={c}
-                onClick={() => { setActiveCategory(c); setManageCategory(c); }}
-                className={`h-8 px-4 rounded-full text-xs font-bold transition-colors ${
-                  activeCategory === c
-                    ? "bg-brand text-white"
-                    : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
-                }`}
-              >
-                {c} ({count})
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+        <input
+          type="text"
+          placeholder="Rechercher un produit dans tout le catalogue..."
+          className="w-full pl-10 pr-4 h-10 rounded-full border border-neutral-200 bg-white text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
       {/* Form: Ajouter un produit */}
       {open && (
@@ -192,9 +211,9 @@ export default function ProductsPage() {
                 <Package className="size-3.5 text-brand" />
               </div>
               Ajouter un produit au catalogue
-              {activeCategory && (
+              {lastCategory && (
                 <span className="text-[10px] font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-full normal-case">
-                  Catégorie : {activeCategory}
+                  Catégorie : {lastCategory}
                 </span>
               )}
             </h2>
@@ -388,71 +407,97 @@ export default function ProductsPage() {
             </div>
           ) : (
             <>
-          {visibleProducts.map((p) => (
-            <div key={p.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm hover:bg-neutral-50/30 transition-colors">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-ink text-sm">{p.name}</span>
-                  {p.category && (
-                    <Badge
-                      variant="outline"
-                      onClick={() => { setActiveCategory(p.category); setManageCategory(p.category); }}
-                      className="bg-brand/5 text-brand border-brand/15 text-[10px] font-extrabold rounded-full py-0.5 px-2.5 cursor-pointer hover:bg-brand/10 transition-colors"
-                    >
-                      {p.category}
-                    </Badge>
-                  )}
-                </div>
-                {p.trackStock && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    {p.lowStock ? (
+          {groups.map(([catName, items]) => {
+            const isOpen = isSearching || expanded.has(catName);
+            const lowStockCount = items.filter((p) => p.lowStock).length;
+            return (
+              <div key={catName}>
+                <div className="flex items-center justify-between px-6 py-3.5 hover:bg-neutral-50/40 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => toggleExpanded(catName)}
+                    className="flex items-center gap-2.5 flex-1 text-left"
+                  >
+                    <ChevronRight className={`size-4 text-neutral-400 transition-transform shrink-0 ${isOpen ? "rotate-90" : ""}`} />
+                    <span className="text-sm font-bold text-ink">{catName}</span>
+                    <span className="text-xs text-neutral-400 font-semibold">({items.length})</span>
+                    {lowStockCount > 0 && (
                       <Badge variant="outline" className="bg-amber/10 text-amber border-amber/20 text-[10px] font-extrabold rounded-full py-0.5 px-2.5 flex items-center gap-1">
                         <AlertTriangle className="size-3" />
-                        <span>{p.stockQty} en stock · Stock bas</span>
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="bg-mint/10 text-mint border-mint/20 text-[10px] font-extrabold rounded-full py-0.5 px-2.5">
-                        {p.stockQty} en stock
+                        <span>{lowStockCount} en alerte</span>
                       </Badge>
                     )}
+                  </button>
+                  {catName !== UNCATEGORIZED && (
+                    <button
+                      type="button"
+                      onClick={() => openManage(catName)}
+                      className="text-[11px] font-bold text-brand hover:underline shrink-0 ml-2"
+                    >
+                      Gérer
+                    </button>
+                  )}
+                </div>
+
+                {isOpen && (
+                  <div className="divide-y divide-neutral-100/60 border-t border-neutral-100/60 bg-neutral-50/20">
+                    {items.map((p) => (
+                      <div key={p.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm hover:bg-white transition-colors">
+                        <div className="space-y-1.5">
+                          <span className="font-bold text-ink text-sm">{p.name}</span>
+                          {p.trackStock && (
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              {p.lowStock ? (
+                                <Badge variant="outline" className="bg-amber/10 text-amber border-amber/20 text-[10px] font-extrabold rounded-full py-0.5 px-2.5 flex items-center gap-1">
+                                  <AlertTriangle className="size-3" />
+                                  <span>{p.stockQty} en stock · Stock bas</span>
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-mint/10 text-mint border-mint/20 text-[10px] font-extrabold rounded-full py-0.5 px-2.5">
+                                  {p.stockQty} en stock
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="text-right">
+                            <span className="text-xs text-neutral-500 font-semibold bg-white border border-neutral-200/60 rounded-full px-3 py-1.5">
+                              Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F
+                            </span>
+                          </div>
+
+                          <Button
+                            onClick={() => startEdit(p)}
+                            variant="outline"
+                            className="shrink-0 h-8 text-xs font-bold px-3.5 border-neutral-200 hover:bg-neutral-50 bg-white flex items-center gap-1.5 rounded-full text-neutral-700"
+                          >
+                            <Edit className="size-3.5 text-neutral-400" />
+                            <span>Modifier</span>
+                          </Button>
+
+                          <Button
+                            onClick={() => setDeleteTarget(p)}
+                            variant="outline"
+                            className="shrink-0 h-8 text-xs font-bold px-3 border-neutral-200 hover:bg-rose-50 hover:text-rose-600 bg-white flex items-center gap-1 rounded-full text-rose-500"
+                            title="Supprimer le produit"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+
+                          <Link href={`/dashboard/sales/new?productId=${p.id}`}>
+                            <Button variant="outline" className="shrink-0 h-8 text-xs font-bold px-4 border-neutral-200 hover:bg-neutral-50 bg-white flex items-center gap-1 rounded-full">
+                              Vendre
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="text-right">
-                  <span className="text-xs text-neutral-500 font-semibold bg-neutral-50 border border-neutral-200/60 rounded-full px-3 py-1.5">
-                    Achat : {Number(p.costPrice).toLocaleString("fr-FR")} F
-                  </span>
-                </div>
-
-                <Button 
-                  onClick={() => startEdit(p)} 
-                  variant="outline" 
-                  className="shrink-0 h-8 text-xs font-bold px-3.5 border-neutral-200 hover:bg-neutral-50 bg-white flex items-center gap-1.5 rounded-full text-neutral-700"
-                >
-                  <Edit className="size-3.5 text-neutral-400" />
-                  <span>Modifier</span>
-                </Button>
-
-                <Button
-                  onClick={() => setDeleteTarget(p)}
-                  variant="outline"
-                  className="shrink-0 h-8 text-xs font-bold px-3 border-neutral-200 hover:bg-rose-50 hover:text-rose-600 bg-white flex items-center gap-1 rounded-full text-rose-500"
-                  title="Supprimer le produit"
-                >
-                  <Trash2 className="size-3.5" />
-                </Button>
-
-                <Link
-                  href={`/dashboard/sales/new?productId=${p.id}`}
-                >
-                  <Button variant="outline" className="shrink-0 h-8 text-xs font-bold px-4 border-neutral-200 hover:bg-neutral-50 bg-white flex items-center gap-1 rounded-full">
-                    Vendre
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {products.length === 0 && (
             <div className="flex flex-col items-center justify-center py-14 text-center">
               <div className="w-12 h-12 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-3">
@@ -460,6 +505,11 @@ export default function ProductsPage() {
               </div>
               <p className="text-neutral-700 text-sm font-semibold">Aucun produit enregistré</p>
               <p className="text-neutral-400 text-xs mt-1">Ajoutez votre premier produit pour commencer.</p>
+            </div>
+          )}
+          {products.length > 0 && groups.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-14 text-center">
+              <p className="text-neutral-700 text-sm font-semibold">Aucun produit ne correspond à &quot;{search}&quot;</p>
             </div>
           )}
             </>
