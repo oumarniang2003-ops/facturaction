@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Shield, Search, Users, FileText, Clock } from "lucide-react";
 import { PaymentDialog } from "./PaymentDialog";
-import { WhatsAppReminderButton } from "./WhatsAppReminderButton";
+import { MerchantWhatsAppCell } from "./MerchantWhatsAppCell";
 
 type Merchant = {
   id: string;
@@ -225,12 +225,18 @@ export default function AdminMerchantsPage() {
                             )
                           }
                         />
-                        <WhatsAppReminderButton
+                        <MerchantWhatsAppCell
+                          merchantId={m.id}
                           ownerName={m.ownerName}
                           businessName={m.businessName}
                           phone={m.phone}
                           plan={m.plan}
                           paidUntil={m.paidUntil}
+                          onPhoneSaved={(phone) =>
+                            setMerchants((prev) =>
+                              prev.map((x) => (x.id === m.id ? { ...x, phone } : x))
+                            )
+                          }
                         />
                       </div>
                     </TableCell>
