@@ -71,7 +71,7 @@ export default async function InvoicesPage() {
       </div>
 
       {invoices.length === 0 ? (
-        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl">
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl">
           <CardContent className="p-10 text-center text-neutral-500 flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center mb-3 text-neutral-400 border border-neutral-100">
               <FileText className="size-6" />
@@ -87,7 +87,7 @@ export default async function InvoicesPage() {
             {invoices.map((inv) => {
               const badgeStyle = statusBadgeStyles[inv.status] || statusBadgeStyles.DRAFT;
               return (
-                <Card key={inv.id} className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+                <Card key={inv.id} className="bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden">
                   <CardContent className="p-5 space-y-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -156,7 +156,7 @@ export default async function InvoicesPage() {
           </div>
 
           {/* Vue desktop : tableau complet */}
-          <Card className="hidden md:block bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+          <Card className="hidden md:block bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden">
             <Table>
               <TableHeader className="bg-neutral-50/50 border-b border-neutral-100/60">
                 <TableRow className="hover:bg-transparent">

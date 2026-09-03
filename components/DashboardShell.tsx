@@ -87,7 +87,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         {/* Desktop Header */}
         <div className="px-6 py-5 border-b border-white/5 hidden md:block">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
+            <div className="size-9 rounded-[10px] bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
               <FileText className="size-4.5 text-white" />
             </div>
             <div className="overflow-hidden">
@@ -100,7 +100,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         {/* Mobile Header Inside Drawer */}
         <div className="px-6 py-5 border-b border-white/5 flex justify-between items-center md:hidden">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-full bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
+            <div className="size-9 rounded-[10px] bg-gradient-to-tr from-brand to-[#7C6FF0] flex items-center justify-center shadow-md shadow-brand/20 shrink-0">
               <FileText className="size-4.5 text-white" />
             </div>
             <div>
@@ -127,9 +127,9 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
                 href={l.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`
-                  flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-all duration-200 font-semibold group
-                  ${isActive 
-                    ? "bg-brand text-white shadow-md shadow-brand/20 font-bold" 
+                  flex items-center gap-3 rounded-[10px] px-4 py-2.5 text-sm transition-all duration-200 font-semibold group
+                  ${isActive
+                    ? "bg-brand text-white shadow-md shadow-brand/20 font-bold"
                     : "text-neutral-400 hover:bg-white/5 hover:text-white"
                   }
                 `}
@@ -147,7 +147,7 @@ export function DashboardShell({ merchantName, role, links, children }: Dashboar
         <div className="p-4 border-t border-white/5">
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="w-full flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+            className="w-full flex items-center gap-3 rounded-[10px] px-4 py-2.5 text-sm font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
           >
             <LogOut className="size-4.5" />
             <span>Déconnexion</span>

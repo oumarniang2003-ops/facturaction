@@ -107,7 +107,7 @@ export default function NewInvoicePage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Document Settings */}
-        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl">
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl">
           <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
@@ -189,7 +189,7 @@ export default function NewInvoicePage() {
 
         {/* Temporary New Client Info */}
         {clientId === "new" && clientName !== "Client de passage" && (
-          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-3xl">
+          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-2xl">
             <CardHeader className="pb-2 pt-5 px-6">
               <CardTitle className="text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
                 <User className="size-4 text-neutral-400" />
@@ -233,7 +233,7 @@ export default function NewInvoicePage() {
         )}
 
         {/* Line Items Table */}
-        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden">
           <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60 bg-neutral-50/50">
             <CardTitle className="text-sm font-bold text-ink font-display">Détails des prestations / articles</CardTitle>
           </CardHeader>
@@ -363,7 +363,7 @@ export default function NewInvoicePage() {
 
         {/* Payment options for invoices */}
         {type === "INVOICE" && (
-          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-3xl">
+          <Card className="bg-neutral-50/50 border-neutral-200/60 shadow-sm rounded-2xl">
             <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">

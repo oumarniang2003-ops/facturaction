@@ -116,7 +116,7 @@ export default function ProductsPage() {
 
       {/* Form: Ajouter un produit */}
       {open && (
-        <Card className="p-6 border border-neutral-200/60 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-3xl animate-in fade-in-50 duration-200">
+        <Card className="p-6 border border-neutral-200/60 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl animate-in fade-in-50 duration-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-neutral-100/60">
             <h2 className="text-sm font-bold text-ink flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-brand/10 flex items-center justify-center">
@@ -195,7 +195,7 @@ export default function ProductsPage() {
 
       {/* Form: Modifier un produit */}
       {editingProduct && (
-        <Card className="p-6 border border-brand/30 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-3xl animate-in fade-in-50 duration-200">
+        <Card className="p-6 border border-brand/30 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-2xl animate-in fade-in-50 duration-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-neutral-100/60">
             <h2 className="text-sm font-bold text-ink flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-brand/10 flex items-center justify-center">
@@ -282,7 +282,7 @@ export default function ProductsPage() {
         </Card>
       )}
 
-      <Card className="bg-white rounded-3xl border border-neutral-200/60 overflow-hidden shadow-sm">
+      <Card className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden shadow-sm">
         <div className="divide-y divide-neutral-100/60">
           {products.map((p) => (
             <div key={p.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm hover:bg-neutral-50/30 transition-colors">

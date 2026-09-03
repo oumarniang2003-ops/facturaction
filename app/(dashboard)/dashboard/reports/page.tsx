@@ -165,7 +165,7 @@ export default async function ReportsPage({
 
       {/* Financial Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-2xl">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-brand rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Chiffre d'affaires (CA)</span>
@@ -180,7 +180,7 @@ export default async function ReportsPage({
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-2xl">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-neutral-400 rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Coût d'achat marchandises</span>
@@ -195,7 +195,7 @@ export default async function ReportsPage({
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-2xl">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-mint rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Bénéfice net</span>
@@ -211,7 +211,7 @@ export default async function ReportsPage({
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-3xl">
+        <Card className="relative overflow-hidden shadow-sm border-neutral-200/60 bg-white rounded-2xl">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-gold rounded-l-3xl"></div>
           <CardHeader className="pb-2 pt-5 px-6">
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Panier moyen</span>
@@ -231,7 +231,7 @@ export default async function ReportsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left column: Products sold details */}
-        <Card className="lg:col-span-2 bg-white border-neutral-200/60 shadow-sm overflow-hidden flex flex-col justify-between rounded-3xl">
+        <Card className="lg:col-span-2 bg-white border-neutral-200/60 shadow-sm overflow-hidden flex flex-col justify-between rounded-2xl">
           <div>
             <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60">
               <CardTitle className="text-base font-bold text-ink font-display">Détail des marchandises vendues</CardTitle>
@@ -275,7 +275,7 @@ export default async function ReportsPage({
         </Card>
 
         {/* Right column: Invoices list for the day */}
-        <Card className="bg-white border-neutral-200/60 shadow-sm flex flex-col justify-between overflow-hidden rounded-3xl">
+        <Card className="bg-white border-neutral-200/60 shadow-sm flex flex-col justify-between overflow-hidden rounded-2xl">
           <div>
             <CardHeader className="pb-4 pt-5 px-6 border-b border-neutral-100/60">
               <CardTitle className="text-base font-bold text-ink font-display">Factures de la journée</CardTitle>

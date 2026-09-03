@@ -4,12 +4,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#161A23",
-        paper: "#F6F5FB",
-        brand: { DEFAULT: "#5B4FE8", dark: "#4338CA" },
-        amber: "#FF6B4A",  // repurposed to a vivid coral, used for secondary accents/alerts
-        mint: "#16C79A",   // NEW: success / money-positive accent
-        gold: "#FFB020",   // NEW: highlight / rating accent
+        ink: "#14151F",
+        paper: "#FAF9F6",
+        brand: { DEFAULT: "#4F3FE0", dark: "#3B2DBD" },
+        amber: "#E0A63A",  // warning / reste-a-percevoir / stock bas
+        mint: "#0EA37A",   // success / money-positive accent
+        gold: "#FFB020",   // highlight / rating accent
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",

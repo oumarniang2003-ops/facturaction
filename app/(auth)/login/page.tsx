@@ -46,7 +46,7 @@ export default function LoginPage() {
           <span className="font-display text-2xl font-extrabold text-ink tracking-tight">FacturAction</span>
         </div>
 
-        <Card className="bg-white/80 backdrop-blur-md border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-3xl overflow-hidden">
+        <Card className="bg-white/80 backdrop-blur-md border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-2xl overflow-hidden">
           <CardHeader className="pb-4 pt-7 px-7 text-center">
             <CardTitle className="font-display text-xl font-bold text-ink">Connexion</CardTitle>
             <CardDescription className="text-xs text-neutral-500 mt-1.5 font-semibold">

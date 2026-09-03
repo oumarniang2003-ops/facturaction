@@ -98,15 +98,15 @@ export default function Home() {
 
           {/* Social Proof stats */}
           <div className="flex flex-col gap-6 pt-10 w-full sm:flex-row sm:justify-center sm:gap-16 lg:pt-14">
-            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-3xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
+            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-2xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
               <p className="text-3xl font-display font-extrabold text-ink">14 000+</p>
               <p className="text-xs font-bold text-neutral-500 mt-1 uppercase tracking-wider">Commerçants</p>
             </div>
-            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-3xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
+            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-2xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
               <p className="text-3xl font-display font-extrabold text-ink">12s</p>
               <p className="text-xs font-bold text-neutral-500 mt-1 uppercase tracking-wider">Par facture</p>
             </div>
-            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-3xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
+            <div className="text-center bg-white/70 backdrop-blur-sm border border-neutral-100 p-5 rounded-2xl shadow-sm flex-1 max-w-[200px] hover:shadow-md transition-shadow">
               <p className="text-3xl font-display font-extrabold text-ink">100%</p>
               <p className="text-xs font-bold text-neutral-500 mt-1 uppercase tracking-wider">Trésorerie claire</p>
             </div>
@@ -128,7 +128,7 @@ export default function Home() {
             {/* Grid layout for major features */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {/* Feature 1: Live calculations */}
-              <div className="bg-paper rounded-3xl border border-neutral-200/60 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-brand/30 transition-all hover:shadow-md lg:p-8">
+              <div className="bg-paper rounded-2xl border border-neutral-200/60 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-brand/30 transition-all hover:shadow-md lg:p-8">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 rounded-full bg-mint/10 flex items-center justify-center shrink-0">
@@ -167,7 +167,7 @@ export default function Home() {
               </div>
 
               {/* Feature 2: Stock Alerts */}
-              <div className="bg-paper rounded-3xl border border-neutral-200/60 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-brand/30 transition-all hover:shadow-md lg:p-8">
+              <div className="bg-paper rounded-2xl border border-neutral-200/60 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-brand/30 transition-all hover:shadow-md lg:p-8">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 rounded-full bg-amber/10 flex items-center justify-center shrink-0">
@@ -198,21 +198,21 @@ export default function Home() {
 
             {/* Subfeatures list */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
-              <div className="bg-paper/40 rounded-3xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
+              <div className="bg-paper/40 rounded-2xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
                 <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
                   <FileText className="size-5 text-brand" />
                 </div>
                 <h4 className="font-display font-bold text-ink text-base">Facture & Devis PDF</h4>
                 <p className="text-xs text-neutral-500 leading-relaxed">Générez des PDF professionnels et envoyez-les en un clic à vos clients par WhatsApp ou Email.</p>
               </div>
-              <div className="bg-paper/40 rounded-3xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
+              <div className="bg-paper/40 rounded-2xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
                 <div className="w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center shrink-0">
                   <Smartphone className="size-5 text-mint" />
                 </div>
                 <h4 className="font-display font-bold text-ink text-base">Wave & Mobile Money</h4>
                 <p className="text-xs text-neutral-500 leading-relaxed">Suivez vos encaissements Wave, Orange Money, Free Money ou espèces de façon totalement isolée.</p>
               </div>
-              <div className="bg-paper/40 rounded-3xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
+              <div className="bg-paper/40 rounded-2xl border border-neutral-200/60 p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform">
                 <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
                   <Users className="size-5 text-gold" />
                 </div>
@@ -237,21 +237,21 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
                 <span className="text-4xl font-display font-extrabold text-amber leading-none">01</span>
                 <h3 className="text-lg font-display font-bold text-white lg:text-xl">Créez votre boutique</h3>
                 <p className="text-xs font-body text-neutral-200 leading-relaxed lg:text-sm">
                   Inscrivez-vous en 2 minutes avec votre email et le nom de votre commerce. Votre espace est immédiatement disponible.
                 </p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
                 <span className="text-4xl font-display font-extrabold text-amber leading-none">02</span>
                 <h3 className="text-lg font-display font-bold text-white lg:text-xl">Entrez vos produits</h3>
                 <p className="text-xs font-body text-neutral-200 leading-relaxed lg:text-sm">
                   Ajoutez vos articles en configurant leur prix de vente standard et leur coût d'achat unitaire pour automatiser les calculs.
                 </p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-5 hover:bg-white/10 transition-colors lg:p-8">
                 <span className="text-4xl font-display font-extrabold text-amber leading-none">03</span>
                 <h3 className="text-lg font-display font-bold text-white lg:text-xl">Générez et encaissez</h3>
                 <p className="text-xs font-body text-neutral-200 leading-relaxed lg:text-sm">
@@ -296,7 +296,7 @@ export default function Home() {
 
             <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch max-w-5xl mx-auto w-full">
               {/* Starter Plan */}
-              <div className="bg-white rounded-3xl border border-neutral-200/60 p-6 flex flex-col justify-between gap-6 flex-1 hover:border-brand/20 hover:shadow-sm transition-all lg:p-8">
+              <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 flex flex-col justify-between gap-6 flex-1 hover:border-brand/20 hover:shadow-sm transition-all lg:p-8">
                 <div>
                   <p className="text-xs font-bold text-brand uppercase tracking-wider">Starter</p>
                   <p className="text-xs text-neutral-500 mt-1">Pour lancer votre activité</p>
@@ -326,7 +326,7 @@ export default function Home() {
               </div>
 
               {/* Pro Plan */}
-              <div className="bg-brand text-white rounded-3xl p-6 flex flex-col justify-between gap-6 flex-1 shadow-[0_8px_30px_rgb(91,79,232,0.18)] relative overflow-hidden lg:p-8 hover:scale-[1.02] transition-transform">
+              <div className="bg-brand text-white rounded-2xl p-6 flex flex-col justify-between gap-6 flex-1 shadow-[0_8px_30px_rgb(91,79,232,0.18)] relative overflow-hidden lg:p-8 hover:scale-[1.02] transition-transform">
                 <div className="absolute top-4 right-4 bg-amber text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                   Recommandé
                 </div>
@@ -363,7 +363,7 @@ export default function Home() {
               </div>
 
               {/* Business Plan */}
-              <div className="bg-white rounded-3xl border border-neutral-200/60 p-6 flex flex-col justify-between gap-6 flex-1 hover:border-brand/20 hover:shadow-sm transition-all lg:p-8">
+              <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 flex flex-col justify-between gap-6 flex-1 hover:border-brand/20 hover:shadow-sm transition-all lg:p-8">
                 <div>
                   <p className="text-xs font-bold text-neutral-600 uppercase tracking-wider">Business</p>
                   <p className="text-xs text-neutral-500 mt-1">Pour plusieurs boutiques & équipes</p>

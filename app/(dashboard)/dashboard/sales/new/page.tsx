@@ -100,7 +100,7 @@ export default function QuickSalePage() {
   if (result) {
     return (
       <div className="max-w-lg space-y-6">
-        <Card className="bg-white border-neutral-200 shadow-sm rounded-3xl overflow-hidden">
+        <Card className="bg-white border-neutral-200 shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-8 text-center space-y-6">
             <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-brand to-mint text-white flex items-center justify-center mx-auto shadow-md">
               <Check className="size-8 stroke-[3]" />
@@ -170,7 +170,7 @@ export default function QuickSalePage() {
         </p>
       </div>
 
-      <Card className="bg-white border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-3xl overflow-hidden">
+      <Card className="bg-white border-neutral-200/60 shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl overflow-hidden">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-1.5">

@@ -264,7 +264,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Content Tabs */}
-      <Card className="bg-white border-neutral-200/60 shadow-sm rounded-3xl overflow-hidden">
+      <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl overflow-hidden">
         <CardContent className="p-6 md:p-8">
           {activeTab === "company" && (
             <div className="space-y-6">
