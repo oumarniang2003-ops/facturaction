@@ -36,32 +36,45 @@ const statusBadgeStyles: Record<string, { bg: string; text: string; border: stri
   CANCELED: { bg: "bg-neutral-50", text: "text-neutral-400", border: "border-neutral-100" },
 };
 
-export default async function InvoicesPage() {
+const statusFilters: { key: string; label: string; statuses?: string[] }[] = [
+  { key: "all", label: "Toutes" },
+  { key: "PAID", label: "Payées" },
+  { key: "SENT", label: "Envoyées" },
+  { key: "OVERDUE", label: "En retard" },
+  { key: "DRAFT", label: "Brouillons" },
+];
+
+export default async function InvoicesPage({
+  searchParams,
+}: {
+  searchParams: { status?: string };
+}) {
   const session = await getServerSession(authOptions);
   const merchantId = (session as any).merchantId;
 
-  const invoices = await prisma.invoice.findMany({
+  const activeStatus = searchParams.status && statusFilters.some((f) => f.key === searchParams.status)
+    ? searchParams.status
+    : "all";
+
+  const allInvoices = await prisma.invoice.findMany({
     where: { merchantId },
     include: { client: true },
     orderBy: { createdAt: "desc" },
   });
 
+  const invoices = activeStatus === "all" ? allInvoices : allInvoices.filter((inv) => inv.status === activeStatus);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold text-ink flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-              <FileText className="size-5 text-brand" />
-            </div>
-            <span>Factures & devis</span>
-          </h1>
+          <h1 className="font-display text-3xl font-bold text-ink">Factures &amp; devis</h1>
           <p className="text-sm text-neutral-500 mt-1.5">
             Gérez vos documents de vente et suivez les règlements clients.
           </p>
         </div>
         <Link href="/dashboard/invoices/new">
-          <Button 
+          <Button
             className="h-10 px-5 font-bold flex items-center gap-2 shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white"
           >
             <Plus className="size-4.5" />
@@ -70,14 +83,39 @@ export default async function InvoicesPage() {
         </Link>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2">
+        {statusFilters.map((f) => {
+          const count = f.key === "all" ? allInvoices.length : allInvoices.filter((inv) => inv.status === f.key).length;
+          return (
+            <Link
+              key={f.key}
+              href={f.key === "all" ? "/dashboard/invoices" : `/dashboard/invoices?status=${f.key}`}
+              className={`h-8 px-4 rounded-full text-xs font-bold transition-colors inline-flex items-center ${
+                activeStatus === f.key
+                  ? "bg-ink text-white"
+                  : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {f.label} ({count})
+            </Link>
+          );
+        })}
+      </div>
+
       {invoices.length === 0 ? (
         <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl">
           <CardContent className="p-10 text-center text-neutral-500 flex flex-col items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center mb-3 text-neutral-400 border border-neutral-100">
               <FileText className="size-6" />
             </div>
-            <p className="text-sm font-semibold text-neutral-700">Aucune facture pour le moment</p>
-            <p className="text-xs text-neutral-400 mt-1">Créez votre première facture pour la voir s'afficher ici.</p>
+            <p className="text-sm font-semibold text-neutral-700">
+              {activeStatus === "all" ? "Aucune facture pour le moment" : "Aucune facture dans ce statut"}
+            </p>
+            <p className="text-xs text-neutral-400 mt-1">
+              {activeStatus === "all"
+                ? "Créez votre première facture pour la voir s'afficher ici."
+                : "Essayez un autre filtre pour voir vos autres documents."}
+            </p>
           </CardContent>
         </Card>
       ) : (

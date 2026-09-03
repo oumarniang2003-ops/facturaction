@@ -10,8 +10,16 @@ export async function GET() {
   const clients = await prisma.client.findMany({
     where: { merchantId: (session as any).merchantId },
     orderBy: { createdAt: "desc" },
+    include: { invoices: { where: { status: { not: "CANCELED" } }, select: { total: true } } },
   });
-  return NextResponse.json(clients);
+
+  const result = clients.map(({ invoices, ...c }) => ({
+    ...c,
+    invoiceCount: invoices.length,
+    totalInvoiced: invoices.reduce((sum, inv) => sum + Number(inv.total), 0),
+  }));
+
+  return NextResponse.json(result);
 }
 
 export async function POST(req: Request) {
