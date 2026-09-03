@@ -114,8 +114,15 @@ export default function ProductsPage() {
             Gérez votre catalogue de produits, modifiez leurs informations et surveillez vos stocks.
           </p>
         </div>
-        <Button 
-          onClick={() => { setOpen(!open); setEditingProduct(null); }} 
+        <Button
+          onClick={() => {
+            const willOpen = !open;
+            setOpen(willOpen);
+            setEditingProduct(null);
+            if (willOpen) {
+              setForm((f) => ({ ...f, category: activeCategory ?? "" }));
+            }
+          }}
           variant="outline"
           className="h-10 px-5 font-bold flex items-center gap-2 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full"
         >
@@ -183,6 +190,11 @@ export default function ProductsPage() {
                 <Package className="size-3.5 text-brand" />
               </div>
               Ajouter un produit au catalogue
+              {activeCategory && (
+                <span className="text-[10px] font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-full normal-case">
+                  Catégorie : {activeCategory}
+                </span>
+              )}
             </h2>
             <button 
               onClick={() => setOpen(false)} 
