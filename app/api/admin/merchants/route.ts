@@ -30,6 +30,7 @@ export async function GET() {
       businessName: m.businessName,
       slug: m.slug,
       email: m.email,
+      phone: m.phone,
       createdAt: m.createdAt,
       ownerName: owner?.name ?? null,
       ownerEmail: owner?.email ?? m.email,

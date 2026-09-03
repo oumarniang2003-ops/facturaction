@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/table";
 import { Shield, Search, Users, FileText, Clock } from "lucide-react";
 import { PaymentDialog } from "./PaymentDialog";
+import { WhatsAppReminderButton } from "./WhatsAppReminderButton";
 
 type Merchant = {
   id: string;
   businessName: string;
   slug: string;
   email: string;
+  phone: string | null;
   createdAt: string;
   ownerName: string | null;
   ownerEmail: string;
@@ -213,15 +215,24 @@ export default function AdminMerchantsPage() {
                       {m.paidUntil ? new Date(m.paidUntil).toLocaleDateString("fr-FR") : "—"}
                     </TableCell>
                     <TableCell>
-                      <PaymentDialog
-                        merchantId={m.id}
-                        businessName={m.businessName}
-                        onSaved={(data) =>
-                          setMerchants((prev) =>
-                            prev.map((x) => (x.id === m.id ? { ...x, ...data } as Merchant : x))
-                          )
-                        }
-                      />
+                      <div className="flex items-center gap-2">
+                        <PaymentDialog
+                          merchantId={m.id}
+                          businessName={m.businessName}
+                          onSaved={(data) =>
+                            setMerchants((prev) =>
+                              prev.map((x) => (x.id === m.id ? { ...x, ...data } as Merchant : x))
+                            )
+                          }
+                        />
+                        <WhatsAppReminderButton
+                          ownerName={m.ownerName}
+                          businessName={m.businessName}
+                          phone={m.phone}
+                          plan={m.plan}
+                          paidUntil={m.paidUntil}
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
