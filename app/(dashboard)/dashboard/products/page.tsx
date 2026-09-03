@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,13 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editForm, setEditForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [savingEdit, setSavingEdit] = useState(false);
+  const editFormRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editingProduct) {
+      editFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [editingProduct]);
 
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
@@ -301,6 +308,7 @@ export default function ProductsPage() {
 
       {/* Form: Modifier un produit */}
       {editingProduct && (
+        <div ref={editFormRef} className="scroll-mt-6">
         <Card className="p-6 border border-brand/30 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.08)] rounded-2xl animate-in fade-in-50 duration-200">
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-neutral-100/60">
             <h2 className="text-sm font-bold text-ink flex items-center gap-2">
@@ -396,6 +404,7 @@ export default function ProductsPage() {
             </div>
           </form>
         </Card>
+        </div>
       )}
 
       <Card className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden shadow-sm">
