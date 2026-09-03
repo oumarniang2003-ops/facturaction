@@ -29,6 +29,7 @@ export async function PUT(
       trackStock: body.trackStock,
       stockQty: body.stockQty,
       vatRate: body.vatRate ?? 0,
+      category: body.category || null,
     },
   });
 

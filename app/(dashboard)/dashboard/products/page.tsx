@@ -9,18 +9,19 @@ import { Badge } from "@/components/ui/badge";
 import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X } from "lucide-react";
 
 type Product = {
-  id: string; name: string; unitPrice: number; costPrice: number; vatRate: number;
+  id: string; name: string; category: string | null; unitPrice: number; costPrice: number; vatRate: number;
   trackStock: boolean; stockQty: number; lowStock: boolean;
 };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState({ name: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
+  const [form, setForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Edit product state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [editForm, setEditForm] = useState({ name: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
+  const [editForm, setEditForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [savingEdit, setSavingEdit] = useState(false);
 
   function load() {
@@ -28,14 +29,22 @@ export default function ProductsPage() {
   }
   useEffect(load, []);
 
+  const categories = Array.from(
+    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  ).sort((a, b) => a.localeCompare(b, "fr"));
+
+  const visibleProducts = activeCategory
+    ? products.filter((p) => p.category === activeCategory)
+    : products;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, unitPrice: 0 }),
+      body: JSON.stringify({ ...form, category: form.category.trim() || null, unitPrice: 0 }),
     });
-    setForm({ name: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
+    setForm({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
     setOpen(false);
     load();
   }
@@ -44,6 +53,7 @@ export default function ProductsPage() {
     setEditingProduct(p);
     setEditForm({
       name: p.name,
+      category: p.category ?? "",
       costPrice: Number(p.costPrice),
       vatRate: Number(p.vatRate),
       trackStock: p.trackStock,
@@ -59,7 +69,7 @@ export default function ProductsPage() {
     await fetch(`/api/products/${editingProduct.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editForm),
+      body: JSON.stringify({ ...editForm, category: editForm.category.trim() || null }),
     });
 
     setSavingEdit(false);
@@ -114,6 +124,43 @@ export default function ProductsPage() {
         </Button>
       </Link>
 
+      <datalist id="category-suggestions">
+        {categories.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
+
+      {categories.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`h-8 px-4 rounded-full text-xs font-bold transition-colors ${
+              activeCategory === null
+                ? "bg-brand text-white"
+                : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+            }`}
+          >
+            Toutes ({products.length})
+          </button>
+          {categories.map((c) => {
+            const count = products.filter((p) => p.category === c).length;
+            return (
+              <button
+                key={c}
+                onClick={() => setActiveCategory(c)}
+                className={`h-8 px-4 rounded-full text-xs font-bold transition-colors ${
+                  activeCategory === c
+                    ? "bg-brand text-white"
+                    : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                }`}
+              >
+                {c} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Form: Ajouter un produit */}
       {open && (
         <Card className="p-6 border border-neutral-200/60 bg-white shadow-[0_8px_30px_rgb(91,79,232,0.04)] rounded-2xl animate-in fade-in-50 duration-200">
@@ -138,9 +185,22 @@ export default function ProductsPage() {
                 required 
                 placeholder="Ex: Sac de ciment, Clavier sans fil" 
                 className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
-                value={form.name} 
-                onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
+            </div>
+            <div className="col-span-2 flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Catégorie</label>
+              <Input
+                list="category-suggestions"
+                placeholder="Ex: Électroménager, TV, Climatisation..."
+                className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              />
+              <p className="text-[11px] text-neutral-400 mt-0.5 font-semibold">
+                Choisissez une catégorie existante ou tapez-en une nouvelle pour la créer.
+              </p>
             </div>
             <div className="col-span-2 flex flex-col gap-1.5">
               <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Prix d'achat unitaire (F) *</label>
@@ -218,8 +278,18 @@ export default function ProductsPage() {
                 required 
                 placeholder="Ex: Sac de ciment, Clavier sans fil" 
                 className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
-                value={editForm.name} 
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} 
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+            </div>
+            <div className="col-span-2 flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Catégorie</label>
+              <Input
+                list="category-suggestions"
+                placeholder="Ex: Électroménager, TV, Climatisation..."
+                className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full px-4 font-semibold"
+                value={editForm.category}
+                onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
               />
             </div>
             <div className="col-span-2 flex flex-col gap-1.5">
@@ -284,10 +354,17 @@ export default function ProductsPage() {
 
       <Card className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden shadow-sm">
         <div className="divide-y divide-neutral-100/60">
-          {products.map((p) => (
+          {visibleProducts.map((p) => (
             <div key={p.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm hover:bg-neutral-50/30 transition-colors">
               <div className="space-y-1.5">
-                <span className="font-bold text-ink text-sm">{p.name}</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-ink text-sm">{p.name}</span>
+                  {p.category && (
+                    <Badge variant="outline" className="bg-brand/5 text-brand border-brand/15 text-[10px] font-extrabold rounded-full py-0.5 px-2.5">
+                      {p.category}
+                    </Badge>
+                  )}
+                </div>
                 {p.trackStock && (
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {p.lowStock ? (

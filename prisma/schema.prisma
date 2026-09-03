@@ -90,6 +90,7 @@ model Product {
   merchantId    String
   name          String
   sku           String?
+  category      String?
   unitPrice     Decimal         @db.Decimal(10, 2)
   vatRate       Decimal         @default(20.00) @db.Decimal(4, 2)
   trackStock    Boolean         @default(false)
