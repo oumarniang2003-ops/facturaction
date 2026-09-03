@@ -4,17 +4,27 @@ import { generateInvoicePdfBuffer } from "@/lib/generate-invoice-pdf";
 import { sendInvoiceEmail } from "@/lib/email";
 
 /**
- * Route destinée à être appelée une fois par jour par un job planifié
- * (Vercel Cron, GitHub Actions, ou tout scheduler externe) :
+ * Route destinée à être appelée une fois par jour par un job planifié.
+ * Vercel Cron (voir vercel.json) déclenche en GET et injecte automatiquement
+ * `Authorization: Bearer $CRON_SECRET`. POST reste supporté pour un
+ * déclenchement manuel ou un scheduler externe (GitHub Actions, cron-job.org) :
  *
- *   0 8 * * *  curl -X POST https://votre-domaine.com/api/cron/reminders \
- *              -H "Authorization: Bearer $CRON_SECRET"
+ *   curl -X POST https://votre-domaine.com/api/cron/reminders \
+ *        -H "Authorization: Bearer $CRON_SECRET"
  *
  * Elle ne dépend d'aucune session utilisateur : c'est un job serveur qui
  * parcourt TOUS les commerçants, chacun isolé par son propre merchantId
  * dans les requêtes qu'elle déclenche (generateInvoicePdfBuffer, etc.)
  */
+export async function GET(req: Request) {
+  return runReminders(req);
+}
+
 export async function POST(req: Request) {
+  return runReminders(req);
+}
+
+async function runReminders(req: Request) {
   const auth = req.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
