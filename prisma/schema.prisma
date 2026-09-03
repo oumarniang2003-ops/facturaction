@@ -120,6 +120,7 @@ model Invoice {
   createdAt       DateTime      @default(now())
   advanceReceived Decimal       @default(0.00) @db.Decimal(10, 2)
   paymentMethod   String?
+  lastReminderSentAt DateTime?
   client          Client        @relation(fields: [clientId], references: [id])
   merchant        Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   items           InvoiceItem[]

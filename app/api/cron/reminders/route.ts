@@ -24,6 +24,9 @@ export async function POST(req: Request) {
   return runReminders(req);
 }
 
+// Espace les rappels pour ne pas spammer le client d'un email identique chaque jour
+const REMINDER_INTERVAL_DAYS = 3;
+
 async function runReminders(req: Request) {
   const auth = req.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -31,6 +34,7 @@ async function runReminders(req: Request) {
   }
 
   const now = new Date();
+  const reminderCutoff = new Date(now.getTime() - REMINDER_INTERVAL_DAYS * 24 * 60 * 60 * 1000);
 
   // 1. Marque comme "en retard" toute facture envoyée dont l'échéance est dépassée
   await prisma.invoice.updateMany({
@@ -38,9 +42,13 @@ async function runReminders(req: Request) {
     data: { status: "OVERDUE" },
   });
 
-  // 2. Récupère toutes les factures en retard, avec le client et le commerçant
+  // 2. Récupère les factures en retard qui n'ont jamais été relancées, ou
+  //    dont le dernier rappel date d'au moins REMINDER_INTERVAL_DAYS jours
   const overdueInvoices = await prisma.invoice.findMany({
-    where: { status: "OVERDUE" },
+    where: {
+      status: "OVERDUE",
+      OR: [{ lastReminderSentAt: null }, { lastReminderSentAt: { lt: reminderCutoff } }],
+    },
     include: { client: true, merchant: true },
   });
 
@@ -61,6 +69,10 @@ async function runReminders(req: Request) {
         total: Number(invoice.total),
         pdfBuffer: result.pdfBuffer,
         isReminder: true,
+      });
+      await prisma.invoice.update({
+        where: { id: invoice.id },
+        data: { lastReminderSentAt: now },
       });
       sentCount++;
     } catch (err: any) {
