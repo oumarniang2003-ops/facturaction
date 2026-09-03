@@ -189,8 +189,8 @@ export default async function DashboardHome({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold text-ink">Vue d'ensemble</h1>
-          <p className="text-neutral-500 text-sm mt-1 capitalize">
-            Chiffres de <span className="font-semibold">{formattedMonth}</span>, état du stock et des clients au global.
+          <p className="text-neutral-500 text-sm mt-1">
+            Chiffres de <span className="font-semibold capitalize">{formattedMonth}</span>, état du stock et des clients au global.
           </p>
         </div>
         <MonthSelector initialMonth={selectedMonth} />
@@ -208,8 +208,8 @@ export default async function DashboardHome({
             <div className="text-2xl font-display font-bold text-ink">
               {totalInvoiced.toLocaleString("fr-FR")} F
             </div>
-            <div className="text-xs text-neutral-400 mt-1.5 font-semibold capitalize">
-              Factures de {formattedMonth}
+            <div className="text-xs text-neutral-400 mt-1.5 font-semibold">
+              Factures de <span className="capitalize">{formattedMonth}</span>
             </div>
           </CardContent>
         </Card>
