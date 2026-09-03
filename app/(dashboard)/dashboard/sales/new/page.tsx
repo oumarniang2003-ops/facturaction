@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Check, FileText, ArrowRight, UserPlus, UserCheck, Users, Info, Search } from "lucide-react";
+import { ShoppingCart, Check, FileText, ArrowRight, UserPlus, UserCheck, Users, Info, Search, Loader2 } from "lucide-react";
 
 function normalize(str: string): string {
   return str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -43,12 +43,15 @@ export default function QuickSalePage() {
   const [clientPhone, setClientPhone] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SaleResult | null>(null);
 
   useEffect(() => {
-    fetch("/api/products").then((r) => r.json()).then(setProducts);
-    fetch("/api/clients").then((r) => r.json()).then(setClients);
+    Promise.all([
+      fetch("/api/products").then((r) => r.json()).then(setProducts),
+      fetch("/api/clients").then((r) => r.json()).then(setClients),
+    ]).finally(() => setCatalogLoading(false));
   }, []);
 
   // Pré-remplit le champ de recherche si un produit arrive déjà sélectionné via l'URL
@@ -215,8 +218,9 @@ export default function QuickSalePage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Rechercher un produit..."
-                  className="w-full rounded-full border border-neutral-200 bg-white pl-10 pr-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700"
+                  placeholder={catalogLoading ? "Chargement du catalogue..." : "Rechercher un produit..."}
+                  disabled={catalogLoading}
+                  className="w-full rounded-full border border-neutral-200 bg-white pl-10 pr-4 h-10 text-sm font-semibold outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/20 transition-all text-neutral-700 disabled:opacity-60"
                   value={productQuery}
                   onFocus={() => setProductOpen(true)}
                   onChange={(e) => {
@@ -225,9 +229,12 @@ export default function QuickSalePage() {
                     setProductOpen(true);
                   }}
                 />
+                {catalogLoading && (
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-neutral-300 animate-spin" />
+                )}
               </div>
 
-              {productOpen && (
+              {productOpen && !catalogLoading && (
                 <div className="absolute z-20 top-full mt-1.5 w-full bg-white border border-neutral-200 rounded-2xl shadow-lg max-h-64 overflow-y-auto py-1.5">
                   {filteredProducts.length === 0 ? (
                     <p className="px-4 py-3 text-xs text-neutral-400 font-semibold">Aucun produit trouvé.</p>

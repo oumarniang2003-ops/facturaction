@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Mail, Phone, MapPin, Users, X } from "lucide-react";
+import { Search, Plus, Mail, Phone, MapPin, Users, X, Loader2 } from "lucide-react";
 
 type Client = {
   id: string;
@@ -49,9 +49,14 @@ export default function ClientsPage() {
     notes: "",
   });
   const [open, setOpen] = useState(false);
+  const [loadingClients, setLoadingClients] = useState(true);
 
   function load() {
-    fetch("/api/clients").then((r) => r.json()).then(setClients);
+    setLoadingClients(true);
+    fetch("/api/clients").then((r) => r.json()).then((data) => {
+      setClients(data);
+      setLoadingClients(false);
+    });
   }
 
   useEffect(load, []);
@@ -218,7 +223,14 @@ export default function ClientsPage() {
         </select>
       </div>
 
-      {filteredClients.length === 0 ? (
+      {loadingClients ? (
+        <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl">
+          <div className="flex flex-col items-center justify-center py-14 text-center">
+            <Loader2 className="size-6 text-neutral-300 animate-spin mb-3" />
+            <p className="text-neutral-400 text-xs font-semibold">Chargement des clients...</p>
+          </div>
+        </Card>
+      ) : filteredClients.length === 0 ? (
         <Card className="bg-white border-neutral-200/60 shadow-sm rounded-2xl">
           <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
             <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center mb-3 text-neutral-400 border border-neutral-100">

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import { Loader2, FileWarning } from "lucide-react";
 
 type Client = { id: string; name: string };
 type Line = { description: string; quantity: number; unitPrice: number; costPrice: number; vatRate: number };
@@ -25,6 +27,7 @@ export default function EditInvoicePage() {
   const [advanceReceived, setAdvanceReceived] = useState<number | "">("");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -62,8 +65,8 @@ export default function EditInvoicePage() {
         setLoading(false);
       })
       .catch((err) => {
-        alert(err.message);
-        router.push("/dashboard/invoices");
+        setLoadError(err.message || "Une erreur est survenue.");
+        setLoading(false);
       });
   }, [invoiceId, router]);
 
@@ -111,7 +114,32 @@ export default function EditInvoicePage() {
   }
 
   if (loading) {
-    return <div className="text-sm text-neutral-500 py-6">Chargement des données du document...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Loader2 className="size-6 text-neutral-300 animate-spin mb-3" />
+        <p className="text-neutral-400 text-xs font-semibold">Chargement des données du document...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center max-w-md mx-auto">
+        <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3 text-rose-500 border border-rose-100">
+          <FileWarning className="size-6" />
+        </div>
+        <p className="text-ink text-sm font-bold">{loadError}</p>
+        <p className="text-neutral-400 text-xs mt-1 mb-5">
+          Ce document n&apos;a pas pu être chargé. Il a peut-être été supprimé.
+        </p>
+        <Link
+          href="/dashboard/invoices"
+          className="h-10 px-5 inline-flex items-center font-bold text-sm rounded-full bg-gradient-to-r from-brand to-[#7C6FF0] text-white shadow-md shadow-brand/20"
+        >
+          Retour aux factures
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -245,8 +273,8 @@ export default function EditInvoicePage() {
         )}
 
         <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-3">
-          {/* Table headers */}
-          <div className="grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
+          {/* Table headers (desktop only) */}
+          <div className="hidden md:grid grid-cols-12 gap-2 text-xs font-bold text-neutral-400 mb-1 px-1">
             <div className="col-span-5">Désignation</div>
             <div className="col-span-2 text-center">Quantité</div>
             <div className="col-span-2 text-right">P. Unitaire (F)</div>
@@ -254,71 +282,101 @@ export default function EditInvoicePage() {
             <div className="col-span-1 text-center">Act.</div>
           </div>
 
-          {lines.map((line, i) => (
-            <div key={i} className="grid grid-cols-12 gap-2 items-center">
-              <input
-                placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
-                required
-                className="col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
-                value={line.description}
-                list="products-datalist"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const matched = products.find(
-                    (p) => p.name.toLowerCase() === val.toLowerCase()
-                  );
-                  if (matched) {
-                    updateLine(i, {
-                      description: val,
-                      unitPrice: Number(matched.unitPrice) || 0,
-                      costPrice: Number(matched.costPrice) || 0,
-                      vatRate: Number(matched.vatRate) || 0,
-                    });
-                  } else {
-                    updateLine(i, { description: val });
-                  }
-                }}
-              />
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="Qté"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-center"
-                value={line.quantity}
-                onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
-              />
-              <input
-                type="number"
-                min={0}
-                step="1"
-                placeholder="P. Unitaire"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                value={line.unitPrice}
-                onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
-              />
-              <input
-                type="number"
-                min={0}
-                step="1"
-                placeholder="P. Achat"
-                className="col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
-                value={line.costPrice}
-                onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
-              />
-              <div className="col-span-1 text-center">
-                <button
-                  type="button"
-                  disabled={lines.length <= 1}
-                  onClick={() => removeLine(i)}
-                  className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
-                  title="Supprimer la ligne"
-                >
-                  &times;
-                </button>
+          <div className="space-y-3">
+            {lines.map((line, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-neutral-200 p-3 space-y-2.5 md:border-0 md:p-0 md:space-y-0 md:grid md:grid-cols-12 md:gap-2 md:items-center"
+              >
+                <div className="flex items-center justify-between md:hidden border-b border-neutral-100 pb-2 mb-0.5">
+                  <span className="text-xs font-bold text-neutral-500">Ligne {i + 1}</span>
+                  <button
+                    type="button"
+                    disabled={lines.length <= 1}
+                    onClick={() => removeLine(i)}
+                    className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-xs font-bold"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+
+                <input
+                  placeholder="Désignation (ex: Réfrigérateur, Climatiseur...)"
+                  required
+                  className="w-full md:col-span-5 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                  value={line.description}
+                  list="products-datalist"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const matched = products.find(
+                      (p) => p.name.toLowerCase() === val.toLowerCase()
+                    );
+                    if (matched) {
+                      updateLine(i, {
+                        description: val,
+                        unitPrice: Number(matched.unitPrice) || 0,
+                        costPrice: Number(matched.costPrice) || 0,
+                        vatRate: Number(matched.vatRate) || 0,
+                      });
+                    } else {
+                      updateLine(i, { description: val });
+                    }
+                  }}
+                />
+
+                <div className="grid grid-cols-3 gap-2 md:contents">
+                  <div className="flex flex-col gap-1 md:contents">
+                    <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">Qté</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="Qté"
+                      className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-2 py-2 text-sm text-center"
+                      value={line.quantity}
+                      onChange={(e) => updateLine(i, { quantity: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 md:contents">
+                    <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">P. Unitaire (F)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step="1"
+                      placeholder="P. Unitaire"
+                      className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                      value={line.unitPrice}
+                      onChange={(e) => updateLine(i, { unitPrice: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 md:contents">
+                    <label className="block text-[10px] text-neutral-400 font-bold uppercase tracking-wider md:hidden">P. Achat (F)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step="1"
+                      placeholder="P. Achat"
+                      className="w-full md:col-span-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm text-right"
+                      value={line.costPrice}
+                      onChange={(e) => updateLine(i, { costPrice: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
+
+                <div className="hidden md:flex md:col-span-1 justify-center">
+                  <button
+                    type="button"
+                    disabled={lines.length <= 1}
+                    onClick={() => removeLine(i)}
+                    className="text-rose-500 hover:text-rose-700 disabled:opacity-30 text-sm font-semibold p-1"
+                    title="Supprimer la ligne"
+                  >
+                    &times;
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
           <button type="button" onClick={addLine} className="text-sm text-brand font-medium">
             + Ajouter une ligne
           </button>

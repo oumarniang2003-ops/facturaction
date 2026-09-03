@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X } from "lucide-react";
+import { Package, Plus, AlertTriangle, ShoppingCart, Edit, Trash2, X, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 type Product = {
   id: string; name: string; category: string | null; unitPrice: number; costPrice: number; vatRate: number;
@@ -15,6 +16,7 @@ type Product = {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [form, setForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -24,8 +26,16 @@ export default function ProductsPage() {
   const [editForm, setEditForm] = useState({ name: "", category: "", costPrice: 0, vatRate: 0, trackStock: false, stockQty: 0 });
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Delete confirmation state
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   function load() {
-    fetch("/api/products").then((r) => r.json()).then(setProducts);
+    setLoadingProducts(true);
+    fetch("/api/products").then((r) => r.json()).then((data) => {
+      setProducts(data);
+      setLoadingProducts(false);
+    });
   }
   useEffect(load, []);
 
@@ -77,13 +87,16 @@ export default function ProductsPage() {
     load();
   }
 
-  async function handleDelete(productId: string) {
-    if (!confirm("Voulez-vous vraiment supprimer ce produit de votre catalogue ?")) return;
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
 
-    await fetch(`/api/products/${productId}`, {
+    await fetch(`/api/products/${deleteTarget.id}`, {
       method: "DELETE",
     });
 
+    setDeleting(false);
+    setDeleteTarget(null);
     load();
   }
 
@@ -354,6 +367,13 @@ export default function ProductsPage() {
 
       <Card className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden shadow-sm">
         <div className="divide-y divide-neutral-100/60">
+          {loadingProducts ? (
+            <div className="flex flex-col items-center justify-center py-14 text-center">
+              <Loader2 className="size-6 text-neutral-300 animate-spin mb-3" />
+              <p className="text-neutral-400 text-xs font-semibold">Chargement du catalogue...</p>
+            </div>
+          ) : (
+            <>
           {visibleProducts.map((p) => (
             <div key={p.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm hover:bg-neutral-50/30 transition-colors">
               <div className="space-y-1.5">
@@ -396,9 +416,9 @@ export default function ProductsPage() {
                   <span>Modifier</span>
                 </Button>
 
-                <Button 
-                  onClick={() => handleDelete(p.id)} 
-                  variant="outline" 
+                <Button
+                  onClick={() => setDeleteTarget(p)}
+                  variant="outline"
                   className="shrink-0 h-8 text-xs font-bold px-3 border-neutral-200 hover:bg-rose-50 hover:text-rose-600 bg-white flex items-center gap-1 rounded-full text-rose-500"
                   title="Supprimer le produit"
                 >
@@ -424,8 +444,21 @@ export default function ProductsPage() {
               <p className="text-neutral-400 text-xs mt-1">Ajoutez votre premier produit pour commencer.</p>
             </div>
           )}
+            </>
+          )}
         </div>
       </Card>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Supprimer ce produit ?"
+          description={`"${deleteTarget.name}" sera définitivement retiré de votre catalogue.`}
+          confirmLabel="Supprimer"
+          loading={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
