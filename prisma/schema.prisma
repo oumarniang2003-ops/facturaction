@@ -34,8 +34,25 @@ model Subscription {
   stripeCustomerId String?
   stripeSubId      String?
   currentPeriodEnd DateTime?
+  paidUntil        DateTime?
   createdAt        DateTime  @default(now())
   merchant         Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  payments         SubscriptionPayment[]
+}
+
+// Historique des paiements d'abonnement enregistrés manuellement par le
+// super admin (Wave, Orange Money, espèces...), tant que Stripe n'est pas
+// branché en production.
+model SubscriptionPayment {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  amount         Decimal       @db.Decimal(10, 2)
+  method         PaymentMethod
+  note           String?
+  paidAt         DateTime      @default(now())
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
 }
 
 model User {

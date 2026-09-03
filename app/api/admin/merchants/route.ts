@@ -39,6 +39,7 @@ export async function GET() {
       lastLoginAt,
       plan: m.subscription?.plan ?? "STARTER",
       status: m.subscription?.status ?? "TRIALING",
+      paidUntil: m.subscription?.paidUntil ?? null,
     };
   });
 

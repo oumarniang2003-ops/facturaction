@@ -42,6 +42,14 @@ async function runReminders(req: Request) {
     data: { status: "OVERDUE" },
   });
 
+  // 1bis. Abonnements payés manuellement (Wave/OM/espèces) dont la période
+  // couverte est dépassée : repasse en impayé jusqu'au prochain paiement
+  // enregistré par le super admin.
+  await prisma.subscription.updateMany({
+    where: { status: "ACTIVE", paidUntil: { lt: now } },
+    data: { status: "PAST_DUE" },
+  });
+
   // 2. Récupère les factures en retard qui n'ont jamais été relancées, ou
   //    dont le dernier rappel date d'au moins REMINDER_INTERVAL_DAYS jours
   const overdueInvoices = await prisma.invoice.findMany({

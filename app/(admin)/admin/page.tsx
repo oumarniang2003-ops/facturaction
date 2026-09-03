@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Shield, Search, Users, FileText, Clock } from "lucide-react";
+import { PaymentDialog } from "./PaymentDialog";
 
 type Merchant = {
   id: string;
@@ -26,6 +27,7 @@ type Merchant = {
   lastLoginAt: string | null;
   plan: "STARTER" | "PRO" | "BUSINESS";
   status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELED";
+  paidUntil: string | null;
 };
 
 const statusLabels: Record<Merchant["status"], { label: string; className: string }> = {
@@ -132,18 +134,20 @@ export default function AdminMerchantsPage() {
               <TableHead>Activité</TableHead>
               <TableHead>Plan</TableHead>
               <TableHead>Statut</TableHead>
+              <TableHead>Payé jusqu&apos;au</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10 text-sm text-neutral-400 font-semibold">
+                <TableCell colSpan={9} className="text-center py-10 text-sm text-neutral-400 font-semibold">
                   Chargement...
                 </TableCell>
               </TableRow>
             ) : filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-10 text-sm text-neutral-400 font-semibold">
+                <TableCell colSpan={9} className="text-center py-10 text-sm text-neutral-400 font-semibold">
                   Aucun commerçant trouvé.
                 </TableCell>
               </TableRow>
@@ -204,6 +208,20 @@ export default function AdminMerchantsPage() {
                         <option value="PAST_DUE">Impayé</option>
                         <option value="CANCELED">Suspendu</option>
                       </select>
+                    </TableCell>
+                    <TableCell className="text-xs text-neutral-500 font-semibold whitespace-nowrap">
+                      {m.paidUntil ? new Date(m.paidUntil).toLocaleDateString("fr-FR") : "—"}
+                    </TableCell>
+                    <TableCell>
+                      <PaymentDialog
+                        merchantId={m.id}
+                        businessName={m.businessName}
+                        onSaved={(data) =>
+                          setMerchants((prev) =>
+                            prev.map((x) => (x.id === m.id ? { ...x, ...data } as Merchant : x))
+                          )
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 );
