@@ -58,11 +58,17 @@ export default async function InvoicesPage({
 
   const allInvoices = await prisma.invoice.findMany({
     where: { merchantId },
-    include: { client: true },
+    include: { client: true, items: true },
     orderBy: { createdAt: "desc" },
   });
 
   const invoices = activeStatus === "all" ? allInvoices : allInvoices.filter((inv) => inv.status === activeStatus);
+
+  function productSummary(items: { description: string }[]) {
+    if (items.length === 0) return "—";
+    if (items.length === 1) return items[0].description;
+    return `${items[0].description} +${items.length - 1}`;
+  }
 
   return (
     <div className="space-y-6">
@@ -145,6 +151,9 @@ export default async function InvoicesPage({
                           <span>{inv.client.phone}</span>
                         </div>
                       )}
+                      <div className="text-[11px] text-neutral-500 font-medium" title={inv.items.map((it) => it.description).join(", ")}>
+                        {productSummary(inv.items)}
+                      </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
@@ -201,6 +210,7 @@ export default async function InvoicesPage({
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Date</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Numéro</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Client</TableHead>
+                  <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Produit(s)</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Statut</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-right">Total</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-right">Actions</TableHead>
@@ -220,6 +230,9 @@ export default async function InvoicesPage({
                         {inv.client.phone && (
                           <div className="text-[11px] text-neutral-400 font-medium mt-0.5">{inv.client.phone}</div>
                         )}
+                      </TableCell>
+                      <TableCell className="px-4 py-3.5 text-neutral-600 text-xs font-medium max-w-[220px] truncate" title={inv.items.map((it) => it.description).join(", ")}>
+                        {productSummary(inv.items)}
                       </TableCell>
                       <TableCell className="px-4 py-3.5">
                         <Badge
