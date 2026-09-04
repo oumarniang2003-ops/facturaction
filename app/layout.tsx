@@ -1,15 +1,16 @@
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Archivo, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-display",
   display: "swap",
 });
 
-const inter = Inter({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
   display: "swap",
 });
 
@@ -20,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html lang="fr" className={`${archivo.variable} ${ibmPlexSans.variable}`}>
       <body className="bg-paper text-ink font-body antialiased">{children}</body>
     </html>
   );

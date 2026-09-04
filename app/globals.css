@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,14 +13,14 @@
 }
 
 body {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-body), sans-serif;
   font-feature-settings: "cv11", "ss01";
 }
 
 @layer base {
   .theme {
-    --font-heading: var(--font-space-grotesk);
-    --font-sans: var(--font-inter);
+    --font-heading: var(--font-display);
+    --font-sans: var(--font-body);
   }
   :root {
     --background: oklch(0.98 0.01 270);
