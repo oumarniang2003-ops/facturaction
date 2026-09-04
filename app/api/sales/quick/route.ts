@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     productId,
     quantity,
     sellPrice, // optionnel : permet de vendre à un prix différent du prix catalogue
+    advanceReceived, // optionnel : montant déjà encaissé si different du total (vente a credit/partielle)
     paymentMethod,
     clientId,
     clientName,
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
     productId: string;
     quantity: number;
     sellPrice?: number;
+    advanceReceived?: number;
     paymentMethod?: string;
     clientId?: string;
     clientName?: string;
@@ -86,6 +88,14 @@ export async function POST(req: Request) {
     { description: product.name, quantity, unitPrice, vatRate },
   ]);
 
+  // Avance encaissée : par défaut le total (vente immédiate classique),
+  // mais peut être inférieure si le client ne paie qu'une partie maintenant.
+  const advance = advanceReceived === undefined || advanceReceived === null
+    ? total
+    : Math.min(Math.max(0, Number(advanceReceived)), total);
+  const remaining = Math.max(0, total - advance);
+  const status = advance >= total ? "PAID" : advance > 0 ? "PARTIALLY_PAID" : "SENT";
+
   const number = await getNextInvoiceNumber(merchantId);
 
   const invoice = await prisma.invoice.create({
@@ -94,10 +104,11 @@ export async function POST(req: Request) {
       clientId: finalClientId,
       number,
       type: "INVOICE",
-      status: "PAID", // vente immédiate : déjà encaissée
+      status,
       subtotal,
       vatTotal,
       total,
+      advanceReceived: advance,
       paymentMethod: paymentMethod || "CASH",
       items: {
         create: items.map((it) => ({
@@ -110,9 +121,9 @@ export async function POST(req: Request) {
           lineTotal: it.lineTotal,
         })),
       },
-      payments: {
-        create: { amount: total, method: (paymentMethod as any) || "CASH" },
-      },
+      ...(advance > 0
+        ? { payments: { create: { amount: advance, method: (paymentMethod as any) || "CASH" } } }
+        : {}),
     },
     include: { items: true, client: true },
   });
@@ -138,6 +149,8 @@ export async function POST(req: Request) {
     {
       invoice,
       revenue: subtotal,
+      advanceReceived: advance,
+      remaining,
       profit,
       remainingStock: product.trackStock ? product.stockQty - quantity : null,
     },

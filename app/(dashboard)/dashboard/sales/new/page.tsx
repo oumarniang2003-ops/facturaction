@@ -22,6 +22,8 @@ type Client = { id: string; name: string };
 type SaleResult = {
   invoice: { id: string; number: string };
   revenue: number;
+  advanceReceived: number;
+  remaining: number;
   profit: number;
   remainingStock: number | null;
 };
@@ -37,6 +39,8 @@ export default function QuickSalePage() {
   const productBoxRef = useRef<HTMLDivElement>(null);
   const [quantity, setQuantity] = useState(1);
   const [sellPrice, setSellPrice] = useState<number | "">("");
+  const [partialPayment, setPartialPayment] = useState(false);
+  const [advanceReceived, setAdvanceReceived] = useState<number | "">("");
   const [clientMode, setClientMode] = useState<"counter" | "existing" | "new">("counter");
   const [clientId, setClientId] = useState("");
   const [clientName, setClientName] = useState("");
@@ -86,12 +90,17 @@ export default function QuickSalePage() {
   const effectivePrice = sellPrice === "" ? 0 : Number(sellPrice);
   const effectiveCost = Number(selectedProduct?.costPrice ?? 0);
   const estimatedProfit = (effectivePrice - effectiveCost) * quantity;
+  const estimatedTotal = effectivePrice * quantity;
+  const effectiveAdvance = partialPayment ? (advanceReceived === "" ? 0 : Number(advanceReceived)) : estimatedTotal;
+  const estimatedRemaining = Math.max(0, estimatedTotal - effectiveAdvance);
 
   function resetForm() {
     setProductId("");
     setProductQuery("");
     setQuantity(1);
     setSellPrice("");
+    setPartialPayment(false);
+    setAdvanceReceived("");
     setClientMode("counter");
     setClientId("");
     setClientName("");
@@ -108,6 +117,16 @@ export default function QuickSalePage() {
       return;
     }
 
+    if (partialPayment && (advanceReceived === "" || Number(advanceReceived) < 0)) {
+      setError("Indiquez le montant de l'avance reçue.");
+      return;
+    }
+
+    if (partialPayment && Number(advanceReceived) > estimatedTotal) {
+      setError("L'avance ne peut pas dépasser le montant total de la vente.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -118,6 +137,7 @@ export default function QuickSalePage() {
         productId,
         quantity,
         sellPrice: Number(sellPrice),
+        advanceReceived: partialPayment ? Number(advanceReceived) : undefined,
         clientId: clientMode === "existing" ? clientId : clientMode === "new" ? "new" : undefined,
         clientName: clientMode === "new" ? clientName : undefined,
         clientPhone: clientMode === "new" ? clientPhone : undefined,
@@ -159,6 +179,19 @@ export default function QuickSalePage() {
                 <p className="text-lg font-display font-extrabold text-mint">{result.profit.toLocaleString("fr-FR")} F</p>
               </div>
             </div>
+
+            {result.remaining > 0 && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-neutral-50/50 border border-neutral-200/50 rounded-2xl p-4 text-center">
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Avance reçue</p>
+                  <p className="text-lg font-display font-extrabold text-ink">{result.advanceReceived.toLocaleString("fr-FR")} F</p>
+                </div>
+                <div className="bg-amber/5 border border-amber/10 rounded-2xl p-4 text-center">
+                  <p className="text-[10px] font-bold text-amber uppercase tracking-wider mb-1">Reste à percevoir</p>
+                  <p className="text-lg font-display font-extrabold text-amber">{result.remaining.toLocaleString("fr-FR")} F</p>
+                </div>
+              </div>
+            )}
 
             {result.remainingStock !== null && (
               <div className="p-3 bg-neutral-50 border border-neutral-100 rounded-2xl text-xs text-neutral-500 inline-block font-semibold">
@@ -297,6 +330,45 @@ export default function QuickSalePage() {
                 <span className="text-mint text-sm font-display font-extrabold">{estimatedProfit.toLocaleString("fr-FR")} F</span>
               </div>
             )}
+
+            <div className="space-y-3 pt-1">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={partialPayment}
+                  onChange={(e) => {
+                    setPartialPayment(e.target.checked);
+                    if (!e.target.checked) setAdvanceReceived("");
+                  }}
+                  className="rounded border-neutral-300 text-brand focus:ring-brand size-4 cursor-pointer"
+                />
+                <span className="text-sm font-semibold text-neutral-700">
+                  Paiement partiel (le client verse une avance maintenant)
+                </span>
+              </label>
+
+              {partialPayment && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Avance reçue (F)</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={estimatedTotal || undefined}
+                    required
+                    placeholder="Ex: 5000"
+                    className="h-10 border-neutral-200 focus-visible:border-brand bg-white rounded-full font-semibold px-4"
+                    value={advanceReceived}
+                    onChange={(e) => setAdvanceReceived(e.target.value === "" ? "" : parseFloat(e.target.value))}
+                  />
+                  {sellPrice !== "" && (
+                    <div className="flex justify-between items-center text-xs font-bold px-1 mt-1">
+                      <span className="text-neutral-400">Reste à percevoir</span>
+                      <span className="text-amber">{estimatedRemaining.toLocaleString("fr-FR")} F</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             <div className="space-y-3 pt-4 border-t border-neutral-100/60">
               <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider">Client</label>
