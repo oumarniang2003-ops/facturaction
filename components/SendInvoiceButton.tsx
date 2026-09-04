@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Send, Check, Loader2 } from "lucide-react";
 
 export function SendInvoiceButton({ invoiceId }: { invoiceId: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -11,15 +12,28 @@ export function SendInvoiceButton({ invoiceId }: { invoiceId: string }) {
     setStatus(res.ok ? "sent" : "error");
   }
 
-  if (status === "sent") return <span className="text-brand text-sm">Envoyée ✓</span>;
+  if (status === "sent") {
+    return (
+      <span className="h-8 px-3 text-[11px] font-bold rounded-full bg-mint/10 text-mint inline-flex items-center gap-1.5 shrink-0">
+        <Check className="size-3.5" />
+        <span>Envoyée</span>
+      </span>
+    );
+  }
 
   return (
     <button
       onClick={handleSend}
       disabled={status === "sending"}
-      className="text-sm text-neutral-500 hover:text-brand disabled:opacity-50"
+      title="Envoyer par email"
+      className="h-8 px-3 text-[11px] font-bold rounded-full border border-neutral-200 hover:bg-neutral-50 bg-white text-neutral-700 disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0 transition-colors"
     >
-      {status === "sending" ? "Envoi..." : status === "error" ? "Échec, réessayer" : "Envoyer"}
+      {status === "sending" ? (
+        <Loader2 className="size-3.5 animate-spin text-neutral-400" />
+      ) : (
+        <Send className="size-3.5 text-neutral-400" />
+      )}
+      <span>{status === "error" ? "Réessayer" : "Envoyer"}</span>
     </button>
   );
 }

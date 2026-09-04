@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 interface DeleteSaleButtonProps {
   invoiceId: string;
   invoiceNumber: string;
-  variant?: "compact" | "button";
+  variant?: "compact" | "button" | "icon";
 }
 
 export function DeleteSaleButton({ invoiceId, invoiceNumber, variant = "compact" }: DeleteSaleButtonProps) {
@@ -93,12 +93,25 @@ export function DeleteSaleButton({ invoiceId, invoiceNumber, variant = "compact"
     );
   }
 
+  if (variant === "icon") {
+    return (
+      <Button
+        variant="outline"
+        onClick={() => setShowConfirm(true)}
+        title="Supprimer"
+        className="h-8 w-8 p-0 border-neutral-200 hover:bg-rose-50 hover:border-rose-200 bg-white rounded-full text-rose-500 transition-colors"
+      >
+        <Trash2 className="size-3.5" />
+      </Button>
+    );
+  }
+
   if (variant === "button") {
     return (
       <Button
         variant="outline"
         onClick={() => setShowConfirm(true)}
-        className="h-8 text-[11px] px-3 border-red-200 hover:bg-red-50 hover:border-red-300 bg-white rounded-full font-bold flex items-center gap-1 text-red-500 transition-colors"
+        className="h-8 text-[11px] px-3 border-rose-200 hover:bg-rose-50 hover:border-rose-300 bg-white rounded-full font-bold flex items-center gap-1 text-rose-500 transition-colors"
       >
         <Trash2 className="size-3.5" />
         <span>Supprimer</span>

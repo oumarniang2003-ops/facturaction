@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Wallet } from "lucide-react";
 
 type RecordPaymentButtonProps = {
   invoiceId: string;
@@ -87,9 +88,10 @@ export function RecordPaymentButton({
     <>
       <button
         onClick={handleOpen}
-        className="px-2 py-1 text-xs font-semibold rounded bg-brand/10 hover:bg-brand/20 text-brand transition-colors"
+        className="h-8 px-3 text-[11px] font-bold rounded-full bg-brand/10 hover:bg-brand/20 text-brand transition-colors inline-flex items-center gap-1.5 shrink-0"
       >
-        💰 Régler
+        <Wallet className="size-3.5" />
+        <span>Régler</span>
       </button>
 
       {open && (

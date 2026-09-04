@@ -29,10 +29,10 @@ const statusLabel: Record<string, string> = {
 
 const statusBadgeStyles: Record<string, { bg: string; text: string; border: string }> = {
   DRAFT: { bg: "bg-neutral-100", text: "text-neutral-600", border: "border-neutral-200" },
-  SENT: { bg: "bg-brand/10", text: "text-brand", border: "border-brand/20" },
+  SENT: { bg: "bg-slate-100", text: "text-slate-600", border: "border-slate-200" },
   PAID: { bg: "bg-mint/10", text: "text-mint", border: "border-mint/20" },
   PARTIALLY_PAID: { bg: "bg-gold/10", text: "text-gold", border: "border-gold/20" },
-  OVERDUE: { bg: "bg-amber/10", text: "text-amber", border: "border-amber/20" },
+  OVERDUE: { bg: "bg-brand/10", text: "text-brand", border: "border-brand/20" },
   CANCELED: { bg: "bg-neutral-50", text: "text-neutral-400", border: "border-neutral-100" },
 };
 
@@ -201,13 +201,9 @@ export default async function InvoicesPage({
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Date</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Numéro</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Client</TableHead>
-                  <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Téléphone</TableHead>
-                  <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Adresse</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11">Statut</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-right">Total</TableHead>
-                  <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-center">Paiement</TableHead>
                   <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-right">Actions</TableHead>
-                  <TableHead className="px-4 py-3 font-bold text-neutral-400 text-[10px] uppercase tracking-wider h-11 text-right">Email</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-neutral-100/60">
@@ -219,14 +215,15 @@ export default async function InvoicesPage({
                         {new Date(inv.issueDate).toLocaleDateString("fr-FR")}
                       </TableCell>
                       <TableCell className="px-4 py-3.5 font-bold text-ink text-xs">{inv.number}</TableCell>
-                      <TableCell className="px-4 py-3.5 font-bold text-neutral-800 text-xs">{inv.client.name}</TableCell>
-                      <TableCell className="px-4 py-3.5 text-neutral-500 text-xs font-medium">{inv.client.phone || "—"}</TableCell>
-                      <TableCell className="px-4 py-3.5 text-neutral-500 text-xs max-w-[150px] truncate font-medium" title={inv.client.address || ""}>
-                        {inv.client.address || "—"}
+                      <TableCell className="px-4 py-3.5 text-xs">
+                        <div className="font-bold text-neutral-800">{inv.client.name}</div>
+                        {inv.client.phone && (
+                          <div className="text-[11px] text-neutral-400 font-medium mt-0.5">{inv.client.phone}</div>
+                        )}
                       </TableCell>
                       <TableCell className="px-4 py-3.5">
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold border ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}
                         >
                           {statusLabel[inv.status]}
@@ -235,37 +232,35 @@ export default async function InvoicesPage({
                       <TableCell className="px-4 py-3.5 text-right font-display font-extrabold text-ink text-xs">
                         {Number(inv.total).toLocaleString("fr-FR")} F
                       </TableCell>
-                      <TableCell className="px-4 py-3.5 text-center">
-                        <RecordPaymentButton
-                          invoiceId={inv.id}
-                          invoiceNumber={inv.number}
-                          total={Number(inv.total)}
-                          advanceReceived={Number(inv.advanceReceived)}
-                        />
-                      </TableCell>
-                      <TableCell className="px-4 py-3.5 text-right text-xs">
-                        <div className="flex justify-end gap-2">
-                          <Link href={`/dashboard/invoices/${inv.id}/edit`}>
-                            <Button variant="outline" className="h-8 text-[11px] px-3 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full font-bold flex items-center gap-1">
-                              <Edit className="size-3.5 text-neutral-400" />
-                              <span>Modifier</span>
-                            </Button>
-                          </Link>
-                          <a
-                            href={`/api/invoices/${inv.id}/pdf`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <Button variant="outline" className="h-8 text-[11px] px-3 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full font-bold flex items-center gap-1">
+                      <TableCell className="px-4 py-3.5">
+                        <div className="flex justify-end items-center gap-1.5 flex-wrap">
+                          <RecordPaymentButton
+                            invoiceId={inv.id}
+                            invoiceNumber={inv.number}
+                            total={Number(inv.total)}
+                            advanceReceived={Number(inv.advanceReceived)}
+                          />
+                          <SendInvoiceButton invoiceId={inv.id} />
+                          <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" rel="noreferrer">
+                            <Button
+                              variant="outline"
+                              title="Voir le PDF"
+                              className="h-8 w-8 p-0 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full"
+                            >
                               <ExternalLink className="size-3.5 text-neutral-400" />
-                              <span>PDF</span>
                             </Button>
                           </a>
-                          <DeleteSaleButton invoiceId={inv.id} invoiceNumber={inv.number} variant="button" />
+                          <Link href={`/dashboard/invoices/${inv.id}/edit`}>
+                            <Button
+                              variant="outline"
+                              title="Modifier"
+                              className="h-8 w-8 p-0 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full"
+                            >
+                              <Edit className="size-3.5 text-neutral-400" />
+                            </Button>
+                          </Link>
+                          <DeleteSaleButton invoiceId={inv.id} invoiceNumber={inv.number} variant="icon" />
                         </div>
-                      </TableCell>
-                      <TableCell className="px-4 py-3.5 text-right">
-                        <SendInvoiceButton invoiceId={inv.id} />
                       </TableCell>
                     </TableRow>
                   );
