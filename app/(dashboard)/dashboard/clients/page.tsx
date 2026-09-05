@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Mail, Phone, MapPin, Users, X, Loader2 } from "lucide-react";
+import { Search, Plus, Mail, Phone, MapPin, Users, X, Loader2, Trophy } from "lucide-react";
 
 type Client = {
   id: string;
@@ -80,6 +80,11 @@ export default function ClientsPage() {
     setOpen(false);
     load();
   }
+
+  const topClients = [...clients]
+    .filter((c) => c.totalInvoiced > 0)
+    .sort((a, b) => b.totalInvoiced - a.totalInvoiced)
+    .slice(0, 5);
 
   const filteredClients = clients.filter((c) => {
     const term = search.toLowerCase();
@@ -199,6 +204,31 @@ export default function ClientsPage() {
               Enregistrer le client
             </Button>
           </form>
+        </Card>
+      )}
+
+      {!loadingClients && topClients.length > 0 && (
+        <Card className="bg-white border-neutral-200/60 rounded-2xl p-5 shadow-none">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="size-4 text-gold" />
+            <h2 className="text-sm font-bold text-ink">Top clients</h2>
+            <span className="text-[11px] text-neutral-400 font-semibold">par total facturé</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {topClients.map((c, i) => (
+              <div key={c.id} className="flex items-center gap-2.5 rounded-xl border border-neutral-100 px-3 py-2.5">
+                <span className="w-6 h-6 rounded-full bg-gold/10 text-gold text-xs font-bold flex items-center justify-center shrink-0">
+                  {i + 1}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-ink truncate">{c.name}</p>
+                  <p className="text-[11px] text-neutral-400 font-semibold">
+                    {c.totalInvoiced.toLocaleString("fr-FR")} F
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
 

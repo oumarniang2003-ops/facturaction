@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Phone, Edit, ExternalLink, Trash2 } from "lucide-react";
+import { FileText, Plus, Phone, Edit, ExternalLink, Trash2, Download } from "lucide-react";
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -79,14 +79,25 @@ export default async function InvoicesPage({
             Gérez vos documents de vente et suivez les règlements clients.
           </p>
         </div>
-        <Link href="/dashboard/invoices/new">
-          <Button
-            className="h-10 px-5 font-bold flex items-center gap-2 shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
-          >
-            <Plus className="size-4.5" />
-            <span>Nouvelle facture</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <a href={`/api/invoices/export${activeStatus !== "all" ? `?status=${activeStatus}` : ""}`}>
+            <Button
+              variant="outline"
+              className="h-10 px-4 font-bold flex items-center gap-2 border-neutral-200 hover:bg-neutral-50 bg-white rounded-full"
+            >
+              <Download className="size-4" />
+              <span>Exporter CSV</span>
+            </Button>
+          </a>
+          <Link href="/dashboard/invoices/new">
+            <Button
+              className="h-10 px-5 font-bold flex items-center gap-2 shadow-md shadow-brand/20 hover:opacity-95 transition-all duration-200 rounded-full bg-brand text-white"
+            >
+              <Plus className="size-4.5" />
+              <span>Nouvelle facture</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
